@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Ein Master-Passwort ist festgelegt: Wird der Einstellungsordner kopiert, öffnen sie sich auf einem anderen Computer, sobald es dort eingegeben wird."
   },
-  "settings.passwords.no_master": {
-    "message": "Kein Master-Passwort festgelegt: Wird der Einstellungsordner kopiert, öffnen sie sich auf einem anderen Computer nicht; sie werden dort neu eingegeben."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Das Master-Passwort wurde nicht entfernt: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Master-Passwort entfernen"
+  "settings.passwords.needs_master": {
+    "message": "Kein Master-Passwort festgelegt: Passwörter werden erst gespeichert, wenn eines festgelegt ist."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# Passwort ist gespeichert} other {# Passwörter sind gespeichert}} (für Server, Freigaben, verschlüsselte Laufwerke), verschlüsselt im Einstellungsordner; der Schlüssel dazu liegt im Schlüsselbund dieses Computers."

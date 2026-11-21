@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Hi ha una contrasenya mestra: si copies la carpeta de configuració, s’obren en un altre ordinador quan s’hi escriu."
   },
-  "settings.passwords.no_master": {
-    "message": "No hi ha cap contrasenya mestra: si copies la carpeta de configuració, no s’obren en un altre ordinador; s’hi han de tornar a escriure."
-  },
-  "settings.passwords.not_removed": {
-    "message": "No s’ha eliminat la contrasenya mestra: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Elimina la contrasenya mestra"
+  "settings.passwords.needs_master": {
+    "message": "No hi ha cap contrasenya mestra: les contrasenyes només es desen quan n'hi ha una."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Hi ha # contrasenya desada} other {Hi ha # contrasenyes desades}} (de servidors, recursos compartits i unitats xifrades), xifrades a la carpeta de configuració; la clau que les obre és a l’anell de claus d’aquest ordinador."

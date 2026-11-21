@@ -1,9 +1,9 @@
 //! Saved passwords (servers', shares', encrypted drives'): each sealed with
 //! AES-256-GCM in the settings folder's `passwords.json`, so they go along
 //! when the folder is copied. The key that opens them stays in this
-//! computer's keyring, never in the folder: random until a master password
-//! is set, then made from it (PBKDF2), so another computer opens them once
-//! it is typed there. The keyring keeps the key, not the master password,
+//! computer's keyring, never in the folder: made from the master password
+//! (PBKDF2), without which nothing is saved, so another computer opens them
+//! once it is typed there. The keyring keeps the key, not the master password,
 //! which may be in use elsewhere too. Calls may wait on the keyring (KWallet
 //! asks to open the wallet): not on the UI thread.
 
@@ -78,7 +78,7 @@ pub fn password(what: &str) -> Option<String> {
 pub fn remember(what: &str, password: &str) -> io::Result<()> {
     let _one = CHANGING.lock().unwrap();
     let mut vault = load()?;
-    let key = ready(&mut vault)?;
+    let key = ready(&vault)?;
     vault.passwords.insert(what.to_owned(), seal(&key, what, password.as_bytes())?);
     save(&vault)
 }
@@ -130,26 +130,29 @@ pub fn unlock(master: &str) -> io::Result<()> {
     Ok(())
 }
 
-/// Sets, changes or (none) removes the master password; every saved
-/// password is sealed again under the new key. This computer's keyring
-/// keeps it; without one, the master password opens them each run.
-pub fn set_master(master: Option<&str>) -> io::Result<()> {
+/// Sets or changes the master password; every saved password is sealed
+/// again under the new key. This computer's keyring keeps it; without one,
+/// the master password opens them each run.
+pub fn set_master(master: &str) -> io::Result<()> {
     let _one = CHANGING.lock().unwrap();
     let mut vault = load()?;
     // With nothing saved, no key is needed yet: none is asked of the keyring.
     let old = match vault.passwords.is_empty() {
         true => None,
-        false => Some(ready(&mut vault)?),
+        false => match key_for(&vault)? {
+            None if vault.master.is_some() => return Err(locked_error()),
+            // An earlier version's random key, gone from the keyring: they cannot be opened.
+            None => {
+                vault.passwords.clear();
+                None
+            }
+            key => key,
+        },
     };
-    let (new, made) = match master {
-        Some(master) => {
-            let salt: [u8; 16] = random()?;
-            (derive(master, &salt, ROUNDS), Some((hex(&salt), ROUNDS)))
-        }
-        None => (random()?, None),
-    };
+    let salt: [u8; 16] = random()?;
+    let new = derive(master, &salt, ROUNDS);
     vault.reseal(&old.unwrap_or(new), &new)?;
-    vault.master = made;
+    vault.master = Some((hex(&salt), ROUNDS));
     save(&vault)?;
     *KEY.lock().unwrap() = Some(new);
     let _ = keep(&new);
@@ -182,25 +185,16 @@ fn key_for(vault: &Vault) -> io::Result<Option<Key>> {
     Ok(*held)
 }
 
-/// The key to seal with: `vault`'s, or a new random one where it has none
-/// that this computer can open and no master password to ask for (what the
-/// old sealed can never be opened, and goes).
-fn ready(vault: &mut Vault) -> io::Result<Key> {
-    if let Some(key) = key_for(vault)? {
-        if vault.check.is_empty() {
-            vault.check = seal(&key, CHECK, CHECK.as_bytes())?;
-        }
-        return Ok(key);
+/// The key to seal with: the master password's, once it is set and open here.
+fn ready(vault: &Vault) -> io::Result<Key> {
+    if vault.master.is_none() {
+        return Err(io::Error::other(crate::t!("passwords.error.no_master")));
     }
-    if vault.master.is_some() {
-        return Err(io::Error::new(io::ErrorKind::PermissionDenied, crate::t!("passwords.error.locked")));
-    }
-    let key: Key = random()?;
-    keep(&key)?;
-    *KEY.lock().unwrap() = Some(key);
-    vault.passwords.clear();
-    vault.check = seal(&key, CHECK, CHECK.as_bytes())?;
-    Ok(key)
+    key_for(vault)?.ok_or_else(locked_error)
+}
+
+fn locked_error() -> io::Error {
+    io::Error::new(io::ErrorKind::PermissionDenied, crate::t!("passwords.error.locked"))
 }
 
 fn kept() -> io::Result<Option<Key>> {
@@ -280,6 +274,11 @@ mod tests {
         assert_eq!(open(&other, "sftp://me@host:22", &sealed), None, "another key");
         assert_eq!(open(&key, "sftp://you@host:22", &sealed), None, "moved to another entry");
         assert_ne!(seal(&key, "sftp://me@host:22", b"s3cret").unwrap(), sealed, "a fresh nonce each time");
+    }
+
+    #[test]
+    fn nothing_is_saved_without_a_master_password() {
+        assert!(ready(&Vault::default()).is_err());
     }
 
     #[test]

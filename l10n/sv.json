@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Ett huvudlösenord är inställt: med inställningsmappen kopierad öppnas de på en annan dator när det skrivs in där."
   },
-  "settings.passwords.no_master": {
-    "message": "Inget huvudlösenord är inställt: med inställningsmappen kopierad öppnas de inte på en annan dator; där skrivs de in igen."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Huvudlösenordet togs inte bort: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Ta bort huvudlösenord"
+  "settings.passwords.needs_master": {
+    "message": "Inget huvudlösenord är angivet: lösenord sparas först när ett är angivet."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# lösenord är sparat} other {# lösenord är sparade}} (för servrar, resurser, krypterade enheter), förseglade i inställningsmappen; nyckeln som öppnar dem finns i den här datorns nyckelring."

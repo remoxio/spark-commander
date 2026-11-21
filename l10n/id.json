@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Kata sandi utama telah diatur: dengan folder pengaturan disalin, kata sandi tersebut dapat dibuka di komputer lain setelah kata sandi utama diketik di sana."
   },
-  "settings.passwords.no_master": {
-    "message": "Kata sandi utama belum diatur: dengan folder pengaturan disalin, kata sandi tersebut tidak dapat dibuka di komputer lain; kata sandi harus diketik lagi di sana."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Kata sandi utama tidak dihapus: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Hapus kata sandi utama"
+  "settings.passwords.needs_master": {
+    "message": "Belum ada kata sandi utama: kata sandi baru disimpan setelah kata sandi utama diatur."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, other {# kata sandi disimpan}} (server, folder bersama, drive terenkripsi), terenkripsi di folder pengaturan; kunci yang membukanya ada di keyring komputer ini."

@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Mesterjelszó beállítva: a beállítások mappáját átmásolva egy másik gépen is megnyithatók, ha ott beírod a mesterjelszót."
   },
-  "settings.passwords.no_master": {
-    "message": "Nincs mesterjelszó: a beállítások mappáját átmásolva egy másik gépen nem nyithatók meg; ott újra be kell írni őket."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Nem sikerült eltávolítani a mesterjelszót: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Mesterjelszó eltávolítása"
+  "settings.passwords.needs_master": {
+    "message": "Nincs mesterjelszó: jelszó csak a mesterjelszó beállítása után menthető."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# mentett jelszó} other {# mentett jelszó}} (kiszolgálókhoz, megosztásokhoz, titkosított meghajtókhoz), titkosítva a beállítások mappájában; a feloldásukhoz szükséges kulcs ennek a gépnek a kulcstartójában van."

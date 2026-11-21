@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Ülemparool on määratud: kui seadete kaust kopeerida, avanevad need teises arvutis pärast ülemparooli sisestamist."
   },
-  "settings.passwords.no_master": {
-    "message": "Ülemparooli pole määratud: kui seadete kaust kopeerida, ei avane need teises arvutis; seal tuleb need uuesti sisestada."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Ülemparooli ei eemaldatud: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Eemalda ülemparool"
+  "settings.passwords.needs_master": {
+    "message": "Ülemparool pole määratud: paroolid salvestatakse alles siis, kui see on määratud."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# parool on salvestatud} other {# parooli on salvestatud}} (serverite, jagatud kaustade, krüptitud ketaste), krüptituna seadete kaustas; neid avav võti on selle arvuti võtmerõngas."

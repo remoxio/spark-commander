@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Er is een hoofdwachtwoord ingesteld: met de instellingenmap gekopieerd, gaan ze ook op een andere computer open zodra je het daar typt."
   },
-  "settings.passwords.no_master": {
-    "message": "Er is geen hoofdwachtwoord ingesteld: met de instellingenmap gekopieerd, gaan ze op een andere computer niet open; daar typ je ze opnieuw."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Het hoofdwachtwoord is niet verwijderd: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Hoofdwachtwoord verwijderen"
+  "settings.passwords.needs_master": {
+    "message": "Er is geen hoofdwachtwoord ingesteld: wachtwoorden worden pas opgeslagen als er een is."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# wachtwoord is opgeslagen} other {# wachtwoorden zijn opgeslagen}} (van servers, gedeelde mappen, versleutelde schijven), versleuteld in de instellingenmap; de sleutel die ze opent, staat in de sleutelbos van deze computer."

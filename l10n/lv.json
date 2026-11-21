@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Galvenā parole ir iestatīta: nokopējot iestatījumu mapi, tās var atvērt citā datorā, tur ievadot galveno paroli."
   },
-  "settings.passwords.no_master": {
-    "message": "Galvenā parole nav iestatīta: nokopējot iestatījumu mapi, citā datorā tās netiks atvērtas; tur tās būs jāievada vēlreiz."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Galvenā parole netika noņemta: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Noņemt galveno paroli"
+  "settings.passwords.needs_master": {
+    "message": "Galvenā parole nav iestatīta: paroles tiek saglabātas tikai pēc tās iestatīšanas."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, zero {Saglabātas # paroles} one {Saglabāta # parole} other {Saglabātas # paroles}} (serveru, koplietojumu, šifrētu disku), šifrētas iestatījumu mapē; atslēga, kas tās atver, glabājas šī datora atslēgu glabātuvē."

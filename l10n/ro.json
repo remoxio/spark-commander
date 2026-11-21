@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Este setată o parolă principală: cu folderul de setări copiat, parolele se deschid pe alt computer după ce o tastați acolo."
   },
-  "settings.passwords.no_master": {
-    "message": "Nu este setată nicio parolă principală: cu folderul de setări copiat, parolele nu se deschid pe alt computer; trebuie tastate din nou acolo."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Parola principală nu a fost eliminată: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Eliminați parola principală"
+  "settings.passwords.needs_master": {
+    "message": "Nu este setată nicio parolă principală: parolele se salvează doar după ce setați una."
   },
   "settings.passwords.saved": {
     "message": "Parole salvate: {count, plural, one {#} few {#} other {#}} (pentru servere, partajări, unități criptate), sigilate în folderul de setări; cheia care le deschide se află în depozitul de chei al acestui computer."

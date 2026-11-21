@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "マスターパスワードが設定されています。設定フォルダーをコピーすれば、別のコンピューターでもマスターパスワードを入力して開けます。"
   },
-  "settings.passwords.no_master": {
-    "message": "マスターパスワードは設定されていません。設定フォルダーをコピーしても別のコンピューターでは開けないため、そこで入力し直すことになります。"
-  },
-  "settings.passwords.not_removed": {
-    "message": "マスターパスワードを削除できませんでした：{err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "マスターパスワードを削除"
+  "settings.passwords.needs_master": {
+    "message": "マスターパスワードは設定されていません。パスワードはマスターパスワードを設定してから保存されます。"
   },
   "settings.passwords.saved": {
     "message": "{count, plural, other {# 件のパスワード}}（サーバー、共有、暗号化ドライブ）が設定フォルダーに暗号化して保存されています。それを開くキーは、このコンピューターのキーリングにあります。"

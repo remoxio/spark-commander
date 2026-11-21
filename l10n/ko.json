@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "마스터 암호가 설정되어 있습니다. 설정 폴더를 복사하면 다른 컴퓨터에서도 마스터 암호를 입력해 열 수 있습니다."
   },
-  "settings.passwords.no_master": {
-    "message": "마스터 암호가 설정되어 있지 않습니다. 설정 폴더를 복사해도 다른 컴퓨터에서는 열 수 없으므로 그곳에서 다시 입력해야 합니다."
-  },
-  "settings.passwords.not_removed": {
-    "message": "마스터 암호를 제거하지 못했습니다: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "마스터 암호 제거"
+  "settings.passwords.needs_master": {
+    "message": "마스터 암호가 설정되지 않았습니다. 마스터 암호를 정한 후에만 암호가 저장됩니다."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, other {암호 #개가 저장되어 있습니다}}(서버, 공유, 암호화된 드라이브). 설정 폴더에 암호화되어 있으며, 이를 여는 키는 이 컴퓨터의 키링에 있습니다."

@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Glavna lozinka je postavljena: kad se kopira mapa postavki, lozinke se na drugom računalu otvaraju čim je ondje upišete."
   },
-  "settings.passwords.no_master": {
-    "message": "Glavna lozinka nije postavljena: kad se kopira mapa postavki, lozinke se na drugom računalu ne otvaraju; ondje ih treba ponovno upisati."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Glavna lozinka nije uklonjena: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Ukloni glavnu lozinku"
+  "settings.passwords.needs_master": {
+    "message": "Glavna lozinka nije postavljena: lozinke se spremaju tek kad se postavi."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Spremljena je # lozinka} few {Spremljene su # lozinke} other {Spremljeno je # lozinki}} (za poslužitelje, dijeljene mape, šifrirane pogone), šifrirano u mapi postavki; ključ koji ih otvara nalazi se u spremištu ključeva ovog računala."

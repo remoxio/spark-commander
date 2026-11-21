@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Pääsalasana on asetettu: kun asetuskansio kopioidaan toiselle tietokoneelle, salasanat avautuvat siellä pääsalasanan kirjoittamalla."
   },
-  "settings.passwords.no_master": {
-    "message": "Pääsalasanaa ei ole asetettu: kun asetuskansio kopioidaan toiselle tietokoneelle, salasanat eivät avaudu siellä, vaan ne kirjoitetaan uudelleen."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Pääsalasanaa ei poistettu: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Poista pääsalasana"
+  "settings.passwords.needs_master": {
+    "message": "Pääsalasanaa ei ole asetettu: salasanat tallennetaan vasta, kun se on asetettu."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# salasana on tallennettu} other {# salasanaa on tallennettu}} (palvelinten, jakojen, salattujen asemien) salattuna asetuskansioon; avain, joka avaa ne, on tämän tietokoneen avainnipussa."

@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Hlavní heslo je nastaveno: po zkopírování složky nastavení se hesla otevřou i na jiném počítači, jakmile ho tam zadáte."
   },
-  "settings.passwords.no_master": {
-    "message": "Hlavní heslo není nastaveno: po zkopírování složky nastavení se hesla na jiném počítači neotevřou; tam je zadáte znovu."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Hlavní heslo nebylo odebráno: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Odebrat hlavní heslo"
+  "settings.passwords.needs_master": {
+    "message": "Hlavní heslo není nastavené: hesla se ukládají, až když je nastavené."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Je uloženo # heslo} few {Jsou uložena # hesla} other {Je uloženo # hesel}} (k serverům, sdíleným složkám, šifrovaným jednotkám), zašifrovaná ve složce nastavení; klíč, který je otevírá, je v klíčence tohoto počítače."

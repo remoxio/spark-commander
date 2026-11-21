@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Hlavné heslo je nastavené: po skopírovaní priečinka nastavení sa heslá otvoria aj na inom počítači, keď ho tam zadáte."
   },
-  "settings.passwords.no_master": {
-    "message": "Hlavné heslo nie je nastavené: po skopírovaní priečinka nastavení sa heslá na inom počítači neotvoria; treba ich tam zadať znova."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Hlavné heslo sa nepodarilo odstrániť: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Odstrániť hlavné heslo"
+  "settings.passwords.needs_master": {
+    "message": "Hlavné heslo nie je nastavené: heslá sa ukladajú až po jeho nastavení."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Uložené je # heslo} few {Uložené sú # heslá} other {Uložených je # hesiel}} (pre servery, zdieľané priečinky, šifrované jednotky), zašifrované v priečinku nastavení; kľúč, ktorý ich otvára, je v kľúčenke tohto počítača."

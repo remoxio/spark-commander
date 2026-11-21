@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Et hovedpassord er angitt: når innstillingsmappen er kopiert, åpnes de på en annen datamaskin når det skrives inn der."
   },
-  "settings.passwords.no_master": {
-    "message": "Ingen hovedpassord er angitt: når innstillingsmappen er kopiert, åpnes de ikke på en annen datamaskin; de må skrives inn på nytt der."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Hovedpassordet ble ikke fjernet: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Fjern hovedpassord"
+  "settings.passwords.needs_master": {
+    "message": "Ingen hovedpassord er angitt: passord lagres først når et er angitt."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# passord er lagret} other {# passord er lagret}} (for servere, delinger og krypterte stasjoner), kryptert i innstillingsmappen; nøkkelen som åpner dem, ligger i nøkkelringen på denne datamaskinen."

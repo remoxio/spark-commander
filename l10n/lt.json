@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Pagrindinis slaptažodis nustatytas: nukopijavus nustatymų aplanką, kitame kompiuteryje jie atsidaro, kai ten įvedamas šis slaptažodis."
   },
-  "settings.passwords.no_master": {
-    "message": "Pagrindinis slaptažodis nenustatytas: nukopijavus nustatymų aplanką, kitame kompiuteryje jie neatsidarys; ten juos reikės įvesti iš naujo."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Pagrindinis slaptažodis nepašalintas: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Pašalinti pagrindinį slaptažodį"
+  "settings.passwords.needs_master": {
+    "message": "Pagrindinis slaptažodis nenustatytas: slaptažodžiai įrašomi tik jį nustačius."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Įrašytas # slaptažodis} few {Įrašyti # slaptažodžiai} other {Įrašyta # slaptažodžių}} (serverių, bendrinamų išteklių, šifruotų diskų), užšifruoti nustatymų aplanke; juos atrakinantis raktas yra šio kompiuterio raktinėje."

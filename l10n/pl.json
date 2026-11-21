@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Hasło główne jest ustawione: po skopiowaniu folderu ustawień hasła otworzą się na innym komputerze, gdy wpiszesz tam hasło główne."
   },
-  "settings.passwords.no_master": {
-    "message": "Hasło główne nie jest ustawione: po skopiowaniu folderu ustawień hasła nie otworzą się na innym komputerze; trzeba będzie wpisać je tam ponownie."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Nie usunięto hasła głównego: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Usuń hasło główne"
+  "settings.passwords.needs_master": {
+    "message": "Nie ustawiono hasła głównego: hasła są zapisywane dopiero po jego ustawieniu."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Zapisano # hasło} few {Zapisano # hasła} many {Zapisano # haseł} other {Zapisano # hasła}} (do serwerów, udziałów, zaszyfrowanych dysków), zaszyfrowane w folderze ustawień; klucz, który je otwiera, jest w pęku kluczy tego komputera."

@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Uma senha mestra está definida: copiando a pasta de configurações, elas abrem em outro computador assim que a senha mestra é digitada lá."
   },
-  "settings.passwords.no_master": {
-    "message": "Nenhuma senha mestra definida: copiando a pasta de configurações, elas não abrem em outro computador; lá, é preciso digitá-las de novo."
-  },
-  "settings.passwords.not_removed": {
-    "message": "A senha mestra não foi removida: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Remover senha mestra"
+  "settings.passwords.needs_master": {
+    "message": "Nenhuma senha mestra definida: as senhas só são salvas depois que uma for definida."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# senha está salva (de servidores, compartilhamentos, unidades criptografadas), criptografada na pasta de configurações; a chave que a abre está no chaveiro deste computador.} other {# senhas estão salvas (de servidores, compartilhamentos, unidades criptografadas), criptografadas na pasta de configurações; a chave que as abre está no chaveiro deste computador.}}"

@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Está definida uma palavra-passe mestra: depois de copiar a pasta de definições, abrem-se noutro computador quando a introduzir lá."
   },
-  "settings.passwords.no_master": {
-    "message": "Não está definida nenhuma palavra-passe mestra: depois de copiar a pasta de definições, não se abrem noutro computador; terá de as introduzir novamente lá."
-  },
-  "settings.passwords.not_removed": {
-    "message": "A palavra-passe mestra não foi removida: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Remover palavra-passe mestra"
+  "settings.passwords.needs_master": {
+    "message": "Nenhuma palavra-passe mestra definida: as palavras-passe só são guardadas depois de definir uma."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# palavra-passe guardada} other {# palavras-passe guardadas}} (de servidores, partilhas e unidades cifradas), cifradas na pasta de definições; a chave que as abre está no porta-chaves deste computador."

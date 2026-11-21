@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Un mot de passe principal est défini : une fois le dossier des réglages copié, ils s’ouvrent sur un autre ordinateur dès qu’il y est saisi."
   },
-  "settings.passwords.no_master": {
-    "message": "Aucun mot de passe principal n’est défini : une fois le dossier des réglages copié, ils ne s’ouvrent pas sur un autre ordinateur ; il faut les y saisir à nouveau."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Le mot de passe principal n’a pas été supprimé : {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Supprimer le mot de passe principal"
+  "settings.passwords.needs_master": {
+    "message": "Aucun mot de passe principal n’est défini : les mots de passe ne sont enregistrés qu’une fois qu’il l’est."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# mot de passe est enregistré} other {# mots de passe sont enregistrés}} (serveurs, partages, disques chiffrés), scellés dans le dossier des réglages ; la clé qui les ouvre se trouve dans le trousseau de cet ordinateur."

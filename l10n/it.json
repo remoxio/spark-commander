@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "È impostata una password principale: copiando la cartella delle impostazioni, si aprono su un altro computer digitandola lì."
   },
-  "settings.passwords.no_master": {
-    "message": "Nessuna password principale impostata: copiando la cartella delle impostazioni, non si aprono su un altro computer; lì vanno digitate di nuovo."
-  },
-  "settings.passwords.not_removed": {
-    "message": "La password principale non è stata rimossa: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Rimuovi password principale"
+  "settings.passwords.needs_master": {
+    "message": "Nessuna password principale impostata: le password vengono salvate solo dopo averne impostata una."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# password salvata (di server, condivisioni, unità cifrate), conservata cifrata nella cartella delle impostazioni; la chiave che la apre è nel portachiavi di questo computer.} other {# password salvate (di server, condivisioni, unità cifrate), conservate cifrate nella cartella delle impostazioni; la chiave che le apre è nel portachiavi di questo computer.}}"

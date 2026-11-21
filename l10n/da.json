@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Der er angivet en hovedadgangskode: når indstillingsmappen er kopieret, kan de åbnes på en anden computer, når den indtastes der."
   },
-  "settings.passwords.no_master": {
-    "message": "Der er ikke angivet nogen hovedadgangskode: når indstillingsmappen er kopieret, kan de ikke åbnes på en anden computer; de skal indtastes igen der."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Hovedadgangskoden blev ikke fjernet: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Fjern hovedadgangskode"
+  "settings.passwords.needs_master": {
+    "message": "Der er ingen hovedadgangskode: adgangskoder gemmes først, når der er valgt en."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# adgangskode er gemt} other {# adgangskoder er gemt}} (til servere, delinger og krypterede drev), krypteret i indstillingsmappen; nøglen, der åbner dem, ligger i denne computers nøglering."

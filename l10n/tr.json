@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Ana parola belirlendi: ayarlar klasörü kopyalanırsa, başka bir bilgisayarda ana parola yazılınca açılırlar."
   },
-  "settings.passwords.no_master": {
-    "message": "Ana parola belirlenmedi: ayarlar klasörü kopyalanırsa başka bir bilgisayarda açılmazlar; orada yeniden yazılmaları gerekir."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Ana parola kaldırılmadı: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Ana parolayı kaldır"
+  "settings.passwords.needs_master": {
+    "message": "Ana parola ayarlanmadı: parolalar ancak bir ana parola ayarlandıktan sonra kaydedilir."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {# parola kayıtlı} other {# parola kayıtlı}} (sunucular, paylaşımlar, şifreli sürücüler için); ayarlar klasöründe şifreli olarak saklanır, onları açan anahtar bu bilgisayarın anahtarlığındadır."

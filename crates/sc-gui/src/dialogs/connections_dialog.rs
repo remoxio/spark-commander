@@ -165,7 +165,7 @@ impl EditConnection {
     }
 
     /// Shows or hides what is typed; an empty field, the saved password,
-    /// after the master password (where one is set).
+    /// after the master password.
     fn eye(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let input = self.password.read(cx);
         let masked = input.presentation().is_masked();
@@ -194,10 +194,9 @@ impl EditConnection {
                 })
                 .detach();
         };
-        match secrets::has_master() {
-            true => super::passwords_dialog::ask(super::passwords_dialog::Ask::Reveal, window, cx, show),
-            false => show(window, cx),
-        }
+        use super::passwords_dialog::{Ask, ask};
+        // An earlier version's, saved without one: a master password is set first.
+        ask(if secrets::has_master() { Ask::Reveal } else { Ask::First }, window, cx, show);
     }
 
     /// Deletes the saved password, once that is confirmed.

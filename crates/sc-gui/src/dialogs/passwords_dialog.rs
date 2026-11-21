@@ -123,7 +123,7 @@ impl MasterDialog {
         let work = cx.background_spawn(async move {
             match what {
                 Ask::Unlock | Ask::Reveal => secrets::unlock(&master),
-                Ask::Set | Ask::First => secrets::set_master(Some(&master)),
+                Ask::Set | Ask::First => secrets::set_master(&master),
             }
         });
         cx.spawn_in(window, async move |this, cx| {

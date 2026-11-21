@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Đã đặt mật khẩu chính: khi sao chép thư mục cài đặt, các mật khẩu sẽ mở được trên máy tính khác sau khi nhập mật khẩu chính ở đó."
   },
-  "settings.passwords.no_master": {
-    "message": "Chưa đặt mật khẩu chính: khi sao chép thư mục cài đặt, các mật khẩu sẽ không mở được trên máy tính khác; bạn sẽ phải nhập lại chúng ở đó."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Chưa gỡ được mật khẩu chính: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Gỡ mật khẩu chính"
+  "settings.passwords.needs_master": {
+    "message": "Chưa đặt mật khẩu chính: mật khẩu chỉ được lưu sau khi đặt mật khẩu chính."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, other {Đã lưu # mật khẩu}} (của máy chủ, thư mục chia sẻ, ổ đĩa mã hóa), được mã hóa trong thư mục cài đặt; khóa để mở chúng nằm trong kho khóa của máy tính này."

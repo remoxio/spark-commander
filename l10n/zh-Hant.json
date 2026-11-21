@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "已設定主密碼：複製設定資料夾後，只要在另一台電腦上輸入主密碼即可開啟。"
   },
-  "settings.passwords.no_master": {
-    "message": "未設定主密碼：複製設定資料夾後，無法在另一台電腦上開啟這些密碼，需要在那裡重新輸入。"
-  },
-  "settings.passwords.not_removed": {
-    "message": "未移除主密碼：{err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "移除主密碼"
+  "settings.passwords.needs_master": {
+    "message": "尚未設定主密碼：設定主密碼後才會儲存密碼。"
   },
   "settings.passwords.saved": {
     "message": "{count, plural, other {已儲存 # 組密碼}}（伺服器、共用資料夾、加密磁碟機），加密保存在設定資料夾中；開啟它們的金鑰位於這台電腦的金鑰圈中。"

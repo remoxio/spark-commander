@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Glavno geslo je nastavljeno: ko kopirate mapo z nastavitvami, se gesla odprejo v drugem računalniku, ko tam vnesete glavno geslo."
   },
-  "settings.passwords.no_master": {
-    "message": "Glavno geslo ni nastavljeno: ko kopirate mapo z nastavitvami, se gesla v drugem računalniku ne odprejo; tam jih vnesete znova."
-  },
-  "settings.passwords.not_removed": {
-    "message": "Glavno geslo ni bilo odstranjeno: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Odstrani glavno geslo"
+  "settings.passwords.needs_master": {
+    "message": "Glavno geslo ni nastavljeno: gesla se shranijo šele, ko ga nastavite."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Shranjeno je # geslo} two {Shranjeni sta # gesli} few {Shranjena so # gesla} other {Shranjenih je # gesel}} (za strežnike, skupne rabe, šifrirane pogone), šifrirano v mapi z nastavitvami; ključ, ki jih odpre, je v zbirki ključev tega računalnika."

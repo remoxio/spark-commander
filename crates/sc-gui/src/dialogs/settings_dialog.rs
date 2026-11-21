@@ -973,7 +973,7 @@ impl SettingsDialog {
         let state = match (master, locked) {
             (_, true) => t!("settings.passwords.locked"),
             (true, false) => t!("settings.passwords.master_set"),
-            (false, false) => t!("settings.passwords.no_master"),
+            (false, false) => t!("settings.passwords.needs_master"),
         };
         let this = cx.weak_entity();
         let read_again = move |_: &mut Window, cx: &mut App| {
@@ -987,23 +987,6 @@ impl SettingsDialog {
             let done = read_again.clone();
             let label = if master { t!("settings.passwords.change_master") } else { t!("settings.passwords.set_master") };
             buttons = buttons.child(Button::new("passwords-master").outline().label(label).on_click(move |_, window, cx| ask(Ask::Set, window, cx, done.clone())));
-        }
-        if master && !locked {
-            buttons = buttons.child(Button::new("passwords-no-master").outline().label(t!("settings.passwords.remove_master")).on_click(move |_, window, cx| {
-                let done = read_again.clone();
-                let removed = cx.background_spawn(async { sc_core::remote::secrets::set_master(None) });
-                window
-                    .spawn(cx, async move |cx| {
-                        let removed = removed.await;
-                        let _ = cx.update(|window, cx| {
-                            if let Err(err) = removed {
-                                window.push_notification(Notification::error(t!("settings.passwords.not_removed", err = err)), cx);
-                            }
-                            done(window, cx);
-                        });
-                    })
-                    .detach();
-            }));
         }
         GroupBox::new().outline().title(t!("settings.passwords.title")).child(
             v_flex()

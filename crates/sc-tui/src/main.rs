@@ -758,9 +758,10 @@ impl App {
             }
             Prompt::Secret { title, text, keyring } => {
                 let form = Form::new(title).secret(&text);
+                // Kept only under a master password, set in the window's Settings.
                 let form = match keyring {
-                    Some(_) => form.check(&t!("remote.remember_password"), false),
-                    None => form,
+                    Some(_) if secrets::has_master() => form.check(&t!("remote.remember_password"), false),
+                    _ => form,
                 };
                 (form, Purpose::Secret { reply, keyring, keep })
             }

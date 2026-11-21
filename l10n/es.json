@@ -3899,14 +3899,8 @@
   "settings.passwords.master_set": {
     "message": "Hay una contraseña maestra: si copias la carpeta de configuración, se abren en otro equipo al escribirla allí."
   },
-  "settings.passwords.no_master": {
-    "message": "No hay contraseña maestra: si copias la carpeta de configuración, no se abren en otro equipo; allí hay que volver a escribirlas."
-  },
-  "settings.passwords.not_removed": {
-    "message": "No se quitó la contraseña maestra: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "message": "Quitar contraseña maestra"
+  "settings.passwords.needs_master": {
+    "message": "No hay contraseña maestra: las contraseñas solo se guardan cuando haya una."
   },
   "settings.passwords.saved": {
     "message": "{count, plural, one {Hay # contraseña guardada (de servidores, recursos compartidos y unidades cifradas), cifrada en la carpeta de configuración; la clave que la abre está en el llavero de este equipo.} other {Hay # contraseñas guardadas (de servidores, recursos compartidos y unidades cifradas), cifradas en la carpeta de configuración; la clave que las abre está en el llavero de este equipo.}}"

@@ -5199,17 +5199,9 @@
     "description": "Settings › Passwords: under the count, while a master password is set.",
     "message": "A master password is set: with the settings folder copied, they open on another computer once it is typed there."
   },
-  "settings.passwords.no_master": {
-    "description": "Settings › Passwords: under the count, while no master password is set.",
-    "message": "No master password is set: with the settings folder copied, they do not open on another computer; they are typed again there."
-  },
-  "settings.passwords.not_removed": {
-    "description": "Settings › Passwords: notification; err = the reason, e.g. the keyring is locked.",
-    "message": "The master password was not removed: {err}"
-  },
-  "settings.passwords.remove_master": {
-    "description": "Settings › Passwords: button.",
-    "message": "Remove master password"
+  "settings.passwords.needs_master": {
+    "description": "Settings › Passwords: under the count, while no master password is set. Passwords are saved only once one is set.",
+    "message": "No master password is set: passwords are saved only once one is."
   },
   "settings.passwords.saved": {
     "description": "Settings › Passwords: where the saved passwords are; count = how many, e.g. 3.",
