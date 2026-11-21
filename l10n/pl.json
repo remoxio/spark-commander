@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Powłoka"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Poziomo: ich ikony w rzędzie u góry"
+  },
+  "settings.sidebar.sections": {
+    "message": "Jak są wyświetlane jego sekcje:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Pionowo: ich nazwy jedna pod drugą"
+  },
   "settings.sort_folders.by_name": {
     "message": "Zawsze według nazwy"
   },

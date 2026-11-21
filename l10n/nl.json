@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Horizontaal: hun pictogrammen op een rij bovenaan"
+  },
+  "settings.sidebar.sections": {
+    "message": "Hoe de onderdelen worden getoond:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Verticaal: hun namen onder elkaar"
+  },
   "settings.sort_folders.by_name": {
     "message": "Altijd op naam"
   },

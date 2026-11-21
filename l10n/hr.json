@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Ljuska"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vodoravno: njihove ikone u retku na vrhu"
+  },
+  "settings.sidebar.sections": {
+    "message": "Kako se prikazuju njezini odjeljci:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Okomito: njihovi nazivi jedan ispod drugog"
+  },
   "settings.sort_folders.by_name": {
     "message": "Uvijek po nazivu"
   },

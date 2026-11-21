@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "셸"
   },
+  "settings.sidebar.horizontal": {
+    "message": "가로: 아이콘을 위쪽에 한 줄로"
+  },
+  "settings.sidebar.sections": {
+    "message": "섹션 표시 방식:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "세로: 이름을 위아래로"
+  },
   "settings.sort_folders.by_name": {
     "message": "항상 이름순"
   },

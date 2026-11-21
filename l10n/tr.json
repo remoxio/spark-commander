@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Kabuk"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Yatay: simgeleri üstte bir sırada"
+  },
+  "settings.sidebar.sections": {
+    "message": "Bölümlerinin nasıl gösterileceği:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Dikey: adları alt alta"
+  },
   "settings.sort_folders.by_name": {
     "message": "Her zaman ada göre"
   },

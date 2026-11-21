@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "シェル"
   },
+  "settings.sidebar.horizontal": {
+    "message": "横：アイコンを上部に一列に並べる"
+  },
+  "settings.sidebar.sections": {
+    "message": "セクションの表示方法："
+  },
+  "settings.sidebar.vertical": {
+    "message": "縦：名前を縦に並べる"
+  },
   "settings.sort_folders.by_name": {
     "message": "常に名前順"
   },

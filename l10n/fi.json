@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Komentotulkki"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vaakasuora: niiden kuvakkeet rivissä ylhäällä"
+  },
+  "settings.sidebar.sections": {
+    "message": "Miten sen osiot näytetään:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Pystysuora: niiden nimet allekkain"
+  },
   "settings.sort_folders.by_name": {
     "message": "Aina nimen mukaan"
   },

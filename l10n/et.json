@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Kest"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Horisontaalne: nende ikoonid reas üleval"
+  },
+  "settings.sidebar.sections": {
+    "message": "Kuidas selle jaotisi näidatakse:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Vertikaalne: nende nimed üksteise all"
+  },
   "settings.sort_folders.by_name": {
     "message": "Alati nime järgi"
   },

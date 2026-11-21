@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Orizontal: pictogramele lor pe un rând sus"
+  },
+  "settings.sidebar.sections": {
+    "message": "Cum sunt afișate secțiunile ei:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Vertical: numele lor unul sub altul"
+  },
   "settings.sort_folders.by_name": {
     "message": "Întotdeauna după nume"
   },

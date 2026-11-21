@@ -1,4 +1,5 @@
-//! The sidebar: its sections as an accordion, one open and filling it;
+//! The sidebar: its sections as a row of icons or as an accordion, one open
+//! and filling it;
 //! this computer's folders as a tree that follows the active panel, the
 //! servers by protocol, and Places: bookmarks, drives and devices.
 
@@ -18,6 +19,7 @@ use sc_core::remote::connections::{self, Connection, Connections};
 use sc_core::system::devices::{self, Device, Volume, VolumeKind};
 use sc_core::menu::Command;
 use sc_core::remote::{Address, Scheme};
+use sc_core::settings::SidebarLayout;
 use sc_core::sidebar::{self, FolderTree, Group, SidebarTab};
 use sc_core::{icons, system::theme, t};
 
@@ -82,6 +84,29 @@ fn device_roots(sidebar: &Sidebar, id: &str) -> Vec<PathBuf> {
 
 /// The "Opening…" note of a device being mounted.
 struct Mounting;
+
+/// The sections in their order, each with its icon and name.
+fn sections() -> [(SidebarTab, Lucide, String); 4] {
+    [
+        (SidebarTab::Places, Lucide::Bookmark, t!("sidebar.section.places")),
+        (SidebarTab::Tree, Lucide::FolderTree, t!("sidebar.section.folders")),
+        (SidebarTab::Connections, Lucide::Network, t!("sidebar.section.connections")),
+        (SidebarTab::Operations, Lucide::ListOrdered, t!("sidebar.section.operations")),
+    ]
+}
+
+fn section_at(which: SidebarTab) -> f32 {
+    sections().iter().position(|section| section.0 == which).unwrap_or(0) as f32
+}
+
+/// The sections' row of icons: its track, the open one's pill and icon, their corners.
+#[derive(Clone, Copy)]
+struct TabsLook {
+    track: Hsla,
+    pill: Hsla,
+    on_pill: Hsla,
+    radius: Pixels,
+}
 
 /// Dragging the sidebar's edge.
 pub(crate) struct SidebarDrag;
@@ -435,71 +460,23 @@ impl Commander {
             self.follow_active();
         }
         let background = self.colors.window.opacity(self.sidebar.tint.unwrap_or(1.));
+        let horizontal = self.settings.sidebar_layout == SidebarLayout::Horizontal;
         if let Some(mac) = crate::appearance::mac_tabs(cx) {
-            let sidebar = self.render_mac_sidebar(tab, background, mac, cx);
+            let sidebar = self.render_mac_sidebar(tab, background, horizontal, mac, cx);
             return Some(self.slide_sidebar(sidebar));
         }
-        let sections = [
-            (SidebarTab::Places, Lucide::Bookmark, t!("sidebar.section.places")),
-            (SidebarTab::Tree, Lucide::FolderTree, t!("sidebar.section.folders")),
-            (SidebarTab::Connections, Lucide::Network, t!("sidebar.section.connections")),
-            (SidebarTab::Operations, Lucide::ListOrdered, t!("sidebar.section.operations")),
-        ];
-        let mut accordion = v_flex().h_full().flex_1().min_w_0();
-        for (at, (which, icon, name)) in sections.into_iter().enumerate() {
-            let open = tab == which;
-            let theme = cx.theme();
-            let chevron = match open {
-                true => IconName::ChevronDown,
-                false => IconName::ChevronRight,
-            };
-            // The queue's progress shows also while its section is shut.
-            let summary = (which == SidebarTab::Operations).then(|| self.operations_summary()).flatten();
-            let line = summary.as_ref().and_then(|(_, done)| *done).map(|done| {
-                div().absolute().left_0().bottom_0().h(px(2.)).w(relative(done)).bg(theme.progress_bar)
-            });
-            let summary = summary.map(|(text, _)| div().text_xs().text_color(theme.muted_foreground).child(text));
-            // A click opens it; the open one stays: one is always open.
-            let header = h_flex()
-                .id(("sidebar-section", at))
-                .relative()
-                .flex_none()
-                .h(SECTION)
-                .px_2()
-                .gap_2()
-                .cursor_pointer()
-                .when(at > 0, |el| el.border_t_1().border_color(theme.border))
-                .hover(|style| style.bg(theme.foreground.opacity(0.06)))
-                .child(Icon::new(icon).size_4().flex_none())
-                .child(div().flex_1().font_medium().child(name))
-                .children(summary)
-                .children(line)
-                .child(Icon::new(chevron).xsmall().text_color(theme.muted_foreground))
-                .on_click(cx.listener(move |this, _, _, cx| this.open_section(which, cx)));
-            accordion = accordion.child(header);
-            let leaving = self.sidebar.leaving == Some(which) && self.sidebar.tab.is_some();
-            if open || leaving {
-                let content = match which {
-                    SidebarTab::Tree => self.render_tree(cx).into_any_element(),
-                    SidebarTab::Connections => self.render_connections(cx).into_any_element(),
-                    SidebarTab::Places => self.render_places(cx).into_any_element(),
-                    SidebarTab::Operations => self.render_operations(cx).into_any_element(),
-                };
-                // The padding inside: on the shutting one it would stay 4 px to the animation's end, then the rows below jump.
-                let content = v_flex().flex_1().min_h_0().overflow_hidden().child(v_flex().size_full().pb_1().child(content));
-                accordion = match self.sidebar.leaving.is_some() {
-                    true => {
-                        let id = (if open { "sidebar-opening" } else { "sidebar-closing" }, self.sidebar.switches);
-                        let slide = Animation::new(SLIDE).with_easing(ease_in_out);
-                        accordion.child(content.with_animation(id, slide, move |mut el, delta| {
-                            el.style().flex_grow = Some(if open { delta } else { 1. - delta });
-                            el
-                        }))
-                    }
-                    false => accordion.child(content),
-                };
+        let sections = match horizontal {
+            true => {
+                let theme = cx.theme();
+                let look = TabsLook { track: theme.muted, pill: theme.primary, on_pill: theme.primary_foreground, radius: theme.radius };
+                v_flex()
+                    .flex_1()
+                    .min_w_0()
+                    .child(self.render_section_tabs(tab, look, cx).mx_2().mt_2())
+                    .child(v_flex().flex_1().min_h_0().pt_2().pb_1().child(self.render_open_section(tab, cx)))
             }
-        }
+            false => self.render_accordion(tab, false, cx),
+        };
         let theme = cx.theme();
         let width = self.sidebar.width;
         let drawer = h_flex()
@@ -508,7 +485,7 @@ impl Commander {
             .bg(background)
             .border_r_1()
             .border_color(theme.border)
-            .child(accordion);
+            .child(sections.h_full());
         // Sliding, its edge narrows or widens; the drawer is clipped, not reflowed.
         let sidebar = div()
             .relative()
@@ -531,58 +508,87 @@ impl Commander {
         Some(self.slide_sidebar(sidebar))
     }
 
-    /// Shown or hidden, its edge slides; as the window opens, it is there already.
-    fn slide_sidebar(&self, sidebar: Div) -> AnyElement {
-        if self.sidebar.slides == 0 {
-            return sidebar.into_any_element();
+    fn section_content(&mut self, which: SidebarTab, cx: &mut Context<Self>) -> AnyElement {
+        match which {
+            SidebarTab::Tree => self.render_tree(cx).into_any_element(),
+            SidebarTab::Connections => self.render_connections(cx).into_any_element(),
+            SidebarTab::Places => self.render_places(cx).into_any_element(),
+            SidebarTab::Operations => self.render_operations(cx).into_any_element(),
         }
-        let width = self.sidebar.width;
-        let out = self.sidebar.tab.is_none();
-        let slide = Animation::new(SLIDE).with_easing(ease_in_out);
-        let sliding = sidebar.with_animation(("sidebar-slide", self.sidebar.slides), slide, move |el, delta| {
-            let shown = match out {
-                true => 1. - delta,
-                false => delta,
-            };
-            el.w(px(width * shown))
-        });
-        sliding.into_any_element()
     }
 
-    /// macOS: a panel inset from the window's edges, the window's height, as
-    /// Finder's, Notes' and Xcode's: the window's buttons and the sidebar's at its
-    /// top, the sections as a row of icons (Xcode's navigators), the open one's
-    /// content under it.
-    fn render_mac_sidebar(&mut self, tab: SidebarTab, background: Hsla, mac: MacControls, cx: &mut Context<Self>) -> Div {
+    /// The sections' names one under another, the open one's content under its name.
+    fn render_accordion(&mut self, tab: SidebarTab, mac: bool, cx: &mut Context<Self>) -> Div {
+        let mut accordion = v_flex().flex_1().min_w_0().min_h_0();
+        for (at, (which, icon, name)) in sections().into_iter().enumerate() {
+            let open = tab == which;
+            let theme = cx.theme();
+            let chevron = match open {
+                true => IconName::ChevronDown,
+                false => IconName::ChevronRight,
+            };
+            // The queue's progress shows also while its section is shut.
+            let summary = (which == SidebarTab::Operations).then(|| self.operations_summary()).flatten();
+            let line = summary.as_ref().and_then(|(_, done)| *done).map(|done| {
+                div().absolute().left_0().bottom_0().h(px(2.)).w(relative(done)).bg(theme.progress_bar)
+            });
+            let summary = summary.map(|(text, _)| div().text_xs().text_color(theme.muted_foreground).child(text));
+            // macOS: rows of the sidebar's, rounded, with a line between them.
+            if mac && at > 0 {
+                accordion = accordion.child(div().flex_none().h(px(1.)).mx_3().bg(theme.border));
+            }
+            // A click opens it; the open one stays: one is always open.
+            let header = h_flex()
+                .id(("sidebar-section", at))
+                .relative()
+                .flex_none()
+                .h(SECTION)
+                .px_2()
+                .gap_2()
+                .cursor_pointer()
+                .map(|el| match mac {
+                    true => el.mx_1().rounded(px(6.)),
+                    false => el.when(at > 0, |el| el.border_t_1().border_color(theme.border)),
+                })
+                .hover(|style| style.bg(theme.foreground.opacity(0.06)))
+                .child(Icon::new(icon).size_4().flex_none())
+                .child(div().flex_1().font_medium().child(name))
+                .children(summary)
+                .children(line)
+                .child(Icon::new(chevron).xsmall().text_color(theme.muted_foreground))
+                .on_click(cx.listener(move |this, _, _, cx| this.open_section(which, cx)));
+            accordion = accordion.child(header);
+            let leaving = self.sidebar.leaving == Some(which) && self.sidebar.tab.is_some();
+            if open || leaving {
+                let content = self.section_content(which, cx);
+                // The padding inside: on the shutting one it would stay 4 px to the animation's end, then the rows below jump.
+                let content = v_flex().flex_1().min_h_0().overflow_hidden().child(v_flex().size_full().pb_1().when(mac, |el| el.px_1()).child(content));
+                accordion = match self.sidebar.leaving.is_some() {
+                    true => {
+                        let id = (if open { "sidebar-opening" } else { "sidebar-closing" }, self.sidebar.switches);
+                        let slide = Animation::new(SLIDE).with_easing(ease_in_out);
+                        accordion.child(content.with_animation(id, slide, move |mut el, delta| {
+                            el.style().flex_grow = Some(if open { delta } else { 1. - delta });
+                            el
+                        }))
+                    }
+                    false => accordion.child(content),
+                };
+            }
+        }
+        accordion
+    }
+
+    /// The sections as a row of icons, as Xcode's navigators, the open one's on a pill.
+    fn render_section_tabs(&mut self, tab: SidebarTab, look: TabsLook, cx: &mut Context<Self>) -> Div {
         let theme = cx.theme();
-        let rim = match theme.mode.is_dark() {
-            true => hsla(0., 0., 1., 0.12),
-            false => hsla(0., 0., 0., 0.12),
-        };
-        let (muted, hover, track, progress) = (theme.muted_foreground, theme.foreground.opacity(0.06), mac.tab_track, theme.progress_bar);
-        // Under the window's buttons: it moves the window, as a title bar.
-        let top = TitleBar::new()
-            .h(px(36.))
-            .pl(px(header::MAC_LIGHTS_END) - INSET)
-            .pr_2()
-            .bg(transparent_black())
-            .border_0()
-            // At the right, as Notes'.
-            .child(div().flex_1())
-            .child(self.sidebar_toggle());
-        let sections = [
-            (SidebarTab::Places, Lucide::Bookmark, t!("sidebar.section.places")),
-            (SidebarTab::Tree, Lucide::FolderTree, t!("sidebar.section.folders")),
-            (SidebarTab::Connections, Lucide::Network, t!("sidebar.section.connections")),
-            (SidebarTab::Operations, Lucide::ListOrdered, t!("sidebar.section.operations")),
-        ];
+        let (muted, hover, progress) = (theme.muted_foreground, theme.foreground.opacity(0.06), theme.progress_bar);
+        let sections = sections();
         let summary = self.operations_summary();
-        let at = |which: SidebarTab| sections.iter().position(|section| section.0 == which).unwrap_or(0) as f32;
         let count = sections.len() as f32;
-        let to = at(tab);
-        let switching = self.sidebar.leaving.map(at);
-        let pill = div().absolute().top_0().bottom_0().w(relative(1. / count)).rounded_full().bg(mac.accent);
-        let pill = match switching {
+        let to = section_at(tab);
+        let pill = div().absolute().top_0().bottom_0().w(relative(1. / count)).rounded(look.radius).bg(look.pill);
+        let pill = match self.sidebar.leaving.map(section_at) {
             Some(from) => {
                 let slide = Animation::new(SLIDE).with_easing(ease_in_out);
                 pill.with_animation(("sidebar-pill", self.sidebar.switches), slide, move |el, delta| {
@@ -608,10 +614,10 @@ impl Commander {
                 .flex()
                 .items_center()
                 .justify_center()
-                .rounded_full()
+                .rounded(look.radius)
                 .cursor_pointer()
                 .map(|el| match open {
-                    true => el.text_color(mac.on_accent),
+                    true => el.text_color(look.on_pill),
                     false => el.text_color(muted).hover(|style| style.bg(hover)),
                 })
                 .child(Icon::new(icon).size(px(15.)))
@@ -619,26 +625,73 @@ impl Commander {
                 .tooltip(move |window, cx| gpui_kit::component::tooltip::Tooltip::new(tip.clone()).build(window, cx))
                 .on_click(cx.listener(move |this, _, _, cx| this.open_section(which, cx)))
         });
-        let tabs = h_flex().relative().flex_none().mx_2().h(px(28.)).rounded_full().bg(track).child(pill).children(icons);
-        let content = match tab {
-            SidebarTab::Tree => self.render_tree(cx).into_any_element(),
-            SidebarTab::Connections => self.render_connections(cx).into_any_element(),
-            SidebarTab::Places => self.render_places(cx).into_any_element(),
-            SidebarTab::Operations => self.render_operations(cx).into_any_element(),
+        h_flex().relative().flex_none().h(px(28.)).rounded(look.radius).bg(look.track).child(pill).children(icons)
+    }
+
+    /// The open section's content; switched to, it comes in from the side of its icon.
+    fn render_open_section(&mut self, tab: SidebarTab, cx: &mut Context<Self>) -> AnyElement {
+        let content = v_flex().relative().size_full().overflow_hidden().child(self.section_content(tab, cx));
+        let Some(from) = self.sidebar.leaving.map(section_at) else {
+            return content.into_any_element();
         };
-        // Kept off the rounded corners.
-        let content = v_flex().relative().flex_1().min_h_0().overflow_hidden().pt_2().px_1().pb(px(12.)).child(content);
-        let content = match switching {
-            Some(from) => {
-                let side = if to > from { 12. } else { -12. };
-                let slide = Animation::new(SLIDE).with_easing(ease_in_out);
-                content
-                    .with_animation(("sidebar-content", self.sidebar.switches), slide, move |el, delta| {
-                        el.opacity(delta).left(px(side * (1. - delta)))
-                    })
-                    .into_any_element()
+        let to = section_at(tab);
+        let side = if to > from { 12. } else { -12. };
+        let slide = Animation::new(SLIDE).with_easing(ease_in_out);
+        content
+            .with_animation(("sidebar-content", self.sidebar.switches), slide, move |el, delta| {
+                el.opacity(delta).left(px(side * (1. - delta)))
+            })
+            .into_any_element()
+    }
+
+    /// Shown or hidden, its edge slides; as the window opens, it is there already.
+    fn slide_sidebar(&self, sidebar: Div) -> AnyElement {
+        if self.sidebar.slides == 0 {
+            return sidebar.into_any_element();
+        }
+        let width = self.sidebar.width;
+        let out = self.sidebar.tab.is_none();
+        let slide = Animation::new(SLIDE).with_easing(ease_in_out);
+        let sliding = sidebar.with_animation(("sidebar-slide", self.sidebar.slides), slide, move |el, delta| {
+            let shown = match out {
+                true => 1. - delta,
+                false => delta,
+            };
+            el.w(px(width * shown))
+        });
+        sliding.into_any_element()
+    }
+
+    /// macOS: a panel inset from the window's edges, the window's height, as
+    /// Finder's, Notes' and Xcode's: the window's buttons and the sidebar's at its
+    /// top, then the sections: a row of icons (Xcode's navigators), the open one's
+    /// content under it; or their names one under another.
+    fn render_mac_sidebar(&mut self, tab: SidebarTab, background: Hsla, horizontal: bool, mac: MacControls, cx: &mut Context<Self>) -> Div {
+        let rim = match cx.theme().mode.is_dark() {
+            true => hsla(0., 0., 1., 0.12),
+            false => hsla(0., 0., 0., 0.12),
+        };
+        // Under the window's buttons: it moves the window, as a title bar.
+        let top = TitleBar::new()
+            .h(px(36.))
+            .pl(px(header::MAC_LIGHTS_END) - INSET)
+            .pr_2()
+            .bg(transparent_black())
+            .border_0()
+            // At the right, as Notes'.
+            .child(div().flex_1())
+            .child(self.sidebar_toggle());
+        let sections = match horizontal {
+            true => {
+                let look = TabsLook { track: mac.tab_track, pill: mac.accent, on_pill: mac.on_accent, radius: px(14.) };
+                v_flex()
+                    .flex_1()
+                    .min_h_0()
+                    .child(self.render_section_tabs(tab, look, cx).mx_2())
+                    // Kept off the rounded corners.
+                    .child(v_flex().flex_1().min_h_0().pt_2().px_1().pb(px(12.)).child(self.render_open_section(tab, cx)))
             }
-            None => content.into_any_element(),
+            false => self.render_accordion(tab, true, cx).pb(px(8.)),
         };
         let panel = v_flex()
             .size_full()
@@ -646,8 +699,7 @@ impl Commander {
             .border_1()
             .border_color(rim)
             .child(top)
-            .child(tabs)
-            .child(content);
+            .child(sections);
         div()
             .relative()
             .h_full()

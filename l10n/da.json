@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Skal"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vandret: deres ikoner på en række øverst"
+  },
+  "settings.sidebar.sections": {
+    "message": "Hvordan dens sektioner vises:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Lodret: deres navne under hinanden"
+  },
   "settings.sort_folders.by_name": {
     "message": "Altid efter navn"
   },

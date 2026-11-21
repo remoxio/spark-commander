@@ -4972,7 +4972,7 @@
     "message": "{opacity}%"
   },
   "settings.backdrop.sidebar": {
-    "description": "Settings › Layout: the box's title over the sidebar's see-through options.",
+    "description": "Settings › Layout: the box's title over the sidebar's options: how its sections are shown, how see-through it is.",
     "message": "Sidebar"
   },
   "settings.backdrop.solid": {
@@ -5235,6 +5235,18 @@
     "description": "Settings › Terminal: the box's title over the terminal's shell.",
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "description": "Settings › Layout › Sidebar: a choice; the sections as a row of icons at the sidebar's top, as macOS's apps have them (the default on macOS).",
+    "message": "Horizontal: their icons in a row at the top"
+  },
+  "settings.sidebar.sections": {
+    "description": "Settings › Layout › Sidebar: the label over the two ways its sections (Places, Folders, Connections, Operations) are shown.",
+    "message": "How its sections are shown:"
+  },
+  "settings.sidebar.vertical": {
+    "description": "Settings › Layout › Sidebar: a choice; the sections' names one under another, the open one's content under its name (the default on Windows and Linux).",
+    "message": "Vertical: their names one under another"
+  },
   "settings.sort_folders.by_name": {
     "description": "Settings › Display › Sorting folders: a choice.",
     "message": "Always by name"
@@ -5436,19 +5448,19 @@
     "message": "Network"
   },
   "sidebar.section.connections": {
-    "description": "Sidebar section heading (the sidebar is an accordion: one section open at a time). Keep it short. Holds the saved servers (SFTP, FTP, WebDAV…).",
+    "description": "Sidebar section heading (one section open at a time: its name in a list of them, or its icon's tooltip in a row of them). Keep it short. Holds the saved servers (SFTP, FTP, WebDAV…).",
     "message": "Connections"
   },
   "sidebar.section.folders": {
-    "description": "Sidebar section heading (the sidebar is an accordion: one section open at a time). Keep it short. Holds this computer's folders as a tree.",
+    "description": "Sidebar section heading (one section open at a time: its name in a list of them, or its icon's tooltip in a row of them). Keep it short. Holds this computer's folders as a tree.",
     "message": "Folders"
   },
   "sidebar.section.operations": {
-    "description": "Sidebar section heading (the sidebar is an accordion: one section open at a time). Keep it short. Holds the queue of jobs: copies, moves, downloads, packing…",
+    "description": "Sidebar section heading (one section open at a time: its name in a list of them, or its icon's tooltip in a row of them). Keep it short. Holds the queue of jobs: copies, moves, downloads, packing…",
     "message": "Operations"
   },
   "sidebar.section.places": {
-    "description": "Sidebar section heading (the sidebar is an accordion: one section open at a time). Keep it short. Holds bookmarks, drives, cloud folders, devices and network shares; translate as the desktop's file manager does (Dolphin, Nautilus).",
+    "description": "Sidebar section heading (one section open at a time: its name in a list of them, or its icon's tooltip in a row of them). Keep it short. Holds bookmarks, drives, cloud folders, devices and network shares; translate as the desktop's file manager does (Dolphin, Nautilus).",
     "message": "Places"
   },
   "sidebar.volume.locked": {

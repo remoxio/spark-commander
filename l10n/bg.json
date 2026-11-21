@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Обвивка"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Хоризонтално: иконите им в ред най-горе"
+  },
+  "settings.sidebar.sections": {
+    "message": "Как се показват разделите ѝ:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Вертикално: имената им един под друг"
+  },
   "settings.sort_folders.by_name": {
     "message": "Винаги по име"
   },

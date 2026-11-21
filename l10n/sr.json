@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Љуска"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Водоравно: њихове иконе у реду на врху"
+  },
+  "settings.sidebar.sections": {
+    "message": "Како се приказују њени одељци:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Усправно: њихови називи један испод другог"
+  },
   "settings.sort_folders.by_name": {
     "message": "Увек по називу"
   },

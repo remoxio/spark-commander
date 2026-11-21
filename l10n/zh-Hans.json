@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "message": "水平：图标在顶部排成一行"
+  },
+  "settings.sidebar.sections": {
+    "message": "分区的显示方式："
+  },
+  "settings.sidebar.vertical": {
+    "message": "垂直：名称上下排列"
+  },
   "settings.sort_folders.by_name": {
     "message": "始终按名称"
   },

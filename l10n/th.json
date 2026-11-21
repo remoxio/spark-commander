@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "เชลล์"
   },
+  "settings.sidebar.horizontal": {
+    "message": "แนวนอน: ไอคอนเรียงเป็นแถวด้านบน"
+  },
+  "settings.sidebar.sections": {
+    "message": "วิธีแสดงส่วนต่าง ๆ:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "แนวตั้ง: ชื่อเรียงต่อกันลงมา"
+  },
   "settings.sort_folders.by_name": {
     "message": "ตามชื่อเสมอ"
   },

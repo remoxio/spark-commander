@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Skall"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vannrett: ikonene på rad øverst"
+  },
+  "settings.sidebar.sections": {
+    "message": "Hvordan delene vises:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Loddrett: navnene under hverandre"
+  },
   "settings.sort_folders.by_name": {
     "message": "Alltid etter navn"
   },

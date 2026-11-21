@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Skal"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vågrätt: deras ikoner på en rad överst"
+  },
+  "settings.sidebar.sections": {
+    "message": "Hur dess avsnitt visas:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Lodrätt: deras namn under varandra"
+  },
   "settings.sort_folders.by_name": {
     "message": "Alltid efter namn"
   },

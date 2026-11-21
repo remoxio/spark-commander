@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Κέλυφος"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Οριζόντια: τα εικονίδιά τους σε μια σειρά στην κορυφή"
+  },
+  "settings.sidebar.sections": {
+    "message": "Πώς εμφανίζονται οι ενότητές της:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Κάθετα: τα ονόματά τους το ένα κάτω από το άλλο"
+  },
   "settings.sort_folders.by_name": {
     "message": "Πάντα κατά όνομα"
   },

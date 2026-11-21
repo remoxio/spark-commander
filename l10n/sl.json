@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Lupina"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vodoravno: njihove ikone v vrsti na vrhu"
+  },
+  "settings.sidebar.sections": {
+    "message": "Kako so prikazani njeni razdelki:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Navpično: njihova imena drugo pod drugim"
+  },
   "settings.sort_folders.by_name": {
     "message": "Vedno po imenu"
   },

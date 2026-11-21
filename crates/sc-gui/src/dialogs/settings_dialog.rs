@@ -18,7 +18,7 @@ use gpui_kit::component::{Icon, IndexPath};
 use gpui_kit::component::menu::{DropdownMenu, PopupMenu, PopupMenuItem};
 use sc_core::dates::{self, Clock};
 use sc_core::menu::{self, ToolbarItem};
-use sc_core::settings::{AddonUpdates, FontChoice, MenuStyle, PAGES, Settings, Blur, SidebarOpacity, TerminalOpacity, StartFont, StartMode};
+use sc_core::settings::{AddonUpdates, FontChoice, MenuStyle, PAGES, Settings, Blur, SidebarLayout, SidebarOpacity, TerminalOpacity, StartFont, StartMode};
 use sc_core::system::theme::Appearance;
 use sc_core::t;
 
@@ -1037,11 +1037,30 @@ impl SettingsDialog {
         )
     }
 
+    /// The sidebar: its sections in a row or one under another; where the
+    /// desktop can show through it, how much.
+    fn render_sidebar(&self, cx: &mut Context<Self>) -> GroupBox {
+        let layouts = [SidebarLayout::Horizontal, SidebarLayout::Vertical];
+        let layout = v_flex().gap_2().child(t!("settings.sidebar.sections")).child(
+            RadioGroup::vertical("sidebar-layout")
+                .children([t!("settings.sidebar.horizontal"), t!("settings.sidebar.vertical")])
+                .selected_index(layouts.iter().position(|layout| *layout == self.draft.sidebar_layout))
+                .on_click(cx.listener(move |this, at: &usize, _, cx| {
+                    this.draft.sidebar_layout = layouts[*at];
+                    cx.notify();
+                })),
+        );
+        let see_through = sc_core::system::theme::see_through();
+        GroupBox::new().outline().title(t!("settings.backdrop.sidebar")).child(
+            v_flex().gap_4().child(layout).when(see_through, |el| el.child(self.render_backdrop(false, cx))),
+        )
+    }
+
     /// The sidebar's or the `terminal`'s opacity over the desktop, and its blur.
-    fn render_backdrop(&self, terminal: bool, cx: &mut Context<Self>) -> GroupBox {
-        let (title, slider, opacity, blur) = match terminal {
-            false => (t!("settings.backdrop.sidebar"), &self.opacity, self.draft.sidebar_opacity.0, self.draft.sidebar_blur.0),
-            true => (t!("settings.backdrop.terminal"), &self.terminal_opacity, self.draft.terminal_opacity.0, self.draft.terminal_blur.0),
+    fn render_backdrop(&self, terminal: bool, cx: &mut Context<Self>) -> Div {
+        let (slider, opacity, blur) = match terminal {
+            false => (&self.opacity, self.draft.sidebar_opacity.0, self.draft.sidebar_blur.0),
+            true => (&self.terminal_opacity, self.draft.terminal_opacity.0, self.draft.terminal_blur.0),
         };
         let blurs = sc_core::system::theme::blurs();
         let shown = match opacity {
@@ -1049,31 +1068,29 @@ impl SettingsDialog {
             0 => t!("settings.backdrop.clear"),
             _ => t!("settings.backdrop.opacity", opacity = opacity),
         };
-        GroupBox::new().outline().title(title).child(
-            v_flex()
-                .gap_2()
-                .child(t!("settings.backdrop.cover"))
-                .child(
-                    h_flex()
-                        .gap_4()
-                        .child(div().flex_1().child(Slider::new(slider)))
-                        .child(div().w(px(150.)).child(shown)),
-                )
-                .child(
-                    Checkbox::new(if terminal { "terminal-blur" } else { "sidebar-blur" })
-                        .label(t!("settings.backdrop.blur"))
-                        .checked(blur && blurs)
-                        .disabled(!blurs)
-                        .on_click(cx.listener(move |this, checked: &bool, window, cx| {
-                            match terminal {
-                                true => this.draft.terminal_blur = Blur(*checked),
-                                false => this.draft.sidebar_blur = Blur(*checked),
-                            }
-                            this.try_backdrop(window, cx);
-                        })),
-                )
-                .when(!blurs, |this| this.child(div().text_color(cx.theme().muted_foreground).child(t!("settings.backdrop.no_blur")))),
-        )
+        v_flex()
+            .gap_2()
+            .child(t!("settings.backdrop.cover"))
+            .child(
+                h_flex()
+                    .gap_4()
+                    .child(div().flex_1().child(Slider::new(slider)))
+                    .child(div().w(px(150.)).child(shown)),
+            )
+            .child(
+                Checkbox::new(if terminal { "terminal-blur" } else { "sidebar-blur" })
+                    .label(t!("settings.backdrop.blur"))
+                    .checked(blur && blurs)
+                    .disabled(!blurs)
+                    .on_click(cx.listener(move |this, checked: &bool, window, cx| {
+                        match terminal {
+                            true => this.draft.terminal_blur = Blur(*checked),
+                            false => this.draft.sidebar_blur = Blur(*checked),
+                        }
+                        this.try_backdrop(window, cx);
+                    })),
+            )
+            .when(!blurs, |this| this.child(div().text_color(cx.theme().muted_foreground).child(t!("settings.backdrop.no_blur"))))
     }
 
     /// Other projects' programs the app uses: the add-ons, each with its
@@ -1230,10 +1247,7 @@ impl SettingsDialog {
                 if cfg!(any(target_os = "linux", target_os = "freebsd")) {
                     groups.push(self.render_menus(cx));
                 }
-                // Where the desktop can show through it.
-                if sc_core::system::theme::see_through() {
-                    groups.push(self.render_backdrop(false, cx));
-                }
+                groups.push(self.render_sidebar(cx));
                 groups.push(self.render_tabs(cx));
                 groups
             }
@@ -1246,7 +1260,7 @@ impl SettingsDialog {
             "Terminal" => {
                 let mut groups = vec![self.render_shell(cx)];
                 if sc_core::system::theme::see_through() {
-                    groups.push(self.render_backdrop(true, cx));
+                    groups.push(GroupBox::new().outline().title(t!("settings.backdrop.terminal")).child(self.render_backdrop(true, cx)));
                 }
                 groups
             }

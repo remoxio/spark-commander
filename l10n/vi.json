@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Ngang: biểu tượng xếp thành hàng ở trên cùng"
+  },
+  "settings.sidebar.sections": {
+    "message": "Cách hiển thị các mục:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Dọc: tên xếp chồng từ trên xuống"
+  },
   "settings.sort_folders.by_name": {
     "message": "Luôn theo tên"
   },

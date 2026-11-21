@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Horizontal: os ícones em uma fileira no topo"
+  },
+  "settings.sidebar.sections": {
+    "message": "Como suas seções são mostradas:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Vertical: os nomes um embaixo do outro"
+  },
   "settings.sort_folders.by_name": {
     "message": "Sempre por nome"
   },

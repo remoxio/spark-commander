@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "शेल"
   },
+  "settings.sidebar.horizontal": {
+    "message": "क्षैतिज: उनके आइकन ऊपर एक पंक्ति में"
+  },
+  "settings.sidebar.sections": {
+    "message": "इसके अनुभाग कैसे दिखें:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "लंबवत: उनके नाम एक के नीचे एक"
+  },
   "settings.sort_folders.by_name": {
     "message": "हमेशा नाम से"
   },

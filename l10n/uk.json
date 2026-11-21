@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Оболонка"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Горизонтально: їхні піктограми рядком угорі"
+  },
+  "settings.sidebar.sections": {
+    "message": "Як показувати її розділи:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Вертикально: їхні назви одна під одною"
+  },
   "settings.sort_folders.by_name": {
     "message": "Завжди за ім’ям"
   },

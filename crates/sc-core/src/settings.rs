@@ -42,6 +42,24 @@ impl Default for Blur {
     }
 }
 
+/// How the sidebar's sections are chosen: their icons in a row at its top, as
+/// macOS's apps have them, or their names one under another, each opening
+/// under its own; each system's own until chosen.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SidebarLayout {
+    Horizontal,
+    Vertical,
+}
+
+impl Default for SidebarLayout {
+    fn default() -> Self {
+        match cfg!(target_os = "macos") {
+            true => SidebarLayout::Horizontal,
+            false => SidebarLayout::Vertical,
+        }
+    }
+}
+
 /// The folder tabs' header shown also with one tab, its + at hand.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -72,6 +90,7 @@ pub struct Settings {
     pub tab_header_always: TabHeaderAlways,
     pub show_hidden: bool,
     pub show_system: bool,
+    pub sidebar_layout: SidebarLayout,
     pub sidebar_opacity: SidebarOpacity,
     pub sidebar_blur: Blur,
     pub terminal_opacity: TerminalOpacity,

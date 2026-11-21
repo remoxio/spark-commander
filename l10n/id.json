@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Horizontal: ikonnya berjajar di atas"
+  },
+  "settings.sidebar.sections": {
+    "message": "Cara bagian-bagiannya ditampilkan:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Vertikal: namanya bersusun ke bawah"
+  },
   "settings.sort_folders.by_name": {
     "message": "Selalu berdasarkan nama"
   },

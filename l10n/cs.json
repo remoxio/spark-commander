@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Shell"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vodorovně: jejich ikony v řadě nahoře"
+  },
+  "settings.sidebar.sections": {
+    "message": "Jak se zobrazují jeho oddíly:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Svisle: jejich názvy pod sebou"
+  },
   "settings.sort_folders.by_name": {
     "message": "Vždy podle názvu"
   },

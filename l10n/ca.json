@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Intèrpret d’ordres"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Horitzontal: les icones en una fila a dalt"
+  },
+  "settings.sidebar.sections": {
+    "message": "Com es mostren les seves seccions:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Vertical: els noms un sota l’altre"
+  },
   "settings.sort_folders.by_name": {
     "message": "Sempre per nom"
   },

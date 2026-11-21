@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Čaula"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Horizontāli: to ikonas rindā augšā"
+  },
+  "settings.sidebar.sections": {
+    "message": "Kā tiek rādītas tās sadaļas:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Vertikāli: to nosaukumi cits zem cita"
+  },
   "settings.sort_folders.by_name": {
     "message": "Vienmēr pēc nosaukuma"
   },

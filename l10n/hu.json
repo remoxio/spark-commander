@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Parancsértelmező"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Vízszintes: az ikonjaik egy sorban felül"
+  },
+  "settings.sidebar.sections": {
+    "message": "Hogyan jelenjenek meg a szakaszai:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Függőleges: a nevük egymás alatt"
+  },
   "settings.sort_folders.by_name": {
     "message": "Mindig név szerint"
   },

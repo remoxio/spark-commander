@@ -15,7 +15,8 @@ GPL.
   extension, size or time.
 - A sidebar with the folder tree, Places (bookmarks, drives, network and
   cloud places, phones through KDE Connect), saved connections and the
-  operation queue.
+  operation queue, chosen by a row of icons or by their names one under
+  another.
 - Workspaces (sets of tabs to switch between), bookmarks, folder history,
   synchronized browsing, a quick filter and a Quick View panel.
 

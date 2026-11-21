@@ -3926,6 +3926,15 @@
   "settings.shell.title": {
     "message": "Apvalkalas"
   },
+  "settings.sidebar.horizontal": {
+    "message": "Horizontaliai: jų piktogramos eilute viršuje"
+  },
+  "settings.sidebar.sections": {
+    "message": "Kaip rodomi jos skyriai:"
+  },
+  "settings.sidebar.vertical": {
+    "message": "Vertikaliai: jų pavadinimai vienas po kito"
+  },
   "settings.sort_folders.by_name": {
     "message": "Visada pagal pavadinimą"
   },
