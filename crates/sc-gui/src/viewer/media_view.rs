@@ -1,5 +1,6 @@
 //! Video and sound in the viewer, played by libmpv (sc_core::viewer::media): the
-//! frames mpv draws at this view's size, and the controls below them.
+//! frames mpv draws at this view's size, and the controls below them; under
+//! a song's cover, its spectrum's bars.
 
 use std::cell::Cell;
 use std::path::{Path, PathBuf};
@@ -12,7 +13,8 @@ use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::{ActiveTheme, IconNamed, Sizable, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
-use sc_core::viewer::media::{Player, clock};
+use sc_core::viewer::media::spectrum::{BANDS, Meter, Spectrum};
+use sc_core::viewer::media::{Player, State, clock, is_video};
 use sc_core::viewer::resume;
 
 /// The player's icons, Lucide's (assets/media).
@@ -68,6 +70,11 @@ pub struct MediaView {
     continued: Option<f64>,
     /// When the place was last saved while playing.
     saved: Instant,
+    /// Sound alone, drawn as bars; read once it plays.
+    music: bool,
+    spectrum: Option<Spectrum>,
+    meter: Meter,
+    metered: Instant,
     _frames: Task<()>,
 }
 
@@ -103,7 +110,6 @@ impl MediaView {
             }
         });
         MediaView {
-            path,
             player: player.map(Rc::new),
             image: None,
             stale: Vec::new(),
@@ -113,6 +119,11 @@ impl MediaView {
             resumed: false,
             continued: None,
             saved: Instant::now(),
+            music: !is_video(&path),
+            path,
+            spectrum: None,
+            meter: Meter::default(),
+            metered: Instant::now(),
             _frames: frames,
         }
     }
@@ -179,6 +190,20 @@ impl MediaView {
         let _ = resume::leave(fingerprint, &name, state.position, state.duration);
     }
 
+    /// The bars at the place playing, moved on since the last frame; drawn again while they move.
+    fn meter(&mut self, state: &State, window: &mut Window) -> Meter {
+        if self.spectrum.is_none() && !state.paused {
+            self.spectrum = Some(Spectrum::open(&self.path));
+        }
+        let levels = self.spectrum.as_ref().and_then(|spectrum| spectrum.at(state.position));
+        let seconds = self.metered.elapsed().as_secs_f32().min(0.1);
+        self.metered = Instant::now();
+        if self.meter.update(levels, seconds) || !state.paused {
+            window.request_animation_frame();
+        }
+        self.meter.clone()
+    }
+
     /// To where the mouse is on the seek bar.
     fn seek_at(&self, x: Pixels) {
         let bar = self.bar.get();
@@ -208,6 +233,7 @@ impl Render for MediaView {
             }
         };
         let state = player.state();
+        let meter = self.music.then(|| self.meter(&state, window));
         let image = self.image.clone();
         let sizing = player.clone();
         // mpv draws at the picture's size in pixels; the frame fills it.
@@ -343,7 +369,34 @@ impl Render for MediaView {
                             window.toggle_fullscreen();
                         }
                     })
-                    .child(picture)
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .relative()
+                            .flex_1()
+                            .min_h_0()
+                            .child(picture)
+                            .when_some(notice, |el, notice| {
+                                el.child(
+                                    div()
+                                        .absolute()
+                                        .inset_0()
+                                        .flex()
+                                        .items_center()
+                                        .justify_center()
+                                        .text_color(gpui_kit::white())
+                                        .child(notice),
+                                )
+                            }),
+                    )
+                    .when_some(meter, |el, meter| {
+                        el.child(
+                            div().flex_none().h(relative(0.4)).px_4().pt_2().pb_3().child(
+                                canvas(|_, _, _| {}, move |bounds, (), window, _| paint_bars(&meter, bounds, window)).size_full(),
+                            ),
+                        )
+                    })
                     .when_some(self.continued, |el, at| {
                         el.child(
                             div()
@@ -358,21 +411,32 @@ impl Render for MediaView {
                                 .text_sm()
                                 .child(sc_core::t!("media.continuing", time = clock(at))),
                         )
-                    })
-                    .when_some(notice, |el, notice| {
-                        el.child(
-                            div()
-                                .absolute()
-                                .inset_0()
-                                .flex()
-                                .items_center()
-                                .justify_center()
-                                .text_color(gpui_kit::white())
-                                .child(notice),
-                        )
                     }),
             )
             .child(controls)
             .into_any_element()
+    }
+}
+
+/// LED columns, green at the foot to red at the top: unlit segments faint, each peak lit.
+fn paint_bars(meter: &Meter, bounds: Bounds<Pixels>, window: &mut Window) {
+    let rows = (f32::from(bounds.size.height) / 9.).clamp(6., 40.) as usize;
+    let (column, row) = (bounds.size.width / BANDS as f32, bounds.size.height / rows as f32);
+    for band in 0..BANDS {
+        let lit = (meter.bars[band] * rows as f32).round() as usize;
+        let peak = (meter.peaks[band] * rows as f32).ceil() as usize;
+        for at in 0..rows {
+            let share = (at as f32 + 0.5) / rows as f32;
+            // Yellow at 60%.
+            let hue = match share < 0.6 {
+                true => 120. - share / 0.6 * 60.,
+                false => 60. - (share - 0.6) / 0.4 * 60.,
+            };
+            let on = at < lit || (peak > lit && at + 1 == peak);
+            let x = bounds.origin.x + column * (band as f32 + 0.12);
+            let y = bounds.origin.y + bounds.size.height - row * (at + 1) as f32;
+            let segment = Bounds::new(point(x.round(), y.round()), size((column * 0.76).round(), (row * 0.72).round().max(px(1.))));
+            window.paint_quad(fill(segment, hsla(hue / 360., 0.9, 0.5, if on { 1. } else { 0.1 })));
+        }
     }
 }

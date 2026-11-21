@@ -11,6 +11,8 @@ use std::sync::{Arc, Condvar, Mutex, OnceLock, mpsc};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
+pub mod spectrum;
+
 /// Video, and sound alone.
 const VIDEO: &[&str] = &[
     "3gp", "avi", "flv", "m2ts", "m4v", "mkv", "mov", "mp4", "mpeg", "mpg", "mts", "ogv", "ts",
