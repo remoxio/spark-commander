@@ -31,8 +31,8 @@ use ratatui::crossterm::event::{
     self, DisableBracketedPaste, DisableMouseCapture, EnableBracketedPaste, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind,
     KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
-use ratatui::crossterm::execute;
-use ratatui::crossterm::terminal::{Clear, ClearType, SetTitle};
+use ratatui::crossterm::{execute, queue};
+use ratatui::crossterm::terminal::{BeginSynchronizedUpdate, Clear, ClearType, EndSynchronizedUpdate, SetTitle};
 use ratatui_image::picker::Picker;
 
 use crate::dialog::{Answer, Choice, Chooser, Form, List};
@@ -432,14 +432,11 @@ impl App {
         while !self.quit && !(self.alone && self.viewer.is_none() && self.editor.is_none()) {
             self.want_picture();
             // Pixels of a picture stay until the screen is cleared.
-            let in_sight = self
-                .viewer
-                .as_ref()
-                .and_then(Viewer::picture_in_sight)
-                .cloned();
-            if in_sight != picture {
-                // Not terminal.clear(): it asks where the cursor is, and waits.
-                execute!(io::stdout(), Clear(ClearType::All))?;
+            let in_sight = self.viewer.as_ref().and_then(Viewer::picture_in_sight);
+            let turned = in_sight != picture;
+            if turned {
+                // Not terminal.clear() (it asks where the cursor is, and waits); queued to go out with the new frame, not before its encoding.
+                queue!(io::stdout(), BeginSynchronizedUpdate, Clear(ClearType::All))?;
                 terminal.swap_buffers();
                 (picture, redraw) = (in_sight, true);
             }
@@ -447,6 +444,9 @@ impl App {
             let busy = self.viewer.as_ref().is_some_and(Viewer::busy);
             if redraw {
                 terminal.draw(|frame| ui::draw(frame, self))?;
+            }
+            if turned {
+                execute!(io::stdout(), EndSynchronizedUpdate)?;
             }
             redraw = busy;
             if event::poll(TICK)? {

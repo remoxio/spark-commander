@@ -167,10 +167,11 @@ impl Viewer {
     }
 
     /// The picture on the screen: when it changes, the terminal is cleared
-    /// of the old one's pixels.
-    pub fn picture_in_sight(&self) -> Option<&Key> {
+    /// of the old one's pixels. A PDF's page as big as the last covers it, so is not.
+    pub fn picture_in_sight(&self) -> Option<(Key, (u32, u32))> {
         let picture = self.picture.as_ref().filter(|_| self.picture_mode())?;
-        Some(&picture.key)
+        let page = picture.key.page.map(|_| 0);
+        Some((Key { page, ..picture.key.clone() }, picture.size))
     }
 
     /// PgUp, PgDn, Home and End go through a PDF's pages.

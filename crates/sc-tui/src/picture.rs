@@ -116,6 +116,8 @@ pub struct Picture {
     pub key: Key,
     /// The image, and its size in pixels; or why there is none.
     pub shown: Result<(StatefulProtocol, String), String>,
+    /// The fitted image's size in pixels; (0, 0) without one.
+    pub size: (u32, u32),
 }
 
 struct Loaded {
@@ -206,8 +208,9 @@ impl App {
             Box::new(move |app: &mut App| {
                 let shown = loaded.map(|loaded| {
                     let picker = app.picker.as_ref().expect("asked before loading");
+                    let size = (loaded.image.width(), loaded.image.height());
                     let protocol = picker.new_resize_protocol(loaded.image);
-                    (protocol, loaded.about, loaded.pages)
+                    (protocol, loaded.about, loaded.pages, size)
                 });
                 let Some(viewer) = app.viewer.as_mut() else {
                     return;
@@ -217,11 +220,12 @@ impl App {
                     return;
                 }
                 viewer.loading = None;
-                let shown = shown.map(|(protocol, about, pages)| {
-                    viewer.pages = pages;
+                let mut size = (0, 0);
+                let shown = shown.map(|(protocol, about, pages, fitted)| {
+                    (viewer.pages, size) = (pages, fitted);
                     (protocol, about)
                 });
-                viewer.picture = Some(Picture { key, shown });
+                viewer.picture = Some(Picture { key, shown, size });
             }) as Done
         });
     }
