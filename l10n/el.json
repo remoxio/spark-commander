@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Μετονομασία φακέλου"
   },
-  "connections.forget_password": {
-    "message": "Διαγραφή του αποθηκευμένου κωδικού"
-  },
   "connections.move_down": {
     "message": "Μετακίνηση κάτω"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Άνοιγμα στο τερματικό"
   },
+  "connections.password.delete": {
+    "message": "Διαγραφή του αποθηκευμένου κωδικού"
+  },
+  "connections.password.delete_button": {
+    "message": "Διαγραφή"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Διαγραφή του αποθηκευμένου κωδικού; Θα ζητείται τότε κατά τη σύνδεση."
+  },
+  "connections.password.delete_title": {
+    "message": "Διαγραφή κωδικού"
+  },
+  "connections.password.not_read": {
+    "message": "Δεν ήταν δυνατή η ανάγνωση του αποθηκευμένου κωδικού."
+  },
   "connections.placeholder.name": {
     "message": "όπως εμφανίζεται στη λίστα"
   },
   "connections.placeholder.password": {
-    "message": "φυλάσσεται κρυπτογραφημένος στον φάκελο ρυθμίσεων· αν μείνει κενό, διατηρείται"
+    "message": "ζητείται κατά τη σύνδεση"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "αποθηκευμένος"
   },
   "connections.placeholder.path": {
     "message": "ο φάκελος σύνδεσης"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Οι αποθηκευμένοι κωδικοί κρυπτογραφούνται με έναν κύριο κωδικό: επιλέξτε έναν τώρα. Αυτός ο υπολογιστής τον θυμάται, οπότε εδώ δεν θα σας ζητηθεί ξανά· σε άλλον υπολογιστή, αφού αντιγράψετε τον φάκελο ρυθμίσεων, τους ανοίγει μόλις τον πληκτρολογήσετε. Αν τον ξεχάσετε, χάνονται μόνο οι αποθηκευμένοι κωδικοί."
   },
+  "passwords.about.reveal": {
+    "message": "Πληκτρολογήστε τον κύριο κωδικό για να δείτε τον αποθηκευμένο κωδικό."
+  },
   "passwords.about.set": {
     "message": "Με έναν κύριο κωδικό πρόσβασης, οι αποθηκευμένοι κωδικοί ανοίγουν σε άλλον υπολογιστή μόλις τον πληκτρολογήσετε εκεί, αφού αντιγράψετε τον φάκελο ρυθμίσεων. Αν τον ξεχάσετε, χάνονται μόνο αυτοί: θα τους πληκτρολογήσετε ξανά."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Πληκτρολογήστε τον κύριο κωδικό πρόσβασης."
+  },
+  "passwords.title.reveal": {
+    "message": "Εμφάνιση κωδικού"
   },
   "passwords.title.set": {
     "message": "Κύριος κωδικός πρόσβασης"

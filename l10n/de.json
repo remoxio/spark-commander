@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Ordner umbenennen"
   },
-  "connections.forget_password": {
-    "message": "Gespeichertes Passwort vergessen"
-  },
   "connections.move_down": {
     "message": "Nach unten"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Im Terminal öffnen"
   },
+  "connections.password.delete": {
+    "message": "Gespeichertes Passwort löschen"
+  },
+  "connections.password.delete_button": {
+    "message": "Löschen"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Gespeichertes Passwort löschen? Es wird dann beim Verbinden abgefragt."
+  },
+  "connections.password.delete_title": {
+    "message": "Passwort löschen"
+  },
+  "connections.password.not_read": {
+    "message": "Das gespeicherte Passwort konnte nicht gelesen werden."
+  },
   "connections.placeholder.name": {
     "message": "wie in der Liste angezeigt"
   },
   "connections.placeholder.password": {
-    "message": "verschlüsselt im Einstellungsordner gespeichert; leer behält es"
+    "message": "wird beim Verbinden abgefragt"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "gespeichert"
   },
   "connections.placeholder.path": {
     "message": "der Anmeldeordner"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Gespeicherte Passwörter werden mit einem Master-Passwort verschlüsselt: Wähle jetzt eines. Dieser Computer merkt es sich, hier wirst du also nicht wieder gefragt; auf einem anderen Computer öffnet es sie, sobald du es dort eingibst, nachdem der Einstellungsordner kopiert wurde. Vergisst du es, gehen nur die gespeicherten Passwörter verloren."
   },
+  "passwords.about.reveal": {
+    "message": "Gib das Master-Passwort ein, um das gespeicherte Passwort zu sehen."
+  },
   "passwords.about.set": {
     "message": "Mit einem Master-Passwort öffnen sich die gespeicherten Passwörter auch auf einem anderen Computer, sobald du es dort eingibst, nachdem der Einstellungsordner kopiert wurde. Vergisst du es, gehen nur die gespeicherten Passwörter verloren: Du gibst sie neu ein."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Gib das Master-Passwort ein."
+  },
+  "passwords.title.reveal": {
+    "message": "Passwort anzeigen"
   },
   "passwords.title.set": {
     "message": "Master-Passwort"

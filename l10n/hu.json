@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Mappa átnevezése"
   },
-  "connections.forget_password": {
-    "message": "A mentett jelszó elfelejtése"
-  },
   "connections.move_down": {
     "message": "Mozgatás lefelé"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Megnyitás terminálban"
   },
+  "connections.password.delete": {
+    "message": "A mentett jelszó törlése"
+  },
+  "connections.password.delete_button": {
+    "message": "Törlés"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Törlöd a mentett jelszót? Ezután csatlakozáskor kérdezi."
+  },
+  "connections.password.delete_title": {
+    "message": "Jelszó törlése"
+  },
+  "connections.password.not_read": {
+    "message": "A mentett jelszó nem olvasható be."
+  },
   "connections.placeholder.name": {
     "message": "ahogy a listában megjelenik"
   },
   "connections.placeholder.password": {
-    "message": "titkosítva a beállítások mappájában; üresen a mentett marad"
+    "message": "csatlakozáskor kérdezi"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "mentve"
   },
   "connections.placeholder.path": {
     "message": "a bejelentkezési mappa"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "A mentett jelszavakat mesterjelszó titkosítja: válassz most egyet. Ez a gép megjegyzi, így itt többé nem kérdezi; egy másik gépen, a beállítások mappájának átmásolása után, beírva megnyitja őket. Ha elfelejted, csak a mentett jelszavak vesznek el."
   },
+  "passwords.about.reveal": {
+    "message": "A mentett jelszó megtekintéséhez írd be a mesterjelszót."
+  },
   "passwords.about.set": {
     "message": "Mesterjelszóval a mentett jelszavak egy másik gépen is megnyithatók: másold át a beállítások mappáját, és írd be ott a mesterjelszót. Ha elfelejted, csak a mentett jelszavak vesznek el: azokat újra be kell írni."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Írd be a mesterjelszót."
+  },
+  "passwords.title.reveal": {
+    "message": "Jelszó megjelenítése"
   },
   "passwords.title.set": {
     "message": "Mesterjelszó"

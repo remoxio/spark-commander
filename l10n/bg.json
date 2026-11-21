@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Преименуване на папка"
   },
-  "connections.forget_password": {
-    "message": "Забравяне на запазената парола"
-  },
   "connections.move_down": {
     "message": "Преместване надолу"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Отваряне в терминал"
   },
+  "connections.password.delete": {
+    "message": "Изтриване на запазената парола"
+  },
+  "connections.password.delete_button": {
+    "message": "Изтриване"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Да се изтрие ли запазената парола? Тогава тя ще се пита при свързване."
+  },
+  "connections.password.delete_title": {
+    "message": "Изтриване на паролата"
+  },
+  "connections.password.not_read": {
+    "message": "Запазената парола не можа да бъде прочетена."
+  },
   "connections.placeholder.name": {
     "message": "както се показва в списъка"
   },
   "connections.placeholder.password": {
-    "message": "пази се шифрована в папката с настройки; празно я запазва"
+    "message": "пита се при свързване"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "запазена"
   },
   "connections.placeholder.path": {
     "message": "папката при влизане"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Запазените пароли се шифроват с главна парола: изберете я сега. Този компютър я запомня, затова тук няма да ви бъде поискана отново; на друг компютър, след като копирате папката с настройки, тя ги отваря, щом я въведете. Ако я забравите, губят се само запазените пароли."
   },
+  "passwords.about.reveal": {
+    "message": "Въведете главната парола, за да видите запазената парола."
+  },
   "passwords.about.set": {
     "message": "С главна парола запазените пароли се отварят на друг компютър, след като я въведете там и копирате папката с настройки. Ако я забравите, губят се само те: въвеждат се отново."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Въведете главната парола."
+  },
+  "passwords.title.reveal": {
+    "message": "Показване на паролата"
   },
   "passwords.title.set": {
     "message": "Главна парола"

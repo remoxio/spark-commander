@@ -21,6 +21,8 @@ pub enum Ask {
     Set,
     /// One to set before the first password is saved.
     First,
+    /// Typed again to show a saved password.
+    Reveal,
 }
 
 type Done = Rc<dyn Fn(&mut Window, &mut App)>;
@@ -67,11 +69,12 @@ pub fn keep(key: String, password: String, window: &mut Window, cx: &mut App) {
 pub fn ask(what: Ask, window: &mut Window, cx: &mut App, done: impl Fn(&mut Window, &mut App) + 'static) {
     let mut masked = |cx: &mut App| cx.new(|cx| InputState::new(window, cx).masked(true));
     let first = masked(cx);
-    let again = (what != Ask::Unlock).then(|| masked(cx));
+    let again = matches!(what, Ask::Set | Ask::First).then(|| masked(cx));
     let view = cx.new(|_| MasterDialog { what, first: first.clone(), again, problem: None, working: false, done: Rc::new(done) });
     let title = match what {
         Ask::Unlock => t!("passwords.title.unlock"),
         Ask::Set | Ask::First => t!("passwords.title.set"),
+        Ask::Reveal => t!("passwords.title.reveal"),
     };
     window.open_dialog(cx, move |dialog, _, _| {
         let ok = view.clone();
@@ -119,7 +122,7 @@ impl MasterDialog {
         // Slow on purpose (PBKDF2), and the keyring may wait.
         let work = cx.background_spawn(async move {
             match what {
-                Ask::Unlock => secrets::unlock(&master),
+                Ask::Unlock | Ask::Reveal => secrets::unlock(&master),
                 Ask::Set | Ask::First => secrets::set_master(Some(&master)),
             }
         });
@@ -131,11 +134,14 @@ impl MasterDialog {
                     Ok(()) => {
                         window.close_dialog(cx);
                         let text = match this.what {
-                            Ask::Unlock => t!("passwords.done.unlocked"),
-                            Ask::Set | Ask::First => t!("passwords.done.set"),
+                            Ask::Unlock => Some(t!("passwords.done.unlocked")),
+                            Ask::Set | Ask::First => Some(t!("passwords.done.set")),
+                            Ask::Reveal => None,
                         };
                         window.remove_notification::<Locked>(cx);
-                        window.push_notification(Notification::success(text), cx);
+                        if let Some(text) = text {
+                            window.push_notification(Notification::success(text), cx);
+                        }
                         (this.done)(window, cx);
                     }
                     Err(err) => {
@@ -157,6 +163,7 @@ impl Render for MasterDialog {
             Ask::Unlock => t!("passwords.about.unlock"),
             Ask::Set => t!("passwords.about.set"),
             Ask::First => t!("passwords.about.first"),
+            Ask::Reveal => t!("passwords.about.reveal"),
         };
         let field = |label: String, input: &Entity<InputState>| h_flex().gap_3().child(div().w(px(130.)).flex_none().child(label)).child(div().flex_1().child(Input::new(input)));
         let theme = cx.theme();

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "フォルダー名の変更"
   },
-  "connections.forget_password": {
-    "message": "保存したパスワードを削除"
-  },
   "connections.move_down": {
     "message": "下へ移動"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "ターミナルで開く"
   },
+  "connections.password.delete": {
+    "message": "保存したパスワードを削除"
+  },
+  "connections.password.delete_button": {
+    "message": "削除"
+  },
+  "connections.password.delete_confirm": {
+    "message": "保存したパスワードを削除しますか？以後は接続時に尋ねます。"
+  },
+  "connections.password.delete_title": {
+    "message": "パスワードの削除"
+  },
+  "connections.password.not_read": {
+    "message": "保存したパスワードを読み取れませんでした。"
+  },
   "connections.placeholder.name": {
     "message": "一覧に表示される名前"
   },
   "connections.placeholder.password": {
-    "message": "設定フォルダーに暗号化して保存。空欄なら現在のものを維持"
+    "message": "接続時に尋ねます"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "保存済み"
   },
   "connections.placeholder.path": {
     "message": "ログイン時のフォルダー"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "保存するパスワードはマスターパスワードで暗号化されます。今すぐ決めてください。このコンピューターが記憶するため、ここで再び尋ねられることはありません。設定フォルダーをコピーした別のコンピューターでは、マスターパスワードを入力すれば開けます。忘れても失われるのは保存したパスワードだけです。"
   },
+  "passwords.about.reveal": {
+    "message": "保存したパスワードを表示するには、マスターパスワードを入力してください。"
+  },
   "passwords.about.set": {
     "message": "マスターパスワードを設定すると、設定フォルダーをコピーした別のコンピューターでも、そこでマスターパスワードを入力すれば保存したパスワードを開けます。忘れても失われるのは保存したパスワードだけで、入力し直せば済みます。"
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "マスターパスワードを入力してください。"
+  },
+  "passwords.title.reveal": {
+    "message": "パスワードの表示"
   },
   "passwords.title.set": {
     "message": "マスターパスワード"

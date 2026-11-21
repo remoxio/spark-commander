@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Preimenuj mapu"
   },
-  "connections.forget_password": {
-    "message": "Zaboravi spremljenu lozinku"
-  },
   "connections.move_down": {
     "message": "Pomakni dolje"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Otvori u terminalu"
   },
+  "connections.password.delete": {
+    "message": "Izbriši spremljenu lozinku"
+  },
+  "connections.password.delete_button": {
+    "message": "Izbriši"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Izbrisati spremljenu lozinku? Tada će se tražiti pri povezivanju."
+  },
+  "connections.password.delete_title": {
+    "message": "Brisanje lozinke"
+  },
+  "connections.password.not_read": {
+    "message": "Spremljenu lozinku nije moguće pročitati."
+  },
   "connections.placeholder.name": {
     "message": "kako je prikazano na popisu"
   },
   "connections.placeholder.password": {
-    "message": "čuva se šifrirana u mapi postavki; prazno je zadržava"
+    "message": "traži se pri povezivanju"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "spremljena"
   },
   "connections.placeholder.path": {
     "message": "mapa nakon prijave"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Spremljene lozinke šifriraju se glavnom lozinkom: odaberite je sada. Ovo je računalo pamti, pa vas ovdje više neće pitati za nju; na drugom računalu, na koje ste kopirali mapu postavki, otvara ih čim je upišete. Ako je zaboravite, gube se samo spremljene lozinke."
   },
+  "passwords.about.reveal": {
+    "message": "Upišite glavnu lozinku da biste vidjeli spremljenu lozinku."
+  },
   "passwords.about.set": {
     "message": "Uz glavnu lozinku spremljene se lozinke otvaraju i na drugom računalu, na koje ste kopirali mapu postavki, kad je ondje upišete. Ako je zaboravite, gube se samo spremljene lozinke: upisat ćete ih ponovno."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Upišite glavnu lozinku."
+  },
+  "passwords.title.reveal": {
+    "message": "Prikaz lozinke"
   },
   "passwords.title.set": {
     "message": "Glavna lozinka"

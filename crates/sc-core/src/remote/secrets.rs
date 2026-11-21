@@ -99,6 +99,11 @@ pub fn saved() -> usize {
     load().map_or(0, |vault| vault.passwords.len())
 }
 
+/// Whether a password is saved for `what`, without opening any.
+pub fn is_saved(what: &str) -> bool {
+    load().is_ok_and(|vault| vault.passwords.contains_key(what))
+}
+
 /// Whether a master password makes the key.
 pub fn has_master() -> bool {
     load().is_ok_and(|vault| vault.master.is_some())

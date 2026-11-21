@@ -1439,10 +1439,6 @@
     "description": "Title of the dialog renaming a folder of Sidebar › Connections (it groups connections; not a folder on a disk).",
     "message": "Rename Folder"
   },
-  "connections.forget_password": {
-    "description": "Checkbox in the Connection dialog: deletes the password kept for this server.",
-    "message": "Forget the kept password"
-  },
   "connections.move_down": {
     "description": "Sidebar › Connections: tooltip of an icon button above the list. Moves the chosen connection or folder one place down.",
     "message": "Move Down"
@@ -1471,13 +1467,37 @@
     "description": "Sidebar › Connections: right-click menu of a saved server. For SFTP servers: logs in with ssh in the terminal pane.",
     "message": "Open in Terminal"
   },
+  "connections.password.delete": {
+    "description": "Tooltip of the trash can button inside the Password field of the Connection dialog: deletes the password saved for this server.",
+    "message": "Delete the saved password"
+  },
+  "connections.password.delete_button": {
+    "description": "Confirming button of the Delete Password dialog. Keep it short.",
+    "message": "Delete"
+  },
+  "connections.password.delete_confirm": {
+    "description": "Question of the Delete Password dialog. Once deleted, the password is asked for each time the server is connected to.",
+    "message": "Delete the saved password? It is asked for when connecting then."
+  },
+  "connections.password.delete_title": {
+    "description": "Title of the dialog confirming that the password saved for a server is deleted (trash can button in the Connection dialog).",
+    "message": "Delete Password"
+  },
+  "connections.password.not_read": {
+    "description": "Error after the eye button of the Connection dialog's Password field could not read the saved password (the keyring did not answer, or it is locked).",
+    "message": "The saved password could not be read."
+  },
   "connections.placeholder.name": {
     "description": "Grey hint inside the empty field of the Connection dialog, saying what an empty field means; lower case. Name field.",
     "message": "as the list shows it"
   },
   "connections.placeholder.password": {
-    "description": "Grey hint inside the empty field of the Connection dialog, saying what an empty field means; lower case. Password field: the password is kept encrypted; left empty, the one kept already stays.",
-    "message": "kept sealed in the settings folder; empty keeps it"
+    "description": "Grey hint inside the empty Password field of the Connection dialog when no password is saved for the server; lower case. The password is asked for when connecting.",
+    "message": "asked when connecting"
+  },
+  "connections.placeholder.password_saved": {
+    "description": "Grey hint inside the empty Password field of the Connection dialog when a password is saved for the server; lower case. Left empty, the saved one stays; one typed replaces it.",
+    "message": "saved"
   },
   "connections.placeholder.path": {
     "description": "Grey hint inside the empty field of the Connection dialog, saying what an empty field means; lower case. Start folder field: empty, the folder the server starts in after logging in.",
@@ -3583,6 +3603,10 @@
     "message": "Saved passwords are encrypted with a master password: choose one now. This computer remembers it, so it is not asked again here; on another computer, with the settings folder copied, it opens them once typed. Forgotten, only the saved passwords are lost.",
     "description": "The master password dialog, when the first password is about to be saved (none is set yet): why it is asked. Shown above the two password fields."
   },
+  "passwords.about.reveal": {
+    "description": "Show Password dialog: the explanation at its top, above the master password field.",
+    "message": "Type the master password to see the saved password."
+  },
   "passwords.about.set": {
     "description": "Master Password dialog: the explanation at its top.",
     "message": "With a master password, the saved passwords open on another computer once it is typed there, the settings folder copied. Forgotten, only they are lost: they are typed again."
@@ -3654,6 +3678,10 @@
   "passwords.problem.empty": {
     "description": "Master password dialogs: shown when OK is pressed with the field empty.",
     "message": "Type the master password."
+  },
+  "passwords.title.reveal": {
+    "description": "Title of the dialog asking for the master password before a saved password is shown (eye button in the Connection dialog's Password field).",
+    "message": "Show Password"
   },
   "passwords.title.set": {
     "description": "Title of the dialog setting or changing the master password.",

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Pervardyti aplanką"
   },
-  "connections.forget_password": {
-    "message": "Pamiršti įsimintą slaptažodį"
-  },
   "connections.move_down": {
     "message": "Perkelti žemyn"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Atidaryti terminale"
   },
+  "connections.password.delete": {
+    "message": "Ištrinti įrašytą slaptažodį"
+  },
+  "connections.password.delete_button": {
+    "message": "Ištrinti"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Ištrinti įrašytą slaptažodį? Tada jo bus klausiama jungiantis."
+  },
+  "connections.password.delete_title": {
+    "message": "Slaptažodžio trynimas"
+  },
+  "connections.password.not_read": {
+    "message": "Nepavyko perskaityti įrašyto slaptažodžio."
+  },
   "connections.placeholder.name": {
     "message": "kaip rodoma sąraše"
   },
   "connections.placeholder.password": {
-    "message": "laikomas užšifruotas nustatymų aplanke; palikus tuščią, lieka esamas"
+    "message": "klausiama jungiantis"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "įrašytas"
   },
   "connections.placeholder.path": {
     "message": "prisijungimo aplankas"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Įrašyti slaptažodžiai šifruojami pagrindiniu slaptažodžiu: pasirinkite jį dabar. Šis kompiuteris jį įsimena, todėl čia jo nebeklaus; kitame kompiuteryje, nukopijavus nustatymų aplanką, jį įvedus slaptažodžiai atsidaro. Jį pamiršus, prarandami tik įrašyti slaptažodžiai."
   },
+  "passwords.about.reveal": {
+    "message": "Įveskite pagrindinį slaptažodį, kad pamatytumėte įrašytą slaptažodį."
+  },
   "passwords.about.set": {
     "message": "Su pagrindiniu slaptažodžiu įrašyti slaptažodžiai atsidaro ir kitame kompiuteryje: nukopijuokite nustatymų aplanką ir įveskite jį ten. Jį pamiršus, prarandami tik įrašyti slaptažodžiai: juos tereikės įvesti iš naujo."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Įveskite pagrindinį slaptažodį."
+  },
+  "passwords.title.reveal": {
+    "message": "Slaptažodžio rodymas"
   },
   "passwords.title.set": {
     "message": "Pagrindinis slaptažodis"

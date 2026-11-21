@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "เปลี่ยนชื่อโฟลเดอร์"
   },
-  "connections.forget_password": {
-    "message": "ลืมรหัสผ่านที่เก็บไว้"
-  },
   "connections.move_down": {
     "message": "ย้ายลง"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "เปิดในเทอร์มินัล"
   },
+  "connections.password.delete": {
+    "message": "ลบรหัสผ่านที่บันทึกไว้"
+  },
+  "connections.password.delete_button": {
+    "message": "ลบ"
+  },
+  "connections.password.delete_confirm": {
+    "message": "ลบรหัสผ่านที่บันทึกไว้หรือไม่ หลังจากนั้นจะถามเมื่อเชื่อมต่อ"
+  },
+  "connections.password.delete_title": {
+    "message": "ลบรหัสผ่าน"
+  },
+  "connections.password.not_read": {
+    "message": "ไม่สามารถอ่านรหัสผ่านที่บันทึกไว้"
+  },
   "connections.placeholder.name": {
     "message": "ตามที่แสดงในรายการ"
   },
   "connections.placeholder.password": {
-    "message": "เก็บแบบเข้ารหัสในโฟลเดอร์การตั้งค่า ปล่อยว่างเพื่อใช้รหัสเดิม"
+    "message": "จะถามเมื่อเชื่อมต่อ"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "บันทึกไว้แล้ว"
   },
   "connections.placeholder.path": {
     "message": "โฟลเดอร์หลังเข้าสู่ระบบ"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "รหัสผ่านที่บันทึกไว้จะถูกเข้ารหัสด้วยรหัสผ่านหลัก โปรดตั้งรหัสผ่านหลักตอนนี้ คอมพิวเตอร์เครื่องนี้จะจำไว้ จึงไม่ถามซ้ำที่นี่ บนคอมพิวเตอร์เครื่องอื่นที่คัดลอกโฟลเดอร์การตั้งค่าไปแล้ว เพียงพิมพ์รหัสผ่านหลักก็เปิดได้ หากลืม จะเสียเพียงรหัสผ่านที่บันทึกไว้"
   },
+  "passwords.about.reveal": {
+    "message": "โปรดพิมพ์รหัสผ่านหลักเพื่อดูรหัสผ่านที่บันทึกไว้"
+  },
   "passwords.about.set": {
     "message": "เมื่อมีรหัสผ่านหลัก รหัสผ่านที่บันทึกไว้จะเปิดบนคอมพิวเตอร์เครื่องอื่นได้เมื่อพิมพ์รหัสผ่านหลักที่นั่น หลังจากคัดลอกโฟลเดอร์การตั้งค่าไปแล้ว หากลืม จะเสียเพียงรหัสผ่านที่บันทึกไว้ ซึ่งพิมพ์ใหม่ได้"
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "พิมพ์รหัสผ่านหลัก"
+  },
+  "passwords.title.reveal": {
+    "message": "แสดงรหัสผ่าน"
   },
   "passwords.title.set": {
     "message": "รหัสผ่านหลัก"

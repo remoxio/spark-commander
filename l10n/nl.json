@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Naam van map wijzigen"
   },
-  "connections.forget_password": {
-    "message": "Bewaard wachtwoord vergeten"
-  },
   "connections.move_down": {
     "message": "Omlaag"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Openen in terminal"
   },
+  "connections.password.delete": {
+    "message": "Opgeslagen wachtwoord verwijderen"
+  },
+  "connections.password.delete_button": {
+    "message": "Verwijderen"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Het opgeslagen wachtwoord verwijderen? Het wordt dan gevraagd bij het verbinden."
+  },
+  "connections.password.delete_title": {
+    "message": "Wachtwoord verwijderen"
+  },
+  "connections.password.not_read": {
+    "message": "Het opgeslagen wachtwoord kon niet worden gelezen."
+  },
   "connections.placeholder.name": {
     "message": "zoals de lijst het toont"
   },
   "connections.placeholder.password": {
-    "message": "versleuteld bewaard in de instellingenmap; leeg houdt het bewaarde"
+    "message": "gevraagd bij verbinden"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "opgeslagen"
   },
   "connections.placeholder.path": {
     "message": "de inlogmap"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Opgeslagen wachtwoorden worden versleuteld met een hoofdwachtwoord: kies er nu een. Deze computer onthoudt het, dus hier wordt er niet meer naar gevraagd; op een andere computer opent het ze zodra je het daar typt, nadat de instellingenmap is gekopieerd. Vergeet je het, dan raak je alleen de opgeslagen wachtwoorden kwijt."
   },
+  "passwords.about.reveal": {
+    "message": "Typ het hoofdwachtwoord om het opgeslagen wachtwoord te zien."
+  },
   "passwords.about.set": {
     "message": "Met een hoofdwachtwoord gaan de opgeslagen wachtwoorden ook op een andere computer open zodra je het daar typt, nadat de instellingenmap is gekopieerd. Vergeet je het, dan raak je alleen die wachtwoorden kwijt: je typt ze opnieuw."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Typ het hoofdwachtwoord."
+  },
+  "passwords.title.reveal": {
+    "message": "Wachtwoord tonen"
   },
   "passwords.title.set": {
     "message": "Hoofdwachtwoord"

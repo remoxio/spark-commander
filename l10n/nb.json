@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Gi mappen nytt navn"
   },
-  "connections.forget_password": {
-    "message": "Glem det lagrede passordet"
-  },
   "connections.move_down": {
     "message": "Flytt ned"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Åpne i terminal"
   },
+  "connections.password.delete": {
+    "message": "Slett det lagrede passordet"
+  },
+  "connections.password.delete_button": {
+    "message": "Slett"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Vil du slette det lagrede passordet? Da blir du spurt om det ved tilkobling."
+  },
+  "connections.password.delete_title": {
+    "message": "Slett passord"
+  },
+  "connections.password.not_read": {
+    "message": "Kunne ikke lese det lagrede passordet."
+  },
   "connections.placeholder.name": {
     "message": "slik listen viser den"
   },
   "connections.placeholder.password": {
-    "message": "lagres kryptert i innstillingsmappen; tomt felt beholder det"
+    "message": "spørres om ved tilkobling"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "lagret"
   },
   "connections.placeholder.path": {
     "message": "påloggingsmappen"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Lagrede passord krypteres med et hovedpassord: velg et nå. Denne datamaskinen husker det, så du blir ikke spurt igjen her; på en annen datamaskin åpner det dem når innstillingsmappen er kopiert og du skriver det inn. Glemmer du det, mister du bare de lagrede passordene."
   },
+  "passwords.about.reveal": {
+    "message": "Skriv inn hovedpassordet for å se det lagrede passordet."
+  },
   "passwords.about.set": {
     "message": "Med et hovedpassord kan de lagrede passordene åpnes på en annen datamaskin når innstillingsmappen er kopiert og hovedpassordet skrives inn der. Glemmer du det, mister du bare de lagrede passordene: de må skrives inn på nytt."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Skriv inn hovedpassordet."
+  },
+  "passwords.title.reveal": {
+    "message": "Vis passord"
   },
   "passwords.title.set": {
     "message": "Hovedpassord"

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Перейменувати теку"
   },
-  "connections.forget_password": {
-    "message": "Забути збережений пароль"
-  },
   "connections.move_down": {
     "message": "Перемістити вниз"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Відкрити в терміналі"
   },
+  "connections.password.delete": {
+    "message": "Видалити збережений пароль"
+  },
+  "connections.password.delete_button": {
+    "message": "Видалити"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Видалити збережений пароль? Тоді його буде запитано під час з’єднання."
+  },
+  "connections.password.delete_title": {
+    "message": "Видалення пароля"
+  },
+  "connections.password.not_read": {
+    "message": "Не вдалося прочитати збережений пароль."
+  },
   "connections.placeholder.name": {
     "message": "як у списку"
   },
   "connections.placeholder.password": {
-    "message": "зберігається зашифрованим у теці параметрів; порожнє — лишити збережений"
+    "message": "запитується під час з’єднання"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "збережено"
   },
   "connections.placeholder.path": {
     "message": "тека після входу"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Збережені паролі шифруються головним паролем: виберіть його зараз. Цей комп’ютер його запам’ятає, тож тут його більше не питатимуть; на іншому комп’ютері, куди скопійовано теку параметрів, він відкриє їх, щойно його введуть. Якщо його забути, втратяться лише збережені паролі."
   },
+  "passwords.about.reveal": {
+    "message": "Введіть головний пароль, щоб побачити збережений пароль."
+  },
   "passwords.about.set": {
     "message": "З головним паролем збережені паролі відкриються на іншому комп’ютері, куди скопійовано теку параметрів, щойно там введуть цей пароль. Якщо його забути, втратяться лише збережені паролі: їх доведеться ввести знову."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Введіть головний пароль."
+  },
+  "passwords.title.reveal": {
+    "message": "Показ пароля"
   },
   "passwords.title.set": {
     "message": "Головний пароль"

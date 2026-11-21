@@ -365,7 +365,7 @@ impl Render for LoginDialog {
             .text_sm()
             .child(why)
             .child(field(t!("remote.login.user"), &self.user))
-            .child(field(t!("remote.login.password"), &self.password))
+            .child(h_flex().gap_3().child(div().w(px(80.)).flex_none().child(t!("remote.login.password"))).child(div().flex_1().child(Input::new(&self.password).mask_toggle())))
             .child(
                 Checkbox::new("login-remember")
                     .label(t!("remote.remember_password"))
@@ -578,7 +578,7 @@ impl Render for SecretDialog {
                 v_flex()
                     .gap_1()
                     .child(self.text.clone())
-                    .child(Input::new(&self.input)),
+                    .child(Input::new(&self.input).mask_toggle()),
             )
             .when(self.keyring.is_some(), |el| {
                 el.child(

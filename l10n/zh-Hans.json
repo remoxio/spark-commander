@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "重命名文件夹"
   },
-  "connections.forget_password": {
-    "message": "清除已保存的密码"
-  },
   "connections.move_down": {
     "message": "下移"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "在终端中打开"
   },
+  "connections.password.delete": {
+    "message": "删除已保存的密码"
+  },
+  "connections.password.delete_button": {
+    "message": "删除"
+  },
+  "connections.password.delete_confirm": {
+    "message": "删除已保存的密码？之后连接时会询问。"
+  },
+  "connections.password.delete_title": {
+    "message": "删除密码"
+  },
+  "connections.password.not_read": {
+    "message": "无法读取已保存的密码。"
+  },
   "connections.placeholder.name": {
     "message": "与列表中显示的相同"
   },
   "connections.placeholder.password": {
-    "message": "加密保存在设置文件夹中；留空则保留原密码"
+    "message": "连接时询问"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "已保存"
   },
   "connections.placeholder.path": {
     "message": "登录后的文件夹"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "已保存的密码使用主密码加密：请现在设置一个。这台计算机会记住它，因此这里不会再次询问；在复制了设置文件夹的另一台计算机上，输入主密码即可打开它们。如果忘记了主密码，只会丢失已保存的密码。"
   },
+  "passwords.about.reveal": {
+    "message": "请输入主密码以查看已保存的密码。"
+  },
   "passwords.about.set": {
     "message": "设置主密码后，只要复制设置文件夹，并在另一台计算机上输入主密码，即可在那里使用已保存的密码。如果忘记了主密码，只会丢失这些已保存的密码：重新输入即可。"
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "请输入主密码。"
+  },
+  "passwords.title.reveal": {
+    "message": "显示密码"
   },
   "passwords.title.set": {
     "message": "主密码"

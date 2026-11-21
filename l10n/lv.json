@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Pārdēvēt mapi"
   },
-  "connections.forget_password": {
-    "message": "Aizmirst saglabāto paroli"
-  },
   "connections.move_down": {
     "message": "Pārvietot uz leju"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Atvērt terminālī"
   },
+  "connections.password.delete": {
+    "message": "Dzēst saglabāto paroli"
+  },
+  "connections.password.delete_button": {
+    "message": "Dzēst"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Vai dzēst saglabāto paroli? Tad tā tiks prasīta, savienojoties."
+  },
+  "connections.password.delete_title": {
+    "message": "Paroles dzēšana"
+  },
+  "connections.password.not_read": {
+    "message": "Saglabāto paroli neizdevās nolasīt."
+  },
   "connections.placeholder.name": {
     "message": "kā redzams sarakstā"
   },
   "connections.placeholder.password": {
-    "message": "glabājas šifrēta iestatījumu mapē; tukšs saglabā esošo"
+    "message": "tiek prasīta, savienojoties"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "saglabāta"
   },
   "connections.placeholder.path": {
     "message": "pieteikšanās mape"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Saglabātās paroles tiek šifrētas ar galveno paroli: izvēlieties to tagad. Šis dators to atceras, tāpēc šeit tā vairs netiks prasīta; citā datorā, kurā nokopēta iestatījumu mape, tās atveras, ievadot galveno paroli. Ja galvenā parole aizmirsta, tiek zaudētas tikai saglabātās paroles."
   },
+  "passwords.about.reveal": {
+    "message": "Ievadiet galveno paroli, lai redzētu saglabāto paroli."
+  },
   "passwords.about.set": {
     "message": "Ar galveno paroli saglabātās paroles var atvērt arī citā datorā, kurā nokopēta iestatījumu mape, ievadot to tur. Ja galvenā parole aizmirsta, tiek zaudētas tikai saglabātās paroles: tās būs jāievada vēlreiz."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Ievadiet galveno paroli."
+  },
+  "passwords.title.reveal": {
+    "message": "Paroles rādīšana"
   },
   "passwords.title.set": {
     "message": "Galvenā parole"

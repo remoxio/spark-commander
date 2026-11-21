@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Zmień nazwę folderu"
   },
-  "connections.forget_password": {
-    "message": "Zapomnij zapamiętane hasło"
-  },
   "connections.move_down": {
     "message": "Przesuń w dół"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Otwórz w terminalu"
   },
+  "connections.password.delete": {
+    "message": "Usuń zapisane hasło"
+  },
+  "connections.password.delete_button": {
+    "message": "Usuń"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Usunąć zapisane hasło? Będzie wtedy podawane przy łączeniu."
+  },
+  "connections.password.delete_title": {
+    "message": "Usuń hasło"
+  },
+  "connections.password.not_read": {
+    "message": "Nie udało się odczytać zapisanego hasła."
+  },
   "connections.placeholder.name": {
     "message": "tak jak na liście"
   },
   "connections.placeholder.password": {
-    "message": "zaszyfrowane w folderze ustawień; puste zachowuje obecne"
+    "message": "podawane przy łączeniu"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "zapisane"
   },
   "connections.placeholder.path": {
     "message": "folder logowania"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Zapisane hasła są szyfrowane hasłem głównym: wybierz je teraz. Ten komputer je zapamięta, więc tutaj nie zapyta o nie ponownie; na innym komputerze, po skopiowaniu folderu ustawień, otworzy je po wpisaniu hasła głównego. Jeśli je zapomnisz, przepadną tylko zapisane hasła."
   },
+  "passwords.about.reveal": {
+    "message": "Wpisz hasło główne, aby zobaczyć zapisane hasło."
+  },
   "passwords.about.set": {
     "message": "Z hasłem głównym zapisane hasła otworzą się na innym komputerze po skopiowaniu folderu ustawień i wpisaniu tam hasła głównego. Jeśli je zapomnisz, przepadną tylko zapisane hasła: trzeba będzie wpisać je ponownie."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Wpisz hasło główne."
+  },
+  "passwords.title.reveal": {
+    "message": "Pokaż hasło"
   },
   "passwords.title.set": {
     "message": "Hasło główne"

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Nimeta kaust ümber"
   },
-  "connections.forget_password": {
-    "message": "Unusta salvestatud parool"
-  },
   "connections.move_down": {
     "message": "Liiguta alla"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Ava terminalis"
   },
+  "connections.password.delete": {
+    "message": "Kustuta salvestatud parool"
+  },
+  "connections.password.delete_button": {
+    "message": "Kustuta"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Kas kustutada salvestatud parool? Siis küsitakse seda ühendamisel."
+  },
+  "connections.password.delete_title": {
+    "message": "Kustuta parool"
+  },
+  "connections.password.not_read": {
+    "message": "Salvestatud parooli ei õnnestunud lugeda."
+  },
   "connections.placeholder.name": {
     "message": "nagu loend seda näitab"
   },
   "connections.placeholder.password": {
-    "message": "hoitakse krüptitult seadete kaustas; tühi jätab senise"
+    "message": "küsitakse ühendamisel"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "salvestatud"
   },
   "connections.placeholder.path": {
     "message": "sisselogimiskaust"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Salvestatud paroolid krüpteeritakse ülemparooliga: vali see nüüd. See arvuti jätab selle meelde, nii et siin seda enam ei küsita; teises arvutis avab see paroolid, kui seadete kaust on sinna kopeeritud ja ülemparool sisestatud. Kui see ununeb, lähevad kaotsi ainult salvestatud paroolid."
   },
+  "passwords.about.reveal": {
+    "message": "Salvestatud parooli nägemiseks sisesta ülemparool."
+  },
   "passwords.about.set": {
     "message": "Ülemparooliga avanevad salvestatud paroolid ka teises arvutis, kui seadete kaust sinna kopeerida ja ülemparool seal sisestada. Kui see ununeb, lähevad kaotsi ainult need paroolid: need tuleb uuesti sisestada."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Sisesta ülemparool."
+  },
+  "passwords.title.reveal": {
+    "message": "Näita parooli"
   },
   "passwords.title.set": {
     "message": "Ülemparool"

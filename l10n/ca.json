@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Canvia el nom de la carpeta"
   },
-  "connections.forget_password": {
-    "message": "Oblida la contrasenya desada"
-  },
   "connections.move_down": {
     "message": "Mou avall"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Obre al terminal"
   },
+  "connections.password.delete": {
+    "message": "Suprimeix la contrasenya desada"
+  },
+  "connections.password.delete_button": {
+    "message": "Suprimeix"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Vols suprimir la contrasenya desada? Llavors es demanarà en connectar."
+  },
+  "connections.password.delete_title": {
+    "message": "Suprimeix la contrasenya"
+  },
+  "connections.password.not_read": {
+    "message": "No s'ha pogut llegir la contrasenya desada."
+  },
   "connections.placeholder.name": {
     "message": "com la mostra la llista"
   },
   "connections.placeholder.password": {
-    "message": "es desa xifrada a la carpeta de configuració; si és buit, es conserva"
+    "message": "es demana en connectar"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "desada"
   },
   "connections.placeholder.path": {
     "message": "la carpeta d’inici de sessió"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Les contrasenyes desades es xifren amb una contrasenya mestra: tria-la ara. Aquest ordinador la recorda, així que aquí no te la tornarà a demanar; en un altre ordinador, un cop copiada la carpeta de configuració, les obre quan l’hi escrius. Si l’oblides, només es perden les contrasenyes desades."
   },
+  "passwords.about.reveal": {
+    "message": "Escriu la contrasenya mestra per veure la contrasenya desada."
+  },
   "passwords.about.set": {
     "message": "Amb una contrasenya mestra, les contrasenyes desades s’obren en un altre ordinador quan s’hi escriu, un cop copiada la carpeta de configuració. Si l’oblides, només es perden elles: les tornes a escriure."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Escriu la contrasenya mestra."
+  },
+  "passwords.title.reveal": {
+    "message": "Mostra la contrasenya"
   },
   "passwords.title.set": {
     "message": "Contrasenya mestra"

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Cambiar nombre de la carpeta"
   },
-  "connections.forget_password": {
-    "message": "Olvidar la contraseña guardada"
-  },
   "connections.move_down": {
     "message": "Bajar"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Abrir en el terminal"
   },
+  "connections.password.delete": {
+    "message": "Eliminar la contraseña guardada"
+  },
+  "connections.password.delete_button": {
+    "message": "Eliminar"
+  },
+  "connections.password.delete_confirm": {
+    "message": "¿Eliminar la contraseña guardada? Entonces se pedirá al conectar."
+  },
+  "connections.password.delete_title": {
+    "message": "Eliminar contraseña"
+  },
+  "connections.password.not_read": {
+    "message": "No se pudo leer la contraseña guardada."
+  },
   "connections.placeholder.name": {
     "message": "como aparece en la lista"
   },
   "connections.placeholder.password": {
-    "message": "se guarda cifrada en la carpeta de configuración; si se deja vacía, se conserva"
+    "message": "se pide al conectar"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "guardada"
   },
   "connections.placeholder.path": {
     "message": "la carpeta de inicio de sesión"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Las contraseñas guardadas se cifran con una contraseña maestra: elige una ahora. Este equipo la recuerda, así que aquí no se te volverá a pedir; en otro equipo, tras copiar la carpeta de configuración, las abre al escribirla allí. Si la olvidas, solo se pierden las contraseñas guardadas."
   },
+  "passwords.about.reveal": {
+    "message": "Escribe la contraseña maestra para ver la contraseña guardada."
+  },
   "passwords.about.set": {
     "message": "Con una contraseña maestra, las contraseñas guardadas se abren en otro equipo al escribirla allí, tras copiar la carpeta de configuración. Si la olvidas, solo se pierden ellas: basta con volver a escribirlas."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Escribe la contraseña maestra."
+  },
+  "passwords.title.reveal": {
+    "message": "Mostrar contraseña"
   },
   "passwords.title.set": {
     "message": "Contraseña maestra"

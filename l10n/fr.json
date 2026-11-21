@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Renommer le dossier"
   },
-  "connections.forget_password": {
-    "message": "Oublier le mot de passe conservé"
-  },
   "connections.move_down": {
     "message": "Descendre"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Ouvrir dans le terminal"
   },
+  "connections.password.delete": {
+    "message": "Supprimer le mot de passe enregistré"
+  },
+  "connections.password.delete_button": {
+    "message": "Supprimer"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Supprimer le mot de passe enregistré ? Il sera alors demandé à la connexion."
+  },
+  "connections.password.delete_title": {
+    "message": "Supprimer le mot de passe"
+  },
+  "connections.password.not_read": {
+    "message": "Impossible de lire le mot de passe enregistré."
+  },
   "connections.placeholder.name": {
     "message": "tel que la liste l’affiche"
   },
   "connections.placeholder.password": {
-    "message": "conservé chiffré dans le dossier des réglages ; vide, il est gardé"
+    "message": "demandé à la connexion"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "enregistré"
   },
   "connections.placeholder.path": {
     "message": "le dossier de connexion"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Les mots de passe enregistrés sont chiffrés avec un mot de passe principal : choisissez-en un maintenant. Cet ordinateur le retient, il ne vous sera donc plus demandé ici ; sur un autre ordinateur, une fois le dossier des réglages copié, il les ouvre dès qu’il y est saisi. En cas d’oubli, seuls les mots de passe enregistrés sont perdus."
   },
+  "passwords.about.reveal": {
+    "message": "Saisissez le mot de passe principal pour voir le mot de passe enregistré."
+  },
   "passwords.about.set": {
     "message": "Avec un mot de passe principal, les mots de passe enregistrés s’ouvrent sur un autre ordinateur dès qu’il y est saisi, une fois le dossier des réglages copié. En cas d’oubli, seuls ces mots de passe sont perdus : il suffit de les saisir à nouveau."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Saisissez le mot de passe principal."
+  },
+  "passwords.title.reveal": {
+    "message": "Afficher le mot de passe"
   },
   "passwords.title.set": {
     "message": "Mot de passe principal"

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Klasörü yeniden adlandır"
   },
-  "connections.forget_password": {
-    "message": "Saklanan parolayı unut"
-  },
   "connections.move_down": {
     "message": "Aşağı taşı"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Terminalde aç"
   },
+  "connections.password.delete": {
+    "message": "Kayıtlı parolayı sil"
+  },
+  "connections.password.delete_button": {
+    "message": "Sil"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Kayıtlı parola silinsin mi? Bundan sonra bağlanırken sorulur."
+  },
+  "connections.password.delete_title": {
+    "message": "Parolayı sil"
+  },
+  "connections.password.not_read": {
+    "message": "Kayıtlı parola okunamadı."
+  },
   "connections.placeholder.name": {
     "message": "listede görüneceği gibi"
   },
   "connections.placeholder.password": {
-    "message": "ayarlar klasöründe şifreli saklanır; boş bırakılırsa korunur"
+    "message": "bağlanırken sorulur"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "kayıtlı"
   },
   "connections.placeholder.path": {
     "message": "oturum açma klasörü"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Kayıtlı parolalar bir ana parolayla şifrelenir: şimdi bir tane seçin. Bu bilgisayar onu hatırlar, bu yüzden burada yeniden sorulmaz; ayarlar klasörünün kopyalandığı başka bir bilgisayarda ise yazıldığında parolaları açar. Ana parola unutulursa yalnızca kayıtlı parolalar kaybolur."
   },
+  "passwords.about.reveal": {
+    "message": "Kayıtlı parolayı görmek için ana parolayı yazın."
+  },
   "passwords.about.set": {
     "message": "Ana parola belirlerseniz, ayarlar klasörü kopyalandığında kayıtlı parolalar başka bir bilgisayarda da ana parola yazılınca açılır. Ana parola unutulursa yalnızca kayıtlı parolalar kaybolur: bunlar yeniden yazılır."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Ana parolayı yazın."
+  },
+  "passwords.title.reveal": {
+    "message": "Parolayı göster"
   },
   "passwords.title.set": {
     "message": "Ana parola"

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "重新命名資料夾"
   },
-  "connections.forget_password": {
-    "message": "忘記已儲存的密碼"
-  },
   "connections.move_down": {
     "message": "下移"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "在終端機中開啟"
   },
+  "connections.password.delete": {
+    "message": "刪除已儲存的密碼"
+  },
+  "connections.password.delete_button": {
+    "message": "刪除"
+  },
+  "connections.password.delete_confirm": {
+    "message": "刪除已儲存的密碼？之後連線時會詢問。"
+  },
+  "connections.password.delete_title": {
+    "message": "刪除密碼"
+  },
+  "connections.password.not_read": {
+    "message": "無法讀取已儲存的密碼。"
+  },
   "connections.placeholder.name": {
     "message": "清單中顯示的名稱"
   },
   "connections.placeholder.password": {
-    "message": "加密保存在設定資料夾中；留空則保留現有密碼"
+    "message": "連線時詢問"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "已儲存"
   },
   "connections.placeholder.path": {
     "message": "登入後的資料夾"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "已儲存的密碼會以主密碼加密：請現在設定一個。這台電腦會記住它，因此這裡不會再次詢問；在複製了設定資料夾的另一台電腦上，輸入主密碼即可開啟。若忘記主密碼，只會遺失已儲存的密碼。"
   },
+  "passwords.about.reveal": {
+    "message": "請輸入主密碼以檢視已儲存的密碼。"
+  },
   "passwords.about.set": {
     "message": "設定主密碼後，只要複製設定資料夾，並在另一台電腦上輸入主密碼，就能在那裡開啟已儲存的密碼。若忘記主密碼，只會遺失這些已儲存的密碼：重新輸入即可。"
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "請輸入主密碼。"
+  },
+  "passwords.title.reveal": {
+    "message": "顯示密碼"
   },
   "passwords.title.set": {
     "message": "主密碼"

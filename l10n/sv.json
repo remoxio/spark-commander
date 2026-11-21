@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Byt namn på mapp"
   },
-  "connections.forget_password": {
-    "message": "Glöm det sparade lösenordet"
-  },
   "connections.move_down": {
     "message": "Flytta ned"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Öppna i terminal"
   },
+  "connections.password.delete": {
+    "message": "Ta bort det sparade lösenordet"
+  },
+  "connections.password.delete_button": {
+    "message": "Ta bort"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Vill du ta bort det sparade lösenordet? Då frågas det efter vid anslutning."
+  },
+  "connections.password.delete_title": {
+    "message": "Ta bort lösenord"
+  },
+  "connections.password.not_read": {
+    "message": "Det sparade lösenordet kunde inte läsas."
+  },
   "connections.placeholder.name": {
     "message": "som listan visar den"
   },
   "connections.placeholder.password": {
-    "message": "sparas krypterat i inställningsmappen; tomt behåller det"
+    "message": "frågas efter vid anslutning"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "sparat"
   },
   "connections.placeholder.path": {
     "message": "inloggningsmappen"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Sparade lösenord krypteras med ett huvudlösenord: välj ett nu. Den här datorn minns det, så du tillfrågas inte igen här; på en annan dator öppnar det dem när du skriver in det, sedan inställningsmappen har kopierats. Glömmer du det förloras bara de sparade lösenorden."
   },
+  "passwords.about.reveal": {
+    "message": "Skriv huvudlösenordet för att se det sparade lösenordet."
+  },
   "passwords.about.set": {
     "message": "Med ett huvudlösenord kan de sparade lösenorden öppnas på en annan dator när det skrivs in där, sedan inställningsmappen har kopierats. Glömmer du det förloras bara de sparade lösenorden: de skrivs in igen."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Skriv huvudlösenordet."
+  },
+  "passwords.title.reveal": {
+    "message": "Visa lösenord"
   },
   "passwords.title.set": {
     "message": "Huvudlösenord"

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Premenovať priečinok"
   },
-  "connections.forget_password": {
-    "message": "Zabudnúť uložené heslo"
-  },
   "connections.move_down": {
     "message": "Posunúť nadol"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Otvoriť v termináli"
   },
+  "connections.password.delete": {
+    "message": "Odstrániť uložené heslo"
+  },
+  "connections.password.delete_button": {
+    "message": "Odstrániť"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Odstrániť uložené heslo? Potom sa bude vyžadovať pri pripájaní."
+  },
+  "connections.password.delete_title": {
+    "message": "Odstrániť heslo"
+  },
+  "connections.password.not_read": {
+    "message": "Uložené heslo sa nepodarilo prečítať."
+  },
   "connections.placeholder.name": {
     "message": "ako sa zobrazí v zozname"
   },
   "connections.placeholder.password": {
-    "message": "uchováva sa šifrované v priečinku nastavení; prázdne ponechá uložené"
+    "message": "vyžiada sa pri pripájaní"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "uložené"
   },
   "connections.placeholder.path": {
     "message": "priečinok po prihlásení"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Uložené heslá sa šifrujú hlavným heslom: zvoľte si ho teraz. Tento počítač si ho zapamätá, takže sa tu naň už nebude pýtať; na inom počítači, kam skopírujete priečinok nastavení, ich otvorí, keď ho zadáte. Ak ho zabudnete, stratia sa iba uložené heslá."
   },
+  "passwords.about.reveal": {
+    "message": "Zadajte hlavné heslo, aby ste videli uložené heslo."
+  },
   "passwords.about.set": {
     "message": "S hlavným heslom sa uložené heslá otvoria aj na inom počítači: skopírujte tam priečinok nastavení a zadajte ho. Ak ho zabudnete, stratia sa iba uložené heslá a zadáte ich znova."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Zadajte hlavné heslo."
+  },
+  "passwords.title.reveal": {
+    "message": "Zobraziť heslo"
   },
   "passwords.title.set": {
     "message": "Hlavné heslo"

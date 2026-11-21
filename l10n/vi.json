@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Đổi tên thư mục"
   },
-  "connections.forget_password": {
-    "message": "Quên mật khẩu đã lưu"
-  },
   "connections.move_down": {
     "message": "Chuyển xuống"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Mở trong terminal"
   },
+  "connections.password.delete": {
+    "message": "Xóa mật khẩu đã lưu"
+  },
+  "connections.password.delete_button": {
+    "message": "Xóa"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Xóa mật khẩu đã lưu? Khi đó mật khẩu sẽ được hỏi khi kết nối."
+  },
+  "connections.password.delete_title": {
+    "message": "Xóa mật khẩu"
+  },
+  "connections.password.not_read": {
+    "message": "Không đọc được mật khẩu đã lưu."
+  },
   "connections.placeholder.name": {
     "message": "như danh sách hiển thị"
   },
   "connections.placeholder.password": {
-    "message": "được mã hóa trong thư mục cài đặt; để trống thì giữ nguyên"
+    "message": "hỏi khi kết nối"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "đã lưu"
   },
   "connections.placeholder.path": {
     "message": "thư mục khi đăng nhập"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Các mật khẩu đã lưu được mã hóa bằng mật khẩu chính: hãy chọn một mật khẩu ngay bây giờ. Máy tính này ghi nhớ nó nên sẽ không hỏi lại ở đây; trên máy tính khác, sau khi sao chép thư mục cài đặt, chỉ cần nhập mật khẩu chính là mở được. Nếu quên mật khẩu chính, chỉ các mật khẩu đã lưu bị mất."
   },
+  "passwords.about.reveal": {
+    "message": "Hãy nhập mật khẩu chính để xem mật khẩu đã lưu."
+  },
   "passwords.about.set": {
     "message": "Với mật khẩu chính, các mật khẩu đã lưu sẽ mở được trên máy tính khác sau khi nhập mật khẩu chính ở đó, khi đã sao chép thư mục cài đặt sang. Nếu quên mật khẩu chính, chỉ các mật khẩu đã lưu bị mất: bạn sẽ nhập lại chúng."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Hãy nhập mật khẩu chính."
+  },
+  "passwords.title.reveal": {
+    "message": "Hiện mật khẩu"
   },
   "passwords.title.set": {
     "message": "Mật khẩu chính"

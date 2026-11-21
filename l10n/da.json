@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Omdøb mappe"
   },
-  "connections.forget_password": {
-    "message": "Glem den gemte adgangskode"
-  },
   "connections.move_down": {
     "message": "Flyt ned"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Åbn i terminal"
   },
+  "connections.password.delete": {
+    "message": "Slet den gemte adgangskode"
+  },
+  "connections.password.delete_button": {
+    "message": "Slet"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Vil du slette den gemte adgangskode? Så bliver du spurgt om den ved forbindelse."
+  },
+  "connections.password.delete_title": {
+    "message": "Slet adgangskode"
+  },
+  "connections.password.not_read": {
+    "message": "Den gemte adgangskode kunne ikke læses."
+  },
   "connections.placeholder.name": {
     "message": "som listen viser den"
   },
   "connections.placeholder.password": {
-    "message": "gemmes krypteret i indstillingsmappen; tomt beholder den"
+    "message": "spørges om ved forbindelse"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "gemt"
   },
   "connections.placeholder.path": {
     "message": "login-mappen"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Gemte adgangskoder krypteres med en hovedadgangskode: vælg en nu. Denne computer husker den, så du bliver ikke spurgt igen her; på en anden computer åbner den dem, når indstillingsmappen er kopieret, og du indtaster den. Glemmer du den, mistes kun de gemte adgangskoder."
   },
+  "passwords.about.reveal": {
+    "message": "Skriv hovedadgangskoden for at se den gemte adgangskode."
+  },
   "passwords.about.set": {
     "message": "Med en hovedadgangskode kan de gemte adgangskoder åbnes på en anden computer, når indstillingsmappen er kopieret, og den indtastes der. Glemmer du den, mistes kun de gemte adgangskoder: de skal så indtastes igen."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Skriv hovedadgangskoden."
+  },
+  "passwords.title.reveal": {
+    "message": "Vis adgangskode"
   },
   "passwords.title.set": {
     "message": "Hovedadgangskode"

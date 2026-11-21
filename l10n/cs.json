@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Přejmenovat složku"
   },
-  "connections.forget_password": {
-    "message": "Zapomenout uložené heslo"
-  },
   "connections.move_down": {
     "message": "Posunout dolů"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Otevřít v terminálu"
   },
+  "connections.password.delete": {
+    "message": "Smazat uložené heslo"
+  },
+  "connections.password.delete_button": {
+    "message": "Smazat"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Smazat uložené heslo? Při připojení se pak bude zadávat."
+  },
+  "connections.password.delete_title": {
+    "message": "Smazat heslo"
+  },
+  "connections.password.not_read": {
+    "message": "Uložené heslo se nepodařilo přečíst."
+  },
   "connections.placeholder.name": {
     "message": "jak ho zobrazí seznam"
   },
   "connections.placeholder.password": {
-    "message": "uchováno šifrovaně ve složce nastavení; prázdné ponechá stávající"
+    "message": "zeptá se při připojení"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "uloženo"
   },
   "connections.placeholder.path": {
     "message": "složka po přihlášení"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Uložená hesla se šifrují hlavním heslem: zvolte si ho teď. Tento počítač si ho pamatuje, takže se tu na něj znovu ptát nebude; na jiném počítači, kam zkopírujete složku nastavení, je otevře, jakmile ho zadáte. Když ho zapomenete, přijdete jen o uložená hesla."
   },
+  "passwords.about.reveal": {
+    "message": "Zadejte hlavní heslo, abyste viděli uložené heslo."
+  },
   "passwords.about.set": {
     "message": "S hlavním heslem se uložená hesla otevřou i na jiném počítači, kam zkopírujete složku nastavení, jakmile ho tam zadáte. Když ho zapomenete, přijdete jen o uložená hesla: zadáte je znovu."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Zadejte hlavní heslo."
+  },
+  "passwords.title.reveal": {
+    "message": "Zobrazit heslo"
   },
   "passwords.title.set": {
     "message": "Hlavní heslo"

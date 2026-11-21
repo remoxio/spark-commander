@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Mudar o nome da pasta"
   },
-  "connections.forget_password": {
-    "message": "Esquecer a palavra-passe guardada"
-  },
   "connections.move_down": {
     "message": "Mover para baixo"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Abrir no terminal"
   },
+  "connections.password.delete": {
+    "message": "Eliminar a palavra-passe guardada"
+  },
+  "connections.password.delete_button": {
+    "message": "Eliminar"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Eliminar a palavra-passe guardada? Passa a ser pedida ao ligar."
+  },
+  "connections.password.delete_title": {
+    "message": "Eliminar palavra-passe"
+  },
+  "connections.password.not_read": {
+    "message": "Não foi possível ler a palavra-passe guardada."
+  },
   "connections.placeholder.name": {
     "message": "como a lista a mostra"
   },
   "connections.placeholder.password": {
-    "message": "guardada cifrada na pasta de definições; vazio mantém-na"
+    "message": "pedida ao ligar"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "guardada"
   },
   "connections.placeholder.path": {
     "message": "a pasta de início de sessão"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "As palavras-passe guardadas são cifradas com uma palavra-passe mestra: escolha uma agora. Este computador memoriza-a, por isso não voltará a ser pedida aqui; noutro computador, depois de copiar a pasta de definições, abre-as quando a introduzir. Se a esquecer, perdem-se apenas as palavras-passe guardadas."
   },
+  "passwords.about.reveal": {
+    "message": "Introduza a palavra-passe mestra para ver a palavra-passe guardada."
+  },
   "passwords.about.set": {
     "message": "Com uma palavra-passe mestra, as palavras-passe guardadas abrem-se noutro computador quando a introduzir lá, depois de copiar a pasta de definições. Se a esquecer, perdem-se apenas as palavras-passe guardadas: basta introduzi-las novamente."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Introduza a palavra-passe mestra."
+  },
+  "passwords.title.reveal": {
+    "message": "Mostrar palavra-passe"
   },
   "passwords.title.set": {
     "message": "Palavra-passe mestra"

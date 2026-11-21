@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Redenumiți folderul"
   },
-  "connections.forget_password": {
-    "message": "Uitați parola păstrată"
-  },
   "connections.move_down": {
     "message": "Mutați în jos"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Deschideți în terminal"
   },
+  "connections.password.delete": {
+    "message": "Ștergeți parola salvată"
+  },
+  "connections.password.delete_button": {
+    "message": "Ștergeți"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Ștergeți parola salvată? Va fi cerută apoi la conectare."
+  },
+  "connections.password.delete_title": {
+    "message": "Ștergere parolă"
+  },
+  "connections.password.not_read": {
+    "message": "Parola salvată nu a putut fi citită."
+  },
   "connections.placeholder.name": {
     "message": "așa cum apare în listă"
   },
   "connections.placeholder.password": {
-    "message": "păstrată criptată în folderul de setări; gol o păstrează pe cea existentă"
+    "message": "cerută la conectare"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "salvată"
   },
   "connections.placeholder.path": {
     "message": "folderul de autentificare"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Parolele salvate sunt criptate cu o parolă principală: alegeți una acum. Acest computer o reține, așa că aici nu vi se va mai cere; pe alt computer, cu folderul de setări copiat, le deschide după ce o tastați. Dacă o uitați, se pierd doar parolele salvate."
   },
+  "passwords.about.reveal": {
+    "message": "Introduceți parola principală pentru a vedea parola salvată."
+  },
   "passwords.about.set": {
     "message": "Cu o parolă principală, parolele salvate se deschid pe alt computer după ce o tastați acolo, cu folderul de setări copiat. Dacă o uitați, se pierd doar parolele salvate: le tastați din nou."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Tastați parola principală."
+  },
+  "passwords.title.reveal": {
+    "message": "Afișare parolă"
   },
   "passwords.title.set": {
     "message": "Parolă principală"

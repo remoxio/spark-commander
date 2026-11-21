@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Preimenuj mapo"
   },
-  "connections.forget_password": {
-    "message": "Pozabi shranjeno geslo"
-  },
   "connections.move_down": {
     "message": "Premakni navzdol"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Odpri v terminalu"
   },
+  "connections.password.delete": {
+    "message": "Izbriši shranjeno geslo"
+  },
+  "connections.password.delete_button": {
+    "message": "Izbriši"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Želite izbrisati shranjeno geslo? Nato bo zahtevano ob povezovanju."
+  },
+  "connections.password.delete_title": {
+    "message": "Brisanje gesla"
+  },
+  "connections.password.not_read": {
+    "message": "Shranjenega gesla ni bilo mogoče prebrati."
+  },
   "connections.placeholder.name": {
     "message": "kot ga prikaže seznam"
   },
   "connections.placeholder.password": {
-    "message": "šifrirano v mapi z nastavitvami; prazno ga ohrani"
+    "message": "zahteva se ob povezovanju"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "shranjeno"
   },
   "connections.placeholder.path": {
     "message": "mapa ob prijavi"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Shranjena gesla so šifrirana z glavnim geslom: izberite ga zdaj. Ta računalnik si ga zapomni, zato vas tu ne bo več spraševal zanj; v drugem računalniku, kamor kopirate mapo z nastavitvami, jih odpre, ko ga vnesete. Če ga pozabite, izgubite le shranjena gesla."
   },
+  "passwords.about.reveal": {
+    "message": "Vnesite glavno geslo, da vidite shranjeno geslo."
+  },
   "passwords.about.set": {
     "message": "Z glavnim geslom se shranjena gesla odprejo v drugem računalniku, ko tja kopirate mapo z nastavitvami in tam vnesete glavno geslo. Če ga pozabite, izgubite le shranjena gesla: znova jih vnesete."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Vnesite glavno geslo."
+  },
+  "passwords.title.reveal": {
+    "message": "Prikaz gesla"
   },
   "passwords.title.set": {
     "message": "Glavno geslo"

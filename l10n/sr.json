@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Преименовање фасцикле"
   },
-  "connections.forget_password": {
-    "message": "Заборави сачувану лозинку"
-  },
   "connections.move_down": {
     "message": "Помери надоле"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Отвори у терминалу"
   },
+  "connections.password.delete": {
+    "message": "Избриши сачувану лозинку"
+  },
+  "connections.password.delete_button": {
+    "message": "Избриши"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Избрисати сачувану лозинку? Тада ће се тражити при повезивању."
+  },
+  "connections.password.delete_title": {
+    "message": "Брисање лозинке"
+  },
+  "connections.password.not_read": {
+    "message": "Сачувана лозинка није могла да се прочита."
+  },
   "connections.placeholder.name": {
     "message": "како се приказује на листи"
   },
   "connections.placeholder.password": {
-    "message": "чува се шифровано у фасцикли подешавања; празно је задржава"
+    "message": "тражи се при повезивању"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "сачувана"
   },
   "connections.placeholder.path": {
     "message": "фасцикла после пријаве"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Сачуване лозинке се шифрују главном лозинком: изаберите је сада. Овај рачунар је памти, па вас овде више неће питати за њу; на другом рачунару, након што копирате фасциклу подешавања, отвара их чим је унесете. Ако је заборавите, губе се само сачуване лозинке."
   },
+  "passwords.about.reveal": {
+    "message": "Унесите главну лозинку да бисте видели сачувану лозинку."
+  },
   "passwords.about.set": {
     "message": "Уз главну лозинку, сачуване лозинке се отварају и на другом рачунару када се тамо унесе, након што се копира фасцикла подешавања. Ако је заборавите, губе се само оне: уносе се поново."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Унесите главну лозинку."
+  },
+  "passwords.title.reveal": {
+    "message": "Приказ лозинке"
   },
   "passwords.title.set": {
     "message": "Главна лозинка"

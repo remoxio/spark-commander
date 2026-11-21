@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Ganti nama folder"
   },
-  "connections.forget_password": {
-    "message": "Lupakan kata sandi yang disimpan"
-  },
   "connections.move_down": {
     "message": "Pindah ke bawah"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Buka di terminal"
   },
+  "connections.password.delete": {
+    "message": "Hapus kata sandi yang disimpan"
+  },
+  "connections.password.delete_button": {
+    "message": "Hapus"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Hapus kata sandi yang disimpan? Kata sandi akan ditanyakan saat menghubungkan."
+  },
+  "connections.password.delete_title": {
+    "message": "Hapus kata sandi"
+  },
+  "connections.password.not_read": {
+    "message": "Kata sandi yang disimpan tidak dapat dibaca."
+  },
   "connections.placeholder.name": {
     "message": "seperti yang ditampilkan di daftar"
   },
   "connections.placeholder.password": {
-    "message": "disimpan terenkripsi di folder pengaturan; kosong mempertahankannya"
+    "message": "ditanyakan saat menghubungkan"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "tersimpan"
   },
   "connections.placeholder.path": {
     "message": "folder login"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "Kata sandi yang disimpan dienkripsi dengan kata sandi utama: pilih satu sekarang. Komputer ini mengingatnya, jadi tidak akan ditanyakan lagi di sini; di komputer lain, setelah folder pengaturan disalin, kata sandi utama membukanya begitu diketik. Jika terlupa, hanya kata sandi yang disimpan yang hilang."
   },
+  "passwords.about.reveal": {
+    "message": "Ketik kata sandi utama untuk melihat kata sandi yang disimpan."
+  },
   "passwords.about.set": {
     "message": "Dengan kata sandi utama, kata sandi yang disimpan dapat dibuka di komputer lain setelah folder pengaturan disalin dan kata sandi utama diketik di sana. Jika terlupa, hanya kata sandi yang disimpan yang hilang: kata sandi itu cukup diketik lagi."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Ketik kata sandi utama."
+  },
+  "passwords.title.reveal": {
+    "message": "Tampilkan kata sandi"
   },
   "passwords.title.set": {
     "message": "Kata sandi utama"

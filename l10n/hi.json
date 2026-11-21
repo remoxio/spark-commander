@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "फ़ोल्डर का नाम बदलें"
   },
-  "connections.forget_password": {
-    "message": "सेव किया गया पासवर्ड भूल जाएं"
-  },
   "connections.move_down": {
     "message": "नीचे ले जाएं"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "टर्मिनल में खोलें"
   },
+  "connections.password.delete": {
+    "message": "सेव किया गया पासवर्ड डिलीट करें"
+  },
+  "connections.password.delete_button": {
+    "message": "डिलीट करें"
+  },
+  "connections.password.delete_confirm": {
+    "message": "सेव किया गया पासवर्ड डिलीट करें? तब कनेक्ट करते समय यह पूछा जाएगा।"
+  },
+  "connections.password.delete_title": {
+    "message": "पासवर्ड डिलीट करें"
+  },
+  "connections.password.not_read": {
+    "message": "सेव किया गया पासवर्ड पढ़ा नहीं जा सका।"
+  },
   "connections.placeholder.name": {
     "message": "जैसा सूची में दिखे"
   },
   "connections.placeholder.password": {
-    "message": "सेटिंग फ़ोल्डर में एन्क्रिप्ट करके रखा जाता है; खाली छोड़ने पर वही रहता है"
+    "message": "कनेक्ट करते समय पूछा जाएगा"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "सेव किया गया"
   },
   "connections.placeholder.path": {
     "message": "लॉगिन फ़ोल्डर"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "सेव किए गए पासवर्ड एक मास्टर पासवर्ड से एन्क्रिप्ट किए जाते हैं: अभी एक चुनें। यह कंप्यूटर इसे याद रखता है, इसलिए यहां यह दोबारा नहीं पूछा जाएगा; दूसरे कंप्यूटर पर, सेटिंग फ़ोल्डर कॉपी करने के बाद, इसे टाइप करते ही वे पासवर्ड खुल जाते हैं। इसे भूल जाने पर सिर्फ़ सेव किए गए पासवर्ड खोते हैं।"
   },
+  "passwords.about.reveal": {
+    "message": "सेव किया गया पासवर्ड देखने के लिए मास्टर पासवर्ड टाइप करें।"
+  },
   "passwords.about.set": {
     "message": "मास्टर पासवर्ड होने पर, सेटिंग फ़ोल्डर कॉपी करके दूसरे कंप्यूटर पर यह पासवर्ड टाइप करते ही सेव किए गए पासवर्ड वहां भी खुल जाते हैं। इसे भूल जाने पर सिर्फ़ वे पासवर्ड खोते हैं: उन्हें फिर से टाइप करना होगा।"
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "मास्टर पासवर्ड टाइप करें।"
+  },
+  "passwords.title.reveal": {
+    "message": "पासवर्ड दिखाएं"
   },
   "passwords.title.set": {
     "message": "मास्टर पासवर्ड"

@@ -1079,9 +1079,6 @@
   "connections.folder.rename_title": {
     "message": "Renomear pasta"
   },
-  "connections.forget_password": {
-    "message": "Esquecer a senha guardada"
-  },
   "connections.move_down": {
     "message": "Mover para baixo"
   },
@@ -1103,11 +1100,29 @@
   "connections.open_in_terminal": {
     "message": "Abrir no terminal"
   },
+  "connections.password.delete": {
+    "message": "Excluir a senha salva"
+  },
+  "connections.password.delete_button": {
+    "message": "Excluir"
+  },
+  "connections.password.delete_confirm": {
+    "message": "Excluir a senha salva? Ela será pedida ao conectar."
+  },
+  "connections.password.delete_title": {
+    "message": "Excluir senha"
+  },
+  "connections.password.not_read": {
+    "message": "Não foi possível ler a senha salva."
+  },
   "connections.placeholder.name": {
     "message": "como aparece na lista"
   },
   "connections.placeholder.password": {
-    "message": "guardada criptografada na pasta de configurações; vazio mantém a atual"
+    "message": "pedida ao conectar"
+  },
+  "connections.placeholder.password_saved": {
+    "message": "salva"
   },
   "connections.placeholder.path": {
     "message": "a pasta de login"
@@ -2687,6 +2702,9 @@
   "passwords.about.first": {
     "message": "As senhas salvas são criptografadas com uma senha mestra: escolha uma agora. Este computador se lembra dela, então ela não será pedida de novo aqui; em outro computador, depois de copiar a pasta de configurações, ela as abre assim que for digitada. Se você esquecê-la, só as senhas salvas se perdem."
   },
+  "passwords.about.reveal": {
+    "message": "Digite a senha mestra para ver a senha salva."
+  },
   "passwords.about.set": {
     "message": "Com uma senha mestra, as senhas salvas abrem em outro computador assim que ela é digitada lá, depois de copiar a pasta de configurações. Se você esquecê-la, só elas se perdem: basta digitá-las de novo."
   },
@@ -2740,6 +2758,9 @@
   },
   "passwords.problem.empty": {
     "message": "Digite a senha mestra."
+  },
+  "passwords.title.reveal": {
+    "message": "Mostrar senha"
   },
   "passwords.title.set": {
     "message": "Senha mestra"
