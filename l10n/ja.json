@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space 一時停止  ←→ シーク  +− 音量  M ミュート"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {メニューはターミナル版ではまだ使えません。} file_operations {ファイル操作はターミナル版ではまだ使えません。} servers {サーバーはターミナル版ではまだ使えません。} other {このコマンドはターミナル版ではまだ使えません。}}"
   },

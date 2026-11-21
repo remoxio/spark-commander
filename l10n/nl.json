@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Pauze  ←→ Spoelen  +− Volume  M Dempen"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {De menu’s: nog niet in de terminalversie.} file_operations {Bestandsbewerkingen: nog niet in de terminalversie.} servers {Servers: nog niet in de terminalversie.} other {Deze opdracht: nog niet in de terminalversie.}}"
   },

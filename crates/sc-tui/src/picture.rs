@@ -126,18 +126,20 @@ struct Loaded {
     pages: usize,
 }
 
+/// A frame libmpv drew, in BGRA.
+pub fn image_of(frame: sc_core::viewer::media::Frame) -> Option<DynamicImage> {
+    let mut rgba = frame.bgra;
+    rgba.as_chunks_mut::<4>().0.iter_mut().for_each(|pixel| pixel.swap(0, 2));
+    RgbaImage::from_raw(frame.width, frame.height, rgba).map(DynamicImage::ImageRgba8)
+}
+
 /// Decodes the picture or renders the page, no larger than `key.room`.
 fn load(key: &Key) -> Result<Loaded, String> {
     let (width, height) = (key.room.0.max(1), key.room.1.max(1));
     let Some(page) = key.page else {
-        let image = match sc_core::viewer::media::is_still(&key.path) {
-            // HEIC and AVIF by libmpv, in BGRA.
-            true => {
-                let frame = sc_core::viewer::media::still(&key.path, 16384)?;
-                let mut rgba = frame.bgra;
-                rgba.chunks_exact_mut(4).for_each(|pixel| pixel.swap(0, 2));
-                DynamicImage::ImageRgba8(RgbaImage::from_raw(frame.width, frame.height, rgba).ok_or_else(|| t!("scmd.picture.broken"))?)
-            }
+        let image = match sc_core::viewer::media::is_still(&key.path) || sc_core::viewer::media::is_video(&key.path) {
+            // HEIC and AVIF by libmpv, in BGRA; a video's frame a tenth in.
+            true => image_of(sc_core::viewer::media::still(&key.path, 16384)?).ok_or_else(|| t!("scmd.picture.broken"))?,
             false => {
                 let reader = ImageReader::open(&key.path).and_then(|reader| reader.with_guessed_format());
                 let image = reader.map_err(|err| err.to_string())?;
@@ -180,7 +182,8 @@ impl App {
         let Some(viewer) = self.viewer.as_mut() else {
             return;
         };
-        if !matches!(viewer.shown.mode, Mode::Picture | Mode::Pdf) {
+        // Sound's cover comes from its player (crate::music).
+        if !matches!(viewer.shown.mode, Mode::Picture | Mode::Pdf) || viewer.music.is_some() {
             return;
         }
         // Half blocks when the terminal was not asked, as in tests.

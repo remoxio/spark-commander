@@ -1,7 +1,7 @@
 //! F3: Lister in the terminal, over the core's viewer. Keys as Lister's:
 //! 1 to 7 and 9 the modes (4 a picture, 9 PDF pages, which PgUp and PgDn
 //! turn), A and S the code pages, W wraps, N and P the next and previous
-//! file, F7 finds, F3 and F5 find again.
+//! file, F7 finds, F3 and F5 find again. Sound plays (crate::music).
 
 use std::io;
 use std::ops::Range;
@@ -21,6 +21,7 @@ use ratatui::text::{Line, Span};
 use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
 
 use crate::dialog::Form;
+use crate::music::{self, Music};
 use crate::picture::{self, Key, PICTURES, Picture};
 use crate::skin::skin;
 use crate::ui;
@@ -67,6 +68,8 @@ pub struct Viewer {
     /// The PDF's page in sight, and how many it has once known.
     pub page: usize,
     pub pages: usize,
+    /// Sound in the Picture mode, playing.
+    pub music: Option<Music>,
 }
 
 impl Viewer {
@@ -76,7 +79,7 @@ impl Viewer {
         settings: ViewerSettings,
         title: Option<String>,
     ) -> io::Result<Self> {
-        let mut shown = Shown::new(files, at, settings, PICTURES.as_slice(), false, false);
+        let mut shown = Shown::new(files, at, settings, PICTURES.as_slice(), false, true);
         // Wrapped rows are as wide as the terminal; pictures fit its rows.
         let (columns, lines) = ratatui::crossterm::terminal::size().unwrap_or((80, 24));
         shown.settings.text_width = columns as usize;
@@ -97,6 +100,7 @@ impl Viewer {
             loading: None,
             page: 0,
             pages: 0,
+            music: None,
         };
         viewer.colour();
         Ok(viewer)
@@ -108,9 +112,14 @@ impl Viewer {
         self.colours = source.and_then(|(language, text)| Some(Coloured::new(Syntax::of(language)?, text)));
     }
 
-    /// Indexing or finding goes on in the background.
+    /// Indexing or finding goes on in the background, or sound plays.
     pub fn busy(&self) -> bool {
-        !self.text.indexed().2 || self.reveal.is_some() || self.finding.is_some()
+        !self.text.indexed().2 || self.reveal.is_some() || self.finding.is_some() || self.playing()
+    }
+
+    /// Sound plays, or its bars still move: drawn at music::FRAME.
+    pub fn playing(&self) -> bool {
+        self.music.as_ref().is_some_and(|music| music.moving)
     }
 
     fn stop_finding(&mut self) {
@@ -155,7 +164,7 @@ impl Viewer {
             return Ok(());
         }
         self.stop_finding();
-        (self.picture, self.loading, self.page, self.pages) = (None, None, 0, 0);
+        (self.picture, self.loading, self.page, self.pages, self.music) = (None, None, 0, 0, None);
         self.text = Arc::new(self.shown.start()?);
         self.colour();
         (self.top, self.left, self.selection, self.reveal) = (0, 0, 0..0, None);
@@ -197,6 +206,9 @@ impl App {
         let page = viewer.height.max(1) as isize;
         let rows = !viewer.picture_mode();
         let pdf = viewer.shown.mode == Mode::Pdf;
+        if viewer.music.as_ref().is_some_and(|music| music.key(key.code)) {
+            return;
+        }
         let done = match key.code {
             KeyCode::Esc | KeyCode::F(10) | KeyCode::Char('q') => {
                 viewer.stop_finding();
@@ -406,7 +418,10 @@ pub fn draw(frame: &mut Frame, viewer: &mut Viewer) {
     let right = match viewer.picture_mode() {
         true => {
             frame.buffer_mut().set_style(body, skin().viewer);
-            picture::draw(frame, body, viewer);
+            match viewer.music.is_some() {
+                true => music::draw(frame, body, viewer),
+                false => picture::draw(frame, body, viewer),
+            }
             let about = match &viewer.picture {
                 _ if viewer.shown.mode == Mode::Pdf && viewer.pages > 0 => {
                     format!(" · {}", t!("scmd.viewer.page", page = viewer.page + 1, pages = viewer.pages))
@@ -414,7 +429,7 @@ pub fn draw(frame: &mut Frame, viewer: &mut Viewer) {
                 Some(Picture {
                     shown: Ok((_, about)),
                     ..
-                }) => format!(" · {about}"),
+                }) if !about.is_empty() => format!(" · {about}"),
                 _ => String::new(),
             };
             format!(" {}{about} ", viewer.shown.describe())

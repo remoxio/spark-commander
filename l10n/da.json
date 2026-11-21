@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Pause  ←→ Spol  +− Lydstyrke  M Lydløs"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Menuerne: endnu ikke i terminalversionen.} file_operations {Filhandlinger: endnu ikke i terminalversionen.} servers {Servere: endnu ikke i terminalversionen.} other {Denne kommando: endnu ikke i terminalversionen.}}"
   },

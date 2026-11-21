@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Jeda  ←→ Geser  +− Volume  M Bisukan"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Menu: belum ada di versi terminal.} file_operations {Operasi berkas: belum ada di versi terminal.} servers {Server: belum ada di versi terminal.} other {Perintah ini: belum ada di versi terminal.}}"
   },

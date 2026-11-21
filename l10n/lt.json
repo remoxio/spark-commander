@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "Gerai"
   },
+  "scmd.music.keys": {
+    "message": "Space Pauzė  ←→ Prasukti  +− Garsumas  M Nutildyti"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Meniu: terminalo versijoje kol kas nėra.} file_operations {Failų operacijos: terminalo versijoje kol kas nėra.} servers {Serveriai: terminalo versijoje kol kas nėra.} other {Ši komanda: terminalo versijoje kol kas nėra.}}"
   },

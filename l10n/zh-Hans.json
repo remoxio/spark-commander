@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "确定"
   },
+  "scmd.music.keys": {
+    "message": "Space 暂停  ←→ 快进/快退  +− 音量  M 静音"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {菜单：终端版本暂不支持。} file_operations {文件操作：终端版本暂不支持。} servers {服务器：终端版本暂不支持。} other {此命令：终端版本暂不支持。}}"
   },

@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Pozastaviť  ←→ Posun  +− Hlasitosť  M Stlmiť"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Ponuky: v terminálovej verzii zatiaľ nie sú.} file_operations {Operácie so súbormi: v terminálovej verzii zatiaľ nie sú.} servers {Servery: v terminálovej verzii zatiaľ nie sú.} other {Tento príkaz: v terminálovej verzii zatiaľ nie je.}}"
   },

@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "Tamam"
   },
+  "scmd.music.keys": {
+    "message": "Space Duraklat  ←→ Sar  +− Ses  M Sessiz"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Menüler: terminal sürümünde henüz yok.} file_operations {Dosya işlemleri: terminal sürümünde henüz yok.} servers {Sunucular: terminal sürümünde henüz yok.} other {Bu komut: terminal sürümünde henüz yok.}}"
   },

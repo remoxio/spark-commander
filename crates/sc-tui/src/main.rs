@@ -6,6 +6,7 @@ mod editor;
 mod input;
 mod keys;
 mod menu;
+mod music;
 mod picture;
 mod skin;
 #[cfg(unix)]
@@ -430,6 +431,7 @@ impl App {
         let mut redraw = true;
         let mut picture = None;
         while !self.quit && !(self.alone && self.viewer.is_none() && self.editor.is_none()) {
+            self.want_music();
             self.want_picture();
             // Pixels of a picture stay until the screen is cleared.
             let in_sight = self.viewer.as_ref().and_then(Viewer::picture_in_sight);
@@ -449,7 +451,11 @@ impl App {
                 execute!(io::stdout(), EndSynchronizedUpdate)?;
             }
             redraw = busy;
-            if event::poll(TICK)? {
+            let wait = match self.viewer.as_ref().is_some_and(Viewer::playing) {
+                true => music::FRAME,
+                false => TICK,
+            };
+            if event::poll(wait)? {
                 match event::read()? {
                     Event::Key(key) if key.kind != KeyEventKind::Release => self.key(key),
                     Event::Mouse(mouse) => self.mouse(mouse),

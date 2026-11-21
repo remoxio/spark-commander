@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Pauză  ←→ Derulare  +− Volum  M Fără sunet"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Meniurile: încă nu există în versiunea pentru terminal.} file_operations {Operațiile cu fișiere: încă nu există în versiunea pentru terminal.} servers {Serverele: încă nu există în versiunea pentru terminal.} other {Această comandă: încă nu există în versiunea pentru terminal.}}"
   },

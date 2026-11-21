@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "U redu"
   },
+  "scmd.music.keys": {
+    "message": "Space Pauza  ←→ Premotaj  +− Glasnoća  M Utišaj"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Izbornici: zasad nisu u inačici za terminal.} file_operations {Operacije s datotekama: zasad nisu u inačici za terminal.} servers {Poslužitelji: zasad nisu u inačici za terminal.} other {Ova naredba: zasad nije u inačici za terminal.}}"
   },

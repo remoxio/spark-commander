@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Pause  ←→ Spulen  +− Lautstärke  M Stumm"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Die Menüs: noch nicht in der Terminalversion.} file_operations {Dateioperationen: noch nicht in der Terminalversion.} servers {Server: noch nicht in der Terminalversion.} other {Dieser Befehl: noch nicht in der Terminalversion.}}"
   },

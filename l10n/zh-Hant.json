@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "確定"
   },
+  "scmd.music.keys": {
+    "message": "Space 暫停  ←→ 快轉/倒轉  +− 音量  M 靜音"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {選單：終端機版本尚未支援。} file_operations {檔案操作：終端機版本尚未支援。} servers {伺服器：終端機版本尚未支援。} other {此命令：終端機版本尚未支援。}}"
   },

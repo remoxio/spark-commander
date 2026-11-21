@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Paus  ←→ Keri  +− Helitugevus  M Vaigista"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Menüüd: terminaliversioonis veel pole.} file_operations {Failitoimingud: terminaliversioonis veel pole.} servers {Serverid: terminaliversioonis veel pole.} other {See käsk: terminaliversioonis veel pole.}}"
   },

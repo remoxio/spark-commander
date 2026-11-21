@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "D’acord"
   },
+  "scmd.music.keys": {
+    "message": "Space Pausa  ←→ Avança  +− Volum  M Silencia"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Els menús: encara no són a la versió de terminal.} file_operations {Les operacions amb fitxers: encara no són a la versió de terminal.} servers {Els servidors: encara no són a la versió de terminal.} other {Aquesta ordre: encara no és a la versió de terminal.}}"
   },

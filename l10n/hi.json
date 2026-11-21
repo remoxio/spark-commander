@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "ठीक है"
   },
+  "scmd.music.keys": {
+    "message": "Space रोकें  ←→ आगे/पीछे  +− आवाज़  M म्यूट"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {मेन्यू: टर्मिनल वर्शन में अभी नहीं।} file_operations {फ़ाइल ऑपरेशन: टर्मिनल वर्शन में अभी नहीं।} servers {सर्वर: टर्मिनल वर्शन में अभी नहीं।} other {यह कमांड: टर्मिनल वर्शन में अभी नहीं।}}"
   },

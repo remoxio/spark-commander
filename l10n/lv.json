@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "Labi"
   },
+  "scmd.music.keys": {
+    "message": "Space Pauze  ←→ Pārtīt  +− Skaļums  M Klusums"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Izvēlnes: termināļa versijā vēl nav pieejamas.} file_operations {Failu darbības: termināļa versijā vēl nav pieejamas.} servers {Serveri: termināļa versijā vēl nav pieejami.} other {Šī komanda: termināļa versijā vēl nav pieejama.}}"
   },

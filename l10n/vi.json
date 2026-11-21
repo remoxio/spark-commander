@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Tạm dừng  ←→ Tua  +− Âm lượng  M Tắt tiếng"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Menu: chưa có trong phiên bản terminal.} file_operations {Thao tác tệp: chưa có trong phiên bản terminal.} servers {Máy chủ: chưa có trong phiên bản terminal.} other {Lệnh này: chưa có trong phiên bản terminal.}}"
   },

@@ -310,6 +310,11 @@ impl Player {
         }
     }
 
+    /// The picture's size as shown, once mpv has read it; none for sound alone.
+    pub fn video_size(&self) -> Option<(f64, f64)> {
+        Some((self.double("dwidth")?, self.double("dheight")?)).filter(|(width, height)| *width >= 1. && *height >= 1.)
+    }
+
     fn double(&self, name: &str) -> Option<f64> {
         let mut value = 0f64;
         let found = self.property(name, FORMAT_DOUBLE, &mut value as *mut f64 as *mut c_void);

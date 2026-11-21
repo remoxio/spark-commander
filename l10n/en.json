@@ -4387,6 +4387,10 @@
     "description": "scmd (the terminal app), the button under a message box, shown as [ OK ]; any key closes it. Keep it short.",
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "description": "scmd (the terminal app), the line under a song's bars in the viewer. Space, ←→, +− and M are keys: keep them and their order; translate the word after each (pause, seek back and forth by 5 seconds, change the volume, mute). Keep it short: it shows only when the line has room.",
+    "message": "Space Pause  ←→ Seek  +− Volume  M Mute"
+  },
   "scmd.not_yet": {
     "description": "scmd (the terminal app), message when something the window version has is chosen that scmd cannot do yet. {what} tells what it is: menus (F9), file_operations (copy, move, delete, new folder), servers (connect, disconnect) or other (any other command); translate each sentence, not the words before the braces.",
     "message": "{what, select, menus {The menus: not in the terminal version yet.} file_operations {File operations: not in the terminal version yet.} servers {Servers: not in the terminal version yet.} other {This command: not in the terminal version yet.}}"

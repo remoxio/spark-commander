@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Pause  ←→ Spol  +− Volum  M Demp"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Menyene: finnes ikke i terminalversjonen ennå.} file_operations {Filoperasjoner: finnes ikke i terminalversjonen ennå.} servers {Servere: finnes ikke i terminalversjonen ennå.} other {Denne kommandoen: finnes ikke i terminalversjonen ennå.}}"
   },

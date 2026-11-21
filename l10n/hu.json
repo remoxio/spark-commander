@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Szünet  ←→ Tekerés  +− Hangerő  M Némítás"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {A menük a terminálos változatban még nem érhetők el.} file_operations {A fájlműveletek a terminálos változatban még nem érhetők el.} servers {A kiszolgálók a terminálos változatban még nem érhetők el.} other {Ez a parancs a terminálos változatban még nem érhető el.}}"
   },

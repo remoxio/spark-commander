@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "확인"
   },
+  "scmd.music.keys": {
+    "message": "Space 일시 정지  ←→ 탐색  +− 볼륨  M 음소거"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {메뉴: 터미널 버전에서는 아직 지원하지 않습니다.} file_operations {파일 작업: 터미널 버전에서는 아직 지원하지 않습니다.} servers {서버: 터미널 버전에서는 아직 지원하지 않습니다.} other {이 명령: 터미널 버전에서는 아직 지원하지 않습니다.}}"
   },

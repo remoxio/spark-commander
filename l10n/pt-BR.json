@@ -3290,6 +3290,9 @@
   "scmd.message.ok": {
     "message": "OK"
   },
+  "scmd.music.keys": {
+    "message": "Space Pausar  ←→ Avançar  +− Volume  M Mudo"
+  },
   "scmd.not_yet": {
     "message": "{what, select, menus {Os menus: ainda não estão na versão para terminal.} file_operations {Operações de arquivo: ainda não estão na versão para terminal.} servers {Servidores: ainda não estão na versão para terminal.} other {Este comando: ainda não está na versão para terminal.}}"
   },
