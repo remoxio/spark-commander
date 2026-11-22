@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "comptant: {count, plural, one {# fitxer} other {# fitxers}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# fitxer} other {# fitxers}}, {percent}%"
-  },
-  "transfer.strip.queue": {
-    "message": "Cua..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Cua ({count, plural, one {# en espera} other {# en espera}})..."
-  },
   "transfer.title.copy": {
     "message": "Copia"
   },

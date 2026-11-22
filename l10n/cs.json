@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "počítání: {count, plural, one {# soubor} few {# soubory} other {# souborů}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# soubor} few {# soubory} other {# souborů}}, {percent} %"
-  },
-  "transfer.strip.queue": {
-    "message": "Fronta..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Fronta ({count, plural, one {# čeká} few {# čekají} other {# čeká}})..."
-  },
   "transfer.title.copy": {
     "message": "Kopírovat"
   },

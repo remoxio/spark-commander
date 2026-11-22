@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "tellen: {count, plural, one {# bestand} other {# bestanden}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# bestand} other {# bestanden}}, {percent}%"
-  },
-  "transfer.strip.queue": {
-    "message": "Wachtrij..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Wachtrij ({count, plural, one {# wachtend} other {# wachtend}})..."
-  },
   "transfer.title.copy": {
     "message": "Kopiëren"
   },

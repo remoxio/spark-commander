@@ -5,7 +5,7 @@ use std::ffi::OsString;
 use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use gpui_kit::component::button::{Button, ButtonVariant, ButtonVariants};
 use gpui_kit::component::input::{Input, InputState};
@@ -61,8 +61,8 @@ pub struct Transfers {
     seen: HashSet<u64>,
     /// The job whose question is on screen.
     asked: Option<u64>,
-    /// The running job, when it started, and its bytes then: for the speed.
-    started: Option<(u64, Instant)>,
+    /// The newest job's id: a newer one opens the sidebar's Operations.
+    newest: u64,
 }
 
 /// Where files go: a panel's folder, or a folder shown in it.
@@ -396,13 +396,9 @@ impl Commander {
         }
         transfers.version = version;
         let jobs = transfers.queue.jobs();
-        let running = jobs
-            .iter()
-            .find(|job| job.status == Status::Running)
-            .map(|job| job.id);
-        if transfers.started.map(|(id, _)| id) != running {
-            transfers.started = running.map(|id| (id, Instant::now()));
-        }
+        let newest = jobs.iter().map(|job| job.id).max().unwrap_or(0);
+        let started = newest > transfers.newest;
+        transfers.newest = transfers.newest.max(newest);
         let finished: Vec<u64> = jobs
             .iter()
             .filter(|job| job.status.finished())
@@ -446,81 +442,11 @@ impl Commander {
             self.transfers.asked = Some(job.id);
             ask(&self.transfers.queue, job, window, cx);
         }
-        cx.notify();
-    }
-
-    /// Above the button bar while jobs run or wait.
-    pub(crate) fn render_transfers(
-        &self,
-        cx: &mut Context<Self>,
-    ) -> Option<impl IntoElement + use<>> {
-        // The sidebar's Operations shows it then.
-        if self.sidebar.tab == Some(SidebarTab::Operations) {
-            return None;
+        // Its progress is shown there.
+        if started {
+            self.show_operations(window, cx);
         }
-        let jobs = self.transfers.queue.jobs();
-        let waiting = jobs
-            .iter()
-            .filter(|job| job.status == Status::Waiting)
-            .count();
-        let job = jobs
-            .iter()
-            .find(|job| job.status == Status::Running)?
-            .clone();
-        let theme = cx.theme();
-        let p = &job.progress;
-        let percent = match p.total_bytes {
-            0 => 0.,
-            total => p.bytes as f32 * 100. / total as f32,
-        };
-        let state = match p.scanning {
-            true => sc_core::t!("transfer.strip.counting", count = p.total_files),
-            false => sc_core::t!("transfer.strip.progress", files = p.files, count = p.total_files, percent = format!("{percent:.0}")),
-        };
-        let speed = self.transfers.started.and_then(|(_, at)| {
-            let seconds = at.elapsed().as_secs_f64();
-            (seconds > 1. && !p.scanning).then(|| {
-                sc_core::t!(
-                    "transfer.speed",
-                    size = sc_core::human_size(((p.bytes - p.resumed) as f64 / seconds) as u64)
-                )
-            })
-        });
-        Some(
-            h_flex()
-                .px_2()
-                .py_1()
-                .gap_3()
-                // Under the frame above, apart from the command line below.
-                .border_b_1()
-                .border_color(theme.border)
-                .text_sm()
-                .child(
-                    div()
-                        .flex_none()
-                        .max_w(px(380.))
-                        .truncate()
-                        .child(job.title),
-                )
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w(px(80.))
-                        .child(Bar::new("transfer-progress").value(percent)),
-                )
-                .child(div().flex_none().child(state))
-                .children(speed)
-                .child(
-                    Button::new("transfer-queue")
-                        .ghost()
-                        .small()
-                        .label(match waiting {
-                            0 => sc_core::t!("transfer.strip.queue"),
-                            n => sc_core::t!("transfer.strip.queue_waiting", count = n),
-                        })
-                        .on_click(cx.listener(|this, _, window, cx| this.show_operations(window, cx))),
-                ),
-        )
+        cx.notify();
     }
 }
 

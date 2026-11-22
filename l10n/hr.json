@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "brojanje: {count, plural, one {# datoteka} few {# datoteke} other {# datoteka}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# datoteka} few {# datoteke} other {# datoteka}}, {percent} %"
-  },
-  "transfer.strip.queue": {
-    "message": "Red..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Red ({count, plural, one {# čeka} few {# čekaju} other {# čeka}})..."
-  },
   "transfer.title.copy": {
     "message": "Kopiraj"
   },

@@ -6047,22 +6047,6 @@
     "description": "A running job's speed, in the progress strip and the Operations list. {size} is a size with its unit (\"12.5 MB\"). Keep it short.",
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "description": "The progress strip above the button bar while a copy counts what it copies. {count} is how many files so far (120). Keep it short.",
-    "message": "counting: {count, plural, one {# file(s)} other {# file(s)}}"
-  },
-  "transfer.strip.progress": {
-    "description": "The progress strip above the button bar while a job runs. {files} is how many are done (3), {count} how many in all (12), {percent} how far by bytes (25). Keep it short.",
-    "message": "{files} / {count, plural, one {# file(s)} other {# file(s)}}, {percent}%"
-  },
-  "transfer.strip.queue": {
-    "description": "The progress strip's button that shows the operation queue. Keep it short.",
-    "message": "Queue..."
-  },
-  "transfer.strip.queue_waiting": {
-    "description": "The progress strip's button that shows the operation queue, with how many jobs wait after the running one (2). Keep it short.",
-    "message": "Queue ({count, plural, one {# waiting} other {# waiting}})..."
-  },
   "transfer.title.copy": {
     "description": "Title and button of the F5 Copy dialog, and of the question when copying into an archive. Keep it short.",
     "message": "Copy"

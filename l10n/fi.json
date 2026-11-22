@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "lasketaan: {count, plural, one {# tiedosto} other {# tiedostoa}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files}/{count, plural, one {# tiedosto} other {# tiedostoa}}, {percent} %"
-  },
-  "transfer.strip.queue": {
-    "message": "Jono..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Jono ({count, plural, one {# odottaa} other {# odottaa}})..."
-  },
   "transfer.title.copy": {
     "message": "Kopioi"
   },

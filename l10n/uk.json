@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/с"
   },
-  "transfer.strip.counting": {
-    "message": "підрахунок: {count, plural, one {# файл} few {# файли} many {# файлів} other {# файлу}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# файл} few {# файли} many {# файлів} other {# файлу}}, {percent}%"
-  },
-  "transfer.strip.queue": {
-    "message": "Черга..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Черга ({count, plural, one {# очікує} few {# очікують} many {# очікують} other {# очікує}})..."
-  },
   "transfer.title.copy": {
     "message": "Копіювати"
   },

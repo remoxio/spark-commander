@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "tæller: {count, plural, one {# fil} other {# filer}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# fil} other {# filer}}, {percent} %"
-  },
-  "transfer.strip.queue": {
-    "message": "Kø..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Kø ({count, plural, one {# venter} other {# venter}})..."
-  },
   "transfer.title.copy": {
     "message": "Kopiér"
   },

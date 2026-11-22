@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "comptage : {count, plural, one {# fichier} other {# fichiers}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# fichier} other {# fichiers}}, {percent} %"
-  },
-  "transfer.strip.queue": {
-    "message": "File d’attente..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "File d’attente ({count, plural, one {# en attente} other {# en attente}})..."
-  },
   "transfer.title.copy": {
     "message": "Copier"
   },

@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "계산 중: {count, plural, other {파일 #개}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, other {파일 #개}}, {percent}%"
-  },
-  "transfer.strip.queue": {
-    "message": "대기열..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "대기열({count, plural, other {#개 대기 중}})..."
-  },
   "transfer.title.copy": {
     "message": "복사"
   },

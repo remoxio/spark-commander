@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/sn"
   },
-  "transfer.strip.counting": {
-    "message": "sayılıyor: {count, plural, one {# dosya} other {# dosya}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, one {# dosya} other {# dosya}}, %{percent}"
-  },
-  "transfer.strip.queue": {
-    "message": "Kuyruk..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "Kuyruk ({count, plural, one {# bekliyor} other {# bekliyor}})..."
-  },
   "transfer.title.copy": {
     "message": "Kopyala"
   },

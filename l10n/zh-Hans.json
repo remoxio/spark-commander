@@ -4535,18 +4535,6 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
-  "transfer.strip.counting": {
-    "message": "正在统计：{count, plural, other {# 个文件}}"
-  },
-  "transfer.strip.progress": {
-    "message": "{files} / {count, plural, other {# 个文件}}，{percent}%"
-  },
-  "transfer.strip.queue": {
-    "message": "队列..."
-  },
-  "transfer.strip.queue_waiting": {
-    "message": "队列（{count, plural, other {# 个等待中}}）..."
-  },
   "transfer.title.copy": {
     "message": "复制"
   },
