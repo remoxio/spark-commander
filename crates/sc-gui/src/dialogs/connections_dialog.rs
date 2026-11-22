@@ -9,7 +9,7 @@ use gpui_kit::component::input::{Input, InputState};
 use gpui_kit::component::notification::Notification;
 use gpui_kit::component::select::{Select, SelectEvent, SelectState};
 use gpui_kit::assets::IconName as Lucide;
-use gpui_kit::component::{IndexPath, Sizable, WindowExt, h_flex, v_flex};
+use gpui_kit::component::{ActiveTheme, Icon, IndexPath, WindowExt, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
 use sc_core::remote::connections::Connection;
@@ -276,19 +276,37 @@ impl Render for EditConnection {
             .when(self.scheme == Scheme::S3, |el| el.child(field(t!("connections.field.region"), &self.region)))
             .when(self.scheme.logs_in(), |el| {
                 let masked = self.password.read(cx).presentation().is_masked();
-                let icon = |id: &'static str, icon: Lucide| Button::new(id).icon(icon).xsmall().text().tab_stop(false);
-                let eye = icon("password-eye", if masked { Lucide::Eye } else { Lucide::EyeOff })
+                let theme = cx.theme();
+                // Joined to the field's right edge as Windows' text box buttons: its height inside the frame (32 px, macOS's 24), past its 10 px padding.
+                let mac = crate::appearance::mac_tabs(cx).is_some();
+                let (side, corner, line) = (px(if mac { 22. } else { 30. }), if mac { px(5.) } else { theme.radius - px(1.) }, theme.input);
+                let last = self.saved.is_none();
+                let button = |id: &'static str, icon: Lucide, last: bool| {
+                    Button::new(id)
+                        .ghost()
+                        .icon(Icon::new(icon).size_4())
+                        .tab_stop(false)
+                        .w(side)
+                        .h(side)
+                        .rounded_none()
+                        .when(last, |el| el.rounded_r(corner))
+                        .border_0()
+                        .border_l_1()
+                        .border_color(line)
+                };
+                let eye = button("password-eye", if masked { Lucide::Eye } else { Lucide::EyeOff }, last)
                     .on_click(cx.listener(|this, _, window, cx| this.eye(window, cx)));
                 let trash = self.saved.is_some().then(|| {
-                    icon("password-delete", Lucide::Trash)
+                    button("password-delete", Lucide::Trash, true)
                         .tooltip(t!("connections.password.delete"))
                         .on_click(cx.listener(|this, _, window, cx| this.delete(window, cx)))
                 });
+                let buttons = h_flex().mr(px(-10.)).child(eye).children(trash);
                 el.child(
                     h_flex()
                         .gap_3()
                         .child(div().w(px(96.)).flex_none().child(secret))
-                        .child(div().flex_1().child(Input::new(&self.password).suffix(h_flex().gap_1().child(eye).children(trash)))),
+                        .child(div().flex_1().child(Input::new(&self.password).suffix(buttons))),
                 )
             })
             .child(
