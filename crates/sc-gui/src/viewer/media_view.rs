@@ -12,6 +12,7 @@ use std::time::{Duration, Instant};
 use futures::StreamExt;
 use gpui_kit::assets::IconName as Lucide;
 use gpui_kit::component::button::{Button, ButtonVariants};
+use gpui_kit::component::scroll::Scrollbar;
 use gpui_kit::component::{ActiveTheme, Icon, IconNamed, Sizable, StyledExt, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
@@ -405,7 +406,10 @@ impl MediaView {
             .h_full()
             .gap_4()
             .map(|el| match lyrics {
-                Some(lyrics) => el.child(header).child(frame(div().flex_1().min_h_0().flex().flex_col()).child(lyrics)),
+                Some(lyrics) => {
+                    let scrollbar = div().absolute().inset_0().child(Scrollbar::vertical(&self.lyrics_scroll));
+                    el.child(header).child(frame(div().relative().flex_1().min_h_0().flex().flex_col()).child(lyrics).child(scrollbar))
+                }
                 None => el.justify_center().child(header),
             });
         let bars = frame(div().flex_none().h(relative(0.32)).px_4().pt_3().pb_3().bg(gpui_kit::black()))
