@@ -249,7 +249,7 @@ diff -ruN a/src/linux/wayland/clipboard.rs b/src/linux/wayland/clipboard.rs
          self.cached_read = Some(item.clone());
 diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
 --- a/src/linux/wayland/window.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/linux/wayland/window.rs	2026-11-22 19:45:15.309542186 +0100
++++ b/src/linux/wayland/window.rs	2026-11-22 20:29:05.016823004 +0100
 @@ -29,6 +29,8 @@
      xdg::dialog::v1::client::xdg_dialog_v1::XdgDialogV1,
  };
@@ -268,17 +268,19 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
      viewport: Option<wp_viewport::WpViewport>,
      outputs: HashMap<ObjectId, Output>,
      display: Option<(ObjectId, Output)>,
-@@ -140,6 +144,9 @@
+@@ -140,6 +144,11 @@
      window_controls: WindowControls,
      client_inset: Option<Pixels>,
      accesskit_adapter: Option<accesskit_unix::Adapter>,
 +    /// SparkCommander patch: not resizable: as small and as large as it is, so the
 +    /// compositor offers no maximize; kept so as the app resizes it.
 +    fixed_size: bool,
++    /// SparkCommander patch: a dialog: its own title bar offers no minimize, as GTK's dialogs.
++    dialog_kind: bool,
  }
  
  pub enum WaylandSurfaceState {
-@@ -596,12 +603,23 @@
+@@ -596,12 +605,23 @@
                  xdg_state.toplevel.set_app_id(app_id.clone());
              }
  
@@ -305,7 +307,7 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
          }
  
          Ok(Self {
-@@ -611,6 +629,7 @@
+@@ -611,6 +631,7 @@
              surface,
              app_id: options.app_id,
              blur: None,
@@ -313,15 +315,16 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
              viewport,
              globals,
              outputs: HashMap::default(),
-@@ -640,6 +659,7 @@
+@@ -640,6 +661,8 @@
              window_controls: WindowControls::default(),
              client_inset: None,
              accesskit_adapter: None,
 +            fixed_size: !options.is_resizable,
++            dialog_kind: options.kind == WindowKind::Dialog,
          })
      }
  
-@@ -786,6 +806,10 @@
+@@ -786,6 +809,10 @@
          if let Some(blur) = &state.blur {
              blur.release();
          }
@@ -332,7 +335,7 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
  
          // Decorations must be destroyed before the xdg state.
          // See https://wayland.app/protocols/xdg-decoration-unstable-v1#zxdg_toplevel_decoration_v1
-@@ -1518,6 +1542,8 @@
+@@ -1518,6 +1545,8 @@
              if let Some(scale) = scale {
                  state.scale = scale;
              }
@@ -341,7 +344,7 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
              let device_bounds = state.bounds.to_device_pixels(state.scale);
              if let Some(renderer) = &mut state.renderer {
                  renderer.update_drawable_size(device_bounds.size);
-@@ -1789,6 +1815,14 @@
+@@ -1789,6 +1818,14 @@
              window_geometry.size.width,
              window_geometry.size.height,
          );
@@ -356,7 +359,21 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
  
          state
              .globals
-@@ -2335,6 +2369,34 @@
+@@ -2195,7 +2232,12 @@
+     }
+ 
+     fn window_controls(&self) -> WindowControls {
+-        self.borrow().window_controls
++        let state = self.borrow();
++        let mut controls = state.window_controls;
++        // SparkCommander patch: see `fixed_size` and `dialog_kind`.
++        controls.maximize &= !state.fixed_size;
++        controls.minimize &= !state.dialog_kind;
++        controls
+     }
+ 
+     fn set_client_inset(&self, inset: Pixels) {
+@@ -2335,6 +2377,34 @@
          }
      }
  
@@ -391,7 +408,7 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
      region.destroy();
  }
  
-@@ -2414,3 +2476,53 @@
+@@ -2414,3 +2484,53 @@
  
      bounds
  }

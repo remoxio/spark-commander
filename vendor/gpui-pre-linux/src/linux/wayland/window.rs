@@ -147,6 +147,8 @@ pub struct WaylandWindowState {
     /// SparkCommander patch: not resizable: as small and as large as it is, so the
     /// compositor offers no maximize; kept so as the app resizes it.
     fixed_size: bool,
+    /// SparkCommander patch: a dialog: its own title bar offers no minimize, as GTK's dialogs.
+    dialog_kind: bool,
 }
 
 pub enum WaylandSurfaceState {
@@ -660,6 +662,7 @@ impl WaylandWindowState {
             client_inset: None,
             accesskit_adapter: None,
             fixed_size: !options.is_resizable,
+            dialog_kind: options.kind == WindowKind::Dialog,
         })
     }
 
@@ -2229,7 +2232,12 @@ impl PlatformWindow for WaylandWindow {
     }
 
     fn window_controls(&self) -> WindowControls {
-        self.borrow().window_controls
+        let state = self.borrow();
+        let mut controls = state.window_controls;
+        // SparkCommander patch: see `fixed_size` and `dialog_kind`.
+        controls.maximize &= !state.fixed_size;
+        controls.minimize &= !state.dialog_kind;
+        controls
     }
 
     fn set_client_inset(&self, inset: Pixels) {
