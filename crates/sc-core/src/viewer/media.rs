@@ -265,6 +265,10 @@ impl Player {
         let _ = self.command(&["cycle", "pause"]);
     }
 
+    pub fn pause(&self) {
+        let _ = self.command(&["set", "pause", "yes"]);
+    }
+
     /// Seconds forward, or back when negative.
     pub fn seek_by(&self, seconds: f64) {
         let _ = self.command(&["seek", &seconds.to_string(), "relative"]);

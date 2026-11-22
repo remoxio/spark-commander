@@ -318,6 +318,8 @@ struct Viewer {
     menu_bar: Entity<AppMenuBar>,
     /// Video or sound being played.
     media: Option<Entity<MediaView>>,
+    /// Its file shown in another mode: paused there, to go on from when back.
+    parked: Option<Entity<MediaView>>,
     /// Shared with a running Find.
     text: Arc<TextFile>,
     /// The file's, HTML's text is shorter.
@@ -620,6 +622,7 @@ impl Viewer {
             picture_scroll: ScrollHandle::new(),
             menu_bar: menu_bar(cx.entity().downgrade(), cx),
             media: media_view(&shown, None, quick, cx),
+            parked: None,
             size: file_size(&shown, &text),
             markdown: markdown(&shown, &text),
             book: None,
@@ -740,7 +743,12 @@ impl Viewer {
         self.zoom_pdf(cx);
         self.convert(cx);
         self.decode_still(cx);
-        self.media = media_view(&self.shown, self.media.take(), self.quick, cx);
+        let playing = self.media.take().or_else(|| self.parked.take());
+        self.media = media_view(&self.shown, playing.clone(), self.quick, cx);
+        if self.media.is_none() {
+            self.parked = playing.filter(|view| view.read(cx).path() == self.shown.path());
+            self.parked.iter().filter_map(|view| view.read(cx).player()).for_each(|player| player.pause());
+        }
         self.text = Arc::new(text);
         self.parse(cx);
         self.problem = None;
