@@ -11,6 +11,7 @@ use std::sync::{Arc, Condvar, Mutex, OnceLock, mpsc};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
+pub mod lyrics;
 pub mod spectrum;
 
 /// Video, and sound alone.
@@ -157,6 +158,10 @@ pub struct State {
     /// Percent.
     pub volume: f64,
     pub muted: bool,
+    /// The sound's bits a second as it plays; 0 while unknown.
+    pub bitrate: f64,
+    /// Played again from the start at its end.
+    pub repeat: bool,
     /// Pictures are drawn; not for sound alone.
     pub video: bool,
     pub error: Option<String>,
@@ -222,6 +227,8 @@ impl Player {
             ("input-default-bindings", "no"),
             ("terminal", "no"),
             ("pause", if paused { "yes" } else { "no" }),
+            // A song's .lrc beside it is its words, shown apart, not over its cover.
+            ("sub-auto", if is_video(path) { "exact" } else { "no" }),
         ] {
             let optional = name == "gpu-hwdec-interop";
             let (name, value) = (text(name)?, text(value)?);
@@ -284,6 +291,43 @@ impl Player {
         let _ = self.command(&["cycle", "mute"]);
     }
 
+    /// Percent.
+    pub fn set_volume(&self, volume: f64) {
+        let _ = self.command(&["set", "volume", &volume.clamp(0., 100.).to_string()]);
+    }
+
+    /// Paused at the start.
+    pub fn stop(&self) {
+        let _ = self.command(&["set", "pause", "yes"]);
+        self.seek_seconds(0.);
+    }
+
+    pub fn toggle_repeat(&self) {
+        let _ = self.command(&["cycle-values", "loop-file", "inf", "no"]);
+    }
+
+    /// The file's tags, as mpv names them, once it is loaded.
+    pub fn tags(&self) -> Vec<(String, String)> {
+        let count = self.int("metadata/list/count").unwrap_or(0);
+        let tag = |ix: i64| Some((self.string(&format!("metadata/list/{ix}/key"))?, self.string(&format!("metadata/list/{ix}/value"))?));
+        (0..count).filter_map(tag).collect()
+    }
+
+    /// The sound's codec, sample rate and channels: `FLAC`, `44.1 kHz`, `stereo`.
+    pub fn sound_format(&self) -> Vec<String> {
+        let codec = self.string("audio-codec-name").map(|codec| codec.to_uppercase());
+        let rate = self.int("audio-params/samplerate").filter(|rate| *rate > 0).map(|rate| match rate % 1000 {
+            0 => format!("{} kHz", rate / 1000),
+            _ => format!("{:.1} kHz", rate as f64 / 1000.),
+        });
+        let channels = self.int("audio-params/channel-count").map(|count| match count {
+            1 => crate::t!("media.channels.mono"),
+            2 => crate::t!("media.channels.stereo"),
+            n => crate::t!("media.channels.many", count = n),
+        });
+        [codec, rate, channels].into_iter().flatten().collect()
+    }
+
     /// The size frames are drawn at, in pixels: the view's.
     pub fn set_size(&self, width: u32, height: u32) {
         self.shared.poke(|wake| {
@@ -305,6 +349,8 @@ impl Player {
             paused: self.flag("pause"),
             volume: self.double("volume").unwrap_or(100.),
             muted: self.flag("mute"),
+            bitrate: self.double("audio-bitrate").unwrap_or(0.),
+            repeat: self.string("loop-file").is_some_and(|times| times != "no"),
             video: self.flag("vo-configured"),
             error: self.shared.error.lock().unwrap().clone(),
         }
@@ -319,6 +365,23 @@ impl Player {
         let mut value = 0f64;
         let found = self.property(name, FORMAT_DOUBLE, &mut value as *mut f64 as *mut c_void);
         found.then_some(value)
+    }
+
+    fn int(&self, name: &str) -> Option<i64> {
+        let mut value = 0i64;
+        let found = self.property(name, FORMAT_INT64, &mut value as *mut i64 as *mut c_void);
+        found.then_some(value)
+    }
+
+    fn string(&self, name: &str) -> Option<String> {
+        let mut value: *mut c_char = null_mut();
+        if !self.property(name, FORMAT_STRING, &mut value as *mut *mut c_char as *mut c_void) || value.is_null() {
+            return None;
+        }
+        // SAFETY: mpv gave a string of its own, ours to free.
+        let text = unsafe { CStr::from_ptr(value) }.to_string_lossy().into_owned();
+        unsafe { (self.mpv.free)(value as *mut c_void) };
+        Some(text)
     }
 
     fn flag(&self, name: &str) -> bool {
@@ -602,7 +665,9 @@ struct Fbo {
 }
 
 const FORMAT_NONE: c_int = 0;
+const FORMAT_STRING: c_int = 1;
 const FORMAT_FLAG: c_int = 3;
+const FORMAT_INT64: c_int = 4;
 const FORMAT_DOUBLE: c_int = 5;
 const EVENT_SHUTDOWN: c_int = 1;
 const EVENT_END_FILE: c_int = 7;
@@ -628,6 +693,7 @@ type GetProperty = unsafe extern "C" fn(*mut Handle, *const c_char, c_int, *mut 
 type Observe = unsafe extern "C" fn(*mut Handle, u64, *const c_char, c_int) -> c_int;
 type WaitEvent = unsafe extern "C" fn(*mut Handle, f64) -> *mut Event;
 type ErrorString = unsafe extern "C" fn(c_int) -> *const c_char;
+type Free = unsafe extern "C" fn(*mut c_void);
 type RenderCreate = unsafe extern "C" fn(*mut *mut RenderContext, *mut Handle, *mut Param) -> c_int;
 type UpdateCallback = Option<unsafe extern "C" fn(*mut c_void)>;
 type SetCallback = unsafe extern "C" fn(*mut RenderContext, UpdateCallback, *mut c_void);
@@ -646,6 +712,7 @@ struct Mpv {
     observe_property: Observe,
     wait_event: WaitEvent,
     error_string: ErrorString,
+    free: Free,
     render_create: RenderCreate,
     render_set_update_callback: SetCallback,
     render_update: RenderUpdate,
@@ -696,6 +763,7 @@ fn load() -> Result<Mpv, String> {
         observe_property: get(&library, "mpv_observe_property")?,
         wait_event: get(&library, "mpv_wait_event")?,
         error_string: get(&library, "mpv_error_string")?,
+        free: get(&library, "mpv_free")?,
         render_create: get(&library, "mpv_render_context_create")?,
         render_set_update_callback: get(&library, "mpv_render_context_set_update_callback")?,
         render_update: get(&library, "mpv_render_context_update")?,

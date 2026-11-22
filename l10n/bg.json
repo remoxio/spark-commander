@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Това не може да се възпроизведе: {err}. 1 го показва като текст."
   },
+  "media.channels.many": {
+    "message": "{count} канала"
+  },
+  "media.channels.mono": {
+    "message": "моно"
+  },
+  "media.channels.stereo": {
+    "message": "стерео"
+  },
   "media.continuing": {
     "message": "Продължава от {time}"
   },

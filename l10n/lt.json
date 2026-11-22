@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Negalima paleisti: {err}. Klavišas 1 parodo kaip tekstą."
   },
+  "media.channels.many": {
+    "message": "kanalų: {count}"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Tęsiama nuo {time}"
   },

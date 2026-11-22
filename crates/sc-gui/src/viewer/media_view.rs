@@ -1,6 +1,7 @@
 //! Video and sound in the viewer, played by libmpv (sc_core::viewer::media): the
-//! frames mpv draws at this view's size, and the controls below them; under
-//! a song's cover, its spectrum's bars.
+//! frames mpv draws at this view's size, and the controls below them. A song:
+//! its cover, its title, artist, album and format beside it over its words
+//! (the line sung lit), its spectrum's bars under them.
 
 use std::cell::Cell;
 use std::path::{Path, PathBuf};
@@ -9,10 +10,13 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use futures::StreamExt;
+use gpui_kit::assets::IconName as Lucide;
 use gpui_kit::component::button::{Button, ButtonVariants};
-use gpui_kit::component::{ActiveTheme, IconNamed, Sizable, h_flex, v_flex};
+use gpui_kit::component::slider::{Slider, SliderEvent, SliderState};
+use gpui_kit::component::{ActiveTheme, Icon, IconNamed, Selectable, Sizable, StyledExt, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
+use sc_core::viewer::media::lyrics::Lyrics;
 use sc_core::viewer::media::spectrum::{BANDS, Meter, Spectrum};
 use sc_core::viewer::media::{Player, State, clock, is_video};
 use sc_core::viewer::resume;
@@ -75,7 +79,26 @@ pub struct MediaView {
     spectrum: Option<Spectrum>,
     meter: Meter,
     metered: Instant,
+    /// A song's tags and words, read once it is loaded.
+    song: Option<Rc<Song>>,
+    reading: bool,
+    /// Its words' list, and the line last lit.
+    lyrics_scroll: ScrollHandle,
+    sung: Option<usize>,
+    /// Quick View's: no other files to go to.
+    quick: bool,
+    volume: Entity<SliderState>,
+    _volume: Subscription,
     _frames: Task<()>,
+}
+
+/// What a song's tags say, its format, its words.
+struct Song {
+    title: String,
+    artist: Option<String>,
+    album: Option<String>,
+    format: Vec<String>,
+    lyrics: Option<Lyrics>,
 }
 
 /// While playing, the place is saved this often.
@@ -109,6 +132,11 @@ impl MediaView {
                 }
             }
         });
+        let volume = cx.new(|_| SliderState::new().min(0.).max(100.).default_value(100.));
+        let changed = cx.subscribe(&volume, |this: &mut MediaView, _, event: &SliderEvent, _| {
+            let (SliderEvent::Change(value) | SliderEvent::Release(value)) = event;
+            this.player().inspect(|player| player.set_volume(f64::from(value.end())));
+        });
         MediaView {
             player: player.map(Rc::new),
             image: None,
@@ -124,6 +152,13 @@ impl MediaView {
             spectrum: None,
             meter: Meter::default(),
             metered: Instant::now(),
+            song: None,
+            reading: false,
+            lyrics_scroll: ScrollHandle::new(),
+            sung: None,
+            quick: paused,
+            volume,
+            _volume: changed,
             _frames: frames,
         }
     }
@@ -145,6 +180,7 @@ impl MediaView {
             self.stale.extend(self.image.replace(image));
         }
         self.resume(cx);
+        self.read_song(cx);
         if self.saved.elapsed() > SAVE_EVERY && self.player().is_some_and(|player| !player.state().paused) {
             self.save();
         }
@@ -174,6 +210,45 @@ impl MediaView {
             });
         })
         .detach();
+    }
+
+    /// A song's tags once it is loaded; its words (an .lrc beside it read) meanwhile.
+    fn read_song(&mut self, cx: &mut Context<Self>) {
+        let Some(player) = self.player().filter(|player| self.music && !self.reading && player.state().duration > 0.) else {
+            return;
+        };
+        self.reading = true;
+        let tags = player.tags();
+        let tag = |name: &str| tags.iter().find(|(key, _)| key.eq_ignore_ascii_case(name)).map(|(_, value)| value.trim().to_owned()).filter(|value| !value.is_empty());
+        let stem = self.path.file_stem().unwrap_or_default().to_string_lossy().into_owned();
+        let (title, artist, album, format) = (tag("title").unwrap_or(stem), tag("artist"), tag("album"), player.sound_format());
+        let path = self.path.clone();
+        let reading = cx.background_executor().spawn(async move { Lyrics::of(&path, &tags) });
+        cx.spawn(async move |this, cx| {
+            let lyrics = reading.await;
+            let _ = this.update(cx, |this, cx| {
+                this.song = Some(Rc::new(Song { title, artist, album, format, lyrics }));
+                cx.notify();
+            });
+        })
+        .detach();
+    }
+
+    /// The line sung in the middle of the words' list, as it changes.
+    fn follow_lyrics(&mut self, line: Option<usize>) {
+        if line == self.sung {
+            return;
+        }
+        self.sung = line;
+        let scroll = &self.lyrics_scroll;
+        let Some(item) = line.and_then(|line| scroll.bounds_for_item(line)) else {
+            return;
+        };
+        // A line's bounds are where it is unscrolled.
+        let (view, offset) = (scroll.bounds(), scroll.offset());
+        let top = item.origin.y - view.origin.y;
+        let wanted = (top - (view.size.height - item.size.height) / 2.).clamp(px(0.), scroll.max_offset().y.max(px(0.)));
+        scroll.set_offset(point(offset.x, -wanted));
     }
 
     /// Where a long one is now, to go on from next time; not before it went back there.
@@ -224,7 +299,6 @@ impl Render for MediaView {
         for old in self.stale.drain(..) {
             let _ = window.drop_image(old);
         }
-        let theme = cx.theme().clone();
         let player = match &self.player {
             Ok(player) => player.clone(),
             Err(err) => {
@@ -234,6 +308,10 @@ impl Render for MediaView {
         };
         let state = player.state();
         let meter = self.music.then(|| self.meter(&state, window));
+        // The keys change the volume too.
+        if (f64::from(self.volume.read(cx).value().end()) - state.volume).abs() >= 0.5 {
+            self.volume.update(cx, |slider, cx| slider.set_value(state.volume as f32, window, cx));
+        }
         let image = self.image.clone();
         let sizing = player.clone();
         // mpv draws at the picture's size in pixels; the frame fills it.
@@ -249,19 +327,166 @@ impl Render for MediaView {
             },
         )
         .size_full();
-        let notice = match (&state.error, state.video) {
-            (Some(err), _) => Some(sc_core::t!("media.cannot_play", err = err)),
-            (None, false) => Some(self.path.file_name().unwrap_or_default().display().to_string()),
-            (None, true) => None,
+        let controls = self.render_controls(&state, window, cx);
+        let continued = self.continued.map(|at| {
+            div()
+                .absolute()
+                .top_3()
+                .left_3()
+                .px_3()
+                .py_1()
+                .rounded_md()
+                .bg(gpui_kit::black().opacity(0.6))
+                .text_color(gpui_kit::white())
+                .text_sm()
+                .child(sc_core::t!("media.continuing", time = clock(at)))
+        });
+        let body = match (meter, &state.error) {
+            (Some(meter), None) => self.render_song(&state, picture, meter, cx).into_any_element(),
+            _ => {
+                let notice = match (&state.error, state.video) {
+                    (Some(err), _) => Some(sc_core::t!("media.cannot_play", err = err)),
+                    (None, false) => Some(self.path.file_name().unwrap_or_default().display().to_string()),
+                    (None, true) => None,
+                };
+                div()
+                    .id("media-picture")
+                    .size_full()
+                    .relative()
+                    .bg(gpui_kit::black())
+                    .on_click(|event, window, _| {
+                        if event.click_count() == 2 {
+                            window.toggle_fullscreen();
+                        }
+                    })
+                    .child(picture)
+                    .when_some(notice, |el, notice| {
+                        el.child(div().absolute().inset_0().flex().items_center().justify_center().text_color(gpui_kit::white()).child(notice))
+                    })
+                    .into_any_element()
+            }
         };
+        v_flex()
+            .size_full()
+            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, _, _| {
+                if this.seeking && event.pressed_button == Some(MouseButton::Left) {
+                    this.seek_at(event.position.x);
+                }
+            }))
+            .on_mouse_up(MouseButton::Left, cx.listener(|this, _, _, _| this.seeking = false))
+            .child(div().flex_1().min_h_0().relative().child(body).children(continued))
+            .child(controls)
+            .into_any_element()
+    }
+}
+
+impl MediaView {
+    /// The cover, the song's names and format over its words, the bars under them.
+    fn render_song(&mut self, state: &State, picture: Canvas<()>, meter: Meter, cx: &mut Context<Self>) -> Div {
+        let theme = cx.theme().clone();
+        let song = self.song.clone();
+        let frame = |el: Div| el.rounded(theme.radius).border_1().border_color(theme.border).overflow_hidden();
+        let cover = frame(div().h_full().flex_none().aspect_ratio(1.).max_w(relative(0.45)).bg(gpui_kit::black())).map(|el| match state.video {
+            true => el.child(picture),
+            false => el.flex().items_center().justify_center().bg(theme.muted).child(Icon::new(Lucide::Music).size(px(64.)).text_color(theme.muted_foreground)),
+        });
+        let names = song.as_ref().map(|song| {
+            v_flex()
+                .flex_1()
+                .min_w_0()
+                .child(div().text_2xl().font_bold().truncate().child(song.title.clone()))
+                .children(song.artist.clone().map(|artist| div().text_lg().truncate().child(artist)))
+                .children(song.album.clone().map(|album| div().text_color(theme.muted_foreground).truncate().child(album)))
+        });
+        let format = song.as_ref().map(|song| {
+            let mut parts = song.format.clone();
+            if state.bitrate > 0. {
+                parts.push(format!("{:.0} kb/s", state.bitrate / 1000.));
+            }
+            let line = |icon: Lucide, text: String| h_flex().gap_2().child(Icon::new(icon).size_4().text_color(theme.muted_foreground)).child(text);
+            v_flex()
+                .flex_none()
+                .gap_2()
+                .pl_4()
+                .border_l_1()
+                .border_color(theme.border)
+                .text_sm()
+                .child(line(Lucide::Clock, clock(state.duration)))
+                .when(!parts.is_empty(), |el| el.child(line(Lucide::AudioLines, parts.join(" · "))))
+        });
+        let lyrics = song.as_ref().and_then(|song| song.lyrics.as_ref()).map(|lyrics| self.render_lyrics(lyrics, state.position, cx));
+        let header = h_flex().flex_none().items_start().gap_4().children(names).children(format);
+        let side = v_flex()
+            .flex_1()
+            .min_w_0()
+            .h_full()
+            .gap_3()
+            .map(|el| match lyrics {
+                Some(lyrics) => el.child(header).child(frame(div().flex_1().min_h_0().flex().flex_col()).child(lyrics)),
+                None => el.justify_center().child(header),
+            });
+        let bars = frame(div().flex_none().h(relative(0.32)).px_4().pt_3().pb_3().bg(gpui_kit::black()))
+            .child(canvas(|_, _, _| {}, move |bounds, (), window, _| paint_bars(&meter, bounds, window)).size_full());
+        v_flex()
+            .size_full()
+            .p_4()
+            .gap_4()
+            .child(h_flex().flex_1().min_h_0().gap_4().child(cover).child(side))
+            .child(bars)
+    }
+
+    /// The words, the line sung lit and kept in the middle; a synced line clicked goes there.
+    fn render_lyrics(&mut self, lyrics: &Lyrics, position: f64, cx: &mut Context<Self>) -> Stateful<Div> {
+        let theme = cx.theme().clone();
+        let sung = lyrics.line_at(position);
+        self.follow_lyrics(sung);
+        let lines = lyrics.lines.iter().enumerate().map(|(ix, line)| {
+            let now = sung == Some(ix);
+            let past = sung.is_some_and(|sung| ix < sung);
+            let text = match line.text.is_empty() {
+                true => "♪".to_owned(),
+                false => line.text.clone(),
+            };
+            let marker = div().w(px(14.)).flex_none().when(now, |el| el.child(Icon::new(MediaIcon::Play).size_3().text_color(theme.primary)));
+            h_flex()
+                .id(("lyric", ix))
+                .flex_none()
+                .gap_2()
+                .px_2()
+                .py_1()
+                .rounded(theme.radius)
+                .map(|el| match (now, past) {
+                    (true, _) => el.bg(theme.primary.opacity(0.18)).text_lg().font_semibold(),
+                    (false, true) => el.text_color(theme.muted_foreground),
+                    (false, false) => el.text_color(theme.foreground.opacity(0.8)),
+                })
+                .child(marker)
+                .child(div().min_w_0().child(text))
+                .when_some(line.at, |el, at| {
+                    el.cursor_pointer().hover(|style| style.bg(theme.foreground.opacity(0.06))).on_click(cx.listener(move |this, _, _, _| {
+                        this.player().inspect(|player| player.seek_seconds(at));
+                    }))
+                })
+        });
+        v_flex().id("lyrics").size_full().p_2().overflow_y_scroll().track_scroll(&self.lyrics_scroll).children(lines)
+    }
+
+    /// Previous and next file, play, stop; the place and the seek bar; the volume; repeat, full screen.
+    fn render_controls(&self, state: &State, window: &Window, cx: &mut Context<Self>) -> Div {
+        let theme = cx.theme().clone();
         let share = match state.duration > 0. {
             true => (state.position / state.duration).clamp(0., 1.) as f32,
             false => 0.,
         };
         let bar = self.bar.clone();
         let full_screen = window.is_fullscreen();
-        let button = |id: &'static str, icon: MediaIcon| Button::new(id).icon(icon).small().ghost();
-        let controls = h_flex()
+        let button = |id: &'static str, icon: Icon| Button::new(id).icon(icon).small().ghost();
+        let step = |id: &'static str, icon: Lucide, action: Box<dyn Action>| {
+            button(id, Icon::new(icon)).on_click(move |_, window, cx| window.dispatch_action(action.boxed_clone(), cx))
+        };
+        let player = |act: fn(&sc_core::viewer::media::Player)| cx.listener(move |this: &mut Self, _, _, _| this.player().inspect(|player| act(player)).map(drop).unwrap_or(()));
+        let divider = || div().flex_none().w(px(1.)).h(px(20.)).bg(theme.border);
+        h_flex()
             .flex_none()
             .gap_2()
             .px_2()
@@ -269,21 +494,15 @@ impl Render for MediaView {
             .items_center()
             .border_t_1()
             .border_color(theme.border)
+            .when(!self.quick, |el| el.child(step("media-previous", Lucide::SkipBack, Box::new(super::PreviousFile))))
             .child(
-                button(
-                    "media-play",
-                    if state.paused { MediaIcon::Play } else { MediaIcon::Pause },
-                )
-                .on_click(cx.listener(|this, _, _, _| {
-                    this.player().inspect(|player| player.toggle_pause());
-                })),
+                button("media-play", Icon::new(if state.paused { MediaIcon::Play } else { MediaIcon::Pause }))
+                    .on_click(player(|player| player.toggle_pause())),
             )
-            .child(
-                div()
-                    .flex_none()
-                    .text_sm()
-                    .child(format!("{} / {}", clock(state.position), clock(state.duration))),
-            )
+            .when(!self.quick, |el| el.child(step("media-next", Lucide::SkipForward, Box::new(super::NextFile))))
+            .child(button("media-stop", Icon::new(Lucide::Square)).on_click(player(|player| player.stop())))
+            .child(divider())
+            .child(div().flex_none().text_sm().child(clock(state.position)))
             .child(
                 div()
                     .id("media-seek")
@@ -306,115 +525,24 @@ impl Render for MediaView {
                             .h(px(6.))
                             .rounded_full()
                             .bg(theme.muted)
-                            .child(
-                                div()
-                                    .absolute()
-                                    .left_0()
-                                    .top_0()
-                                    .h_full()
-                                    .w(relative(share))
-                                    .rounded_full()
-                                    .bg(theme.primary),
-                            )
-                            .child(
-                                canvas(move |bounds, _, _| bar.set(bounds), |_, _, _, _| {})
-                                    .absolute()
-                                    .size_full(),
-                            ),
+                            .child(div().absolute().left_0().top_0().h_full().w(relative(share)).rounded_full().bg(theme.primary))
+                            .child(canvas(move |bounds, _, _| bar.set(bounds), |_, _, _, _| {}).absolute().size_full()),
                     ),
             )
+            .child(div().flex_none().text_sm().child(clock(state.duration)))
+            .child(divider())
             .child(
-                button(
-                    "media-mute",
-                    if state.muted { MediaIcon::Muted } else { MediaIcon::Volume },
-                )
-                .on_click(cx.listener(|this, _, _, _| {
-                    this.player().inspect(|player| player.toggle_mute());
-                })),
+                button("media-mute", Icon::new(if state.muted { MediaIcon::Muted } else { MediaIcon::Volume }))
+                    .on_click(player(|player| player.toggle_mute())),
             )
+            .child(div().flex_none().w(px(96.)).child(Slider::new(&self.volume)))
+            .child(div().flex_none().w(px(40.)).text_sm().child(format!("{:.0}%", state.volume)))
+            .child(divider())
+            .child(button("media-repeat", Icon::new(Lucide::Repeat)).selected(state.repeat).on_click(player(|player| player.toggle_repeat())))
             .child(
-                div()
-                    .flex_none()
-                    .w(px(40.))
-                    .text_sm()
-                    .child(format!("{:.0}%", state.volume)),
+                button("media-full-screen", Icon::new(if full_screen { MediaIcon::Window } else { MediaIcon::FullScreen }))
+                    .on_click(|_, window, _| window.toggle_fullscreen()),
             )
-            .child(
-                button(
-                    "media-full-screen",
-                    if full_screen { MediaIcon::Window } else { MediaIcon::FullScreen },
-                )
-                .on_click(|_, window, _| window.toggle_fullscreen()),
-            );
-        v_flex()
-            .size_full()
-            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, _, _| {
-                if this.seeking && event.pressed_button == Some(MouseButton::Left) {
-                    this.seek_at(event.position.x);
-                }
-            }))
-            .on_mouse_up(
-                MouseButton::Left,
-                cx.listener(|this, _, _, _| this.seeking = false),
-            )
-            .child(
-                div()
-                    .id("media-picture")
-                    .flex_1()
-                    .min_h_0()
-                    .relative()
-                    .bg(gpui_kit::black())
-                    .on_click(|event, window, _| {
-                        if event.click_count() == 2 {
-                            window.toggle_fullscreen();
-                        }
-                    })
-                    .flex()
-                    .flex_col()
-                    .child(
-                        div()
-                            .relative()
-                            .flex_1()
-                            .min_h_0()
-                            .child(picture)
-                            .when_some(notice, |el, notice| {
-                                el.child(
-                                    div()
-                                        .absolute()
-                                        .inset_0()
-                                        .flex()
-                                        .items_center()
-                                        .justify_center()
-                                        .text_color(gpui_kit::white())
-                                        .child(notice),
-                                )
-                            }),
-                    )
-                    .when_some(meter, |el, meter| {
-                        el.child(
-                            div().flex_none().h(relative(0.4)).px_4().pt_2().pb_3().child(
-                                canvas(|_, _, _| {}, move |bounds, (), window, _| paint_bars(&meter, bounds, window)).size_full(),
-                            ),
-                        )
-                    })
-                    .when_some(self.continued, |el, at| {
-                        el.child(
-                            div()
-                                .absolute()
-                                .top_3()
-                                .left_3()
-                                .px_3()
-                                .py_1()
-                                .rounded_md()
-                                .bg(gpui_kit::black().opacity(0.6))
-                                .text_color(gpui_kit::white())
-                                .text_sm()
-                                .child(sc_core::t!("media.continuing", time = clock(at))),
-                        )
-                    }),
-            )
-            .child(controls)
-            .into_any_element()
     }
 }
 

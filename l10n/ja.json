@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "再生できません：{err}。1 キーでテキストとして表示します。"
   },
+  "media.channels.many": {
+    "message": "{count} チャンネル"
+  },
+  "media.channels.mono": {
+    "message": "モノラル"
+  },
+  "media.channels.stereo": {
+    "message": "ステレオ"
+  },
   "media.continuing": {
     "message": "{time} から再開"
   },

@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Ово не може да се репродукује: {err}. Тастер 1 га приказује као текст."
   },
+  "media.channels.many": {
+    "message": "канала: {count}"
+  },
+  "media.channels.mono": {
+    "message": "моно"
+  },
+  "media.channels.stereo": {
+    "message": "стерео"
+  },
   "media.continuing": {
     "message": "Наставља се од {time}"
   },

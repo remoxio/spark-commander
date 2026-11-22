@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Bu oynatılamıyor: {err}. 1 tuşu metin olarak gösterir."
   },
+  "media.channels.many": {
+    "message": "{count} kanal"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "{time} konumundan devam ediliyor"
   },

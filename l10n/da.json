@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Dette kan ikke afspilles: {err}. 1 viser det som tekst."
   },
+  "media.channels.many": {
+    "message": "{count} kanaler"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Fortsætter ved {time}"
   },

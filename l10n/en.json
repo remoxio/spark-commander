@@ -2843,6 +2843,18 @@
     "description": "Video or sound in the viewer, in place of the player; err = why, often from libmpv. 1 is the key that switches the viewer to plain text.",
     "message": "This cannot be played: {err}. 1 shows it as text."
   },
+  "media.channels.many": {
+    "description": "A song's format in the viewer, beside its codec and sample rate; count = its channels, 3 or more (5.1 sound is 6).",
+    "message": "{count} channels"
+  },
+  "media.channels.mono": {
+    "description": "A song's format in the viewer, beside its codec and sample rate: one channel.",
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "description": "A song's format in the viewer, beside its codec and sample rate: two channels.",
+    "message": "stereo"
+  },
   "media.continuing": {
     "description": "Video in the viewer, a badge for a few seconds when it goes on where it was left; time = the position, e.g. 1:02:05.",
     "message": "Continuing at {time}"

@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Kann nicht abgespielt werden: {err}. 1 zeigt es als Text."
   },
+  "media.channels.many": {
+    "message": "{count} Kanäle"
+  },
+  "media.channels.mono": {
+    "message": "Mono"
+  },
+  "media.channels.stereo": {
+    "message": "Stereo"
+  },
   "media.continuing": {
     "message": "Weiter bei {time}"
   },

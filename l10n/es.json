@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "No se puede reproducir: {err}. 1 lo muestra como texto."
   },
+  "media.channels.many": {
+    "message": "{count} canales"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "estéreo"
+  },
   "media.continuing": {
     "message": "Continuando en {time}"
   },

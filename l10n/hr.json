@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Ovo se ne može reproducirati: {err}. Tipka 1 prikazuje sadržaj kao tekst."
   },
+  "media.channels.many": {
+    "message": "{count} kanala"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Nastavak od {time}"
   },

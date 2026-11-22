@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Nie można tego odtworzyć: {err}. Klawisz 1 pokaże to jako tekst."
   },
+  "media.channels.many": {
+    "message": "kanały: {count}"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Kontynuacja od {time}"
   },

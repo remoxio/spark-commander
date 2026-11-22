@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Seda ei saa esitada: {err}. 1 näitab seda tekstina."
   },
+  "media.channels.many": {
+    "message": "{count} kanalit"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Jätkub kohalt {time}"
   },

@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Tätä ei voi toistaa: {err}. 1 näyttää sen tekstinä."
   },
+  "media.channels.many": {
+    "message": "{count} kanavaa"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Jatketaan kohdasta {time}"
   },

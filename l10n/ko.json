@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "재생할 수 없습니다: {err}. 1을 누르면 텍스트로 표시합니다."
   },
+  "media.channels.many": {
+    "message": "{count}채널"
+  },
+  "media.channels.mono": {
+    "message": "모노"
+  },
+  "media.channels.stereo": {
+    "message": "스테레오"
+  },
   "media.continuing": {
     "message": "{time}부터 이어서 재생"
   },

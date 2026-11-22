@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Nedá sa prehrať: {err}. Kláves 1 ho zobrazí ako text."
   },
+  "media.channels.many": {
+    "message": "kanály: {count}"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Pokračuje sa od {time}"
   },

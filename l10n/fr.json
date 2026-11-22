@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Lecture impossible : {err}. 1 l’affiche en texte."
   },
+  "media.channels.many": {
+    "message": "{count} canaux"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stéréo"
+  },
   "media.continuing": {
     "message": "Reprise à {time}"
   },

@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Dit kan niet worden afgespeeld: {err}. 1 toont het als tekst."
   },
+  "media.channels.many": {
+    "message": "{count} kanalen"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Verder bij {time}"
   },

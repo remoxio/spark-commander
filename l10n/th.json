@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "เล่นไม่ได้: {err} กด 1 เพื่อแสดงเป็นข้อความ"
   },
+  "media.channels.many": {
+    "message": "{count} ช่องสัญญาณ"
+  },
+  "media.channels.mono": {
+    "message": "โมโน"
+  },
+  "media.channels.stereo": {
+    "message": "สเตอริโอ"
+  },
   "media.continuing": {
     "message": "เล่นต่อที่ {time}"
   },

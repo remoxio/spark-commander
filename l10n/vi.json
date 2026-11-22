@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Không phát được: {err}. Phím 1 hiển thị dưới dạng văn bản."
   },
+  "media.channels.many": {
+    "message": "{count} kênh"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Tiếp tục từ {time}"
   },

@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Tega ni mogoče predvajati: {err}. Tipka 1 to prikaže kot besedilo."
   },
+  "media.channels.many": {
+    "message": "kanali: {count}"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Nadaljevanje pri {time}"
   },

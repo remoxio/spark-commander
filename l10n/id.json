@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Tidak dapat diputar: {err}. 1 menampilkannya sebagai teks."
   },
+  "media.channels.many": {
+    "message": "{count} kanal"
+  },
+  "media.channels.mono": {
+    "message": "mono"
+  },
+  "media.channels.stereo": {
+    "message": "stereo"
+  },
   "media.continuing": {
     "message": "Melanjutkan dari {time}"
   },

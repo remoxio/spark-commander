@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "इसे चलाया नहीं जा सकता: {err}। 1 दबाने पर यह टेक्स्ट के रूप में दिखेगा।"
   },
+  "media.channels.many": {
+    "message": "{count} चैनल"
+  },
+  "media.channels.mono": {
+    "message": "मोनो"
+  },
+  "media.channels.stereo": {
+    "message": "स्टीरियो"
+  },
   "media.continuing": {
     "message": "{time} से जारी"
   },

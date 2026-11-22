@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "Δεν είναι δυνατή η αναπαραγωγή: {err}. Το 1 το εμφανίζει ως κείμενο."
   },
+  "media.channels.many": {
+    "message": "{count} κανάλια"
+  },
+  "media.channels.mono": {
+    "message": "μονοφωνικό"
+  },
+  "media.channels.stereo": {
+    "message": "στερεοφωνικό"
+  },
   "media.continuing": {
     "message": "Συνέχεια από {time}"
   },

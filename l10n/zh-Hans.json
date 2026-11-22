@@ -2132,6 +2132,15 @@
   "media.cannot_play_as_text": {
     "message": "无法播放：{err}。按 1 以文本形式显示。"
   },
+  "media.channels.many": {
+    "message": "{count} 声道"
+  },
+  "media.channels.mono": {
+    "message": "单声道"
+  },
+  "media.channels.stereo": {
+    "message": "立体声"
+  },
   "media.continuing": {
     "message": "从 {time} 继续播放"
   },
