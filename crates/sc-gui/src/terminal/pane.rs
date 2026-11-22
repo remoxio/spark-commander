@@ -173,19 +173,14 @@ impl Commander {
         }
         .into();
         let commander = cx.entity().downgrade();
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let (commander, view) = (commander.clone(), view.clone());
-            alert.title(t!("terminal.close.title")).description(text.clone()).ok_text(t!("terminal.close.ok")).show_cancel(true).on_ok(move |_, window, cx| {
-                // Closed at once: its delayed close would give the focus back to the closed shell.
-                window.close_dialog(cx);
-                // Found again: another tab may have closed meanwhile.
-                let _ = commander.update(cx, |this, cx| {
-                    if let Some(ix) = this.terminals.iter().position(|tab| tab.view == view) {
-                        this.close_terminal_tab(ix, window, cx);
-                    }
-                });
-                false
-            })
+        // The question closes at once: its delayed close would give the focus back to the closed shell.
+        crate::dialogs::dialog_window::question(t!("terminal.close.title"), text.to_string(), t!("terminal.close.ok"), false, window, cx, move |window, cx| {
+            // Found again: another tab may have closed meanwhile.
+            let _ = commander.update(cx, |this, cx| {
+                if let Some(ix) = this.terminals.iter().position(|tab| tab.view == view) {
+                    this.close_terminal_tab(ix, window, cx);
+                }
+            });
         });
     }
 

@@ -522,16 +522,22 @@ impl TextEditor {
             return self.read_again(window, cx);
         }
         let this = cx.weak_entity();
+        if crate::dialogs::dialog_window::separate() {
+            let (title, text, button) = (t!("editor.reload.title"), t!("editor.reload.text"), t!("editor.reload.button"));
+            return crate::dialogs::dialog_window::question(title, text, button, true, window, cx, move |window, cx| {
+                let _ = this.update(cx, |this, cx| this.read_again(window, cx));
+            });
+        }
         window.open_dialog(cx, move |dialog, _, _| {
             let reload = this.clone();
             let buttons = h_flex()
                 .gap_2()
                 .justify_end()
                 .child(Button::new("editor-reload").danger().label(t!("editor.reload.button")).on_click(move |_, window, cx| {
-                    window.close_dialog(cx);
+                    crate::dialogs::dialog_window::close(window, cx);
                     let _ = reload.update(cx, |this, cx| this.read_again(window, cx));
                 }))
-                .child(Button::new("editor-reload-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| window.close_dialog(cx)));
+                .child(Button::new("editor-reload-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
             dialog
                 .title(t!("editor.reload.title"))
                 .overlay_closable(false)
@@ -561,19 +567,28 @@ impl TextEditor {
     /// Saving what was shown anyway writes the text as shown.
     fn confirm_save(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let this = cx.weak_entity();
+        if crate::dialogs::dialog_window::separate() {
+            let (title, text, button) = (t!("editor.save_anyway.title"), t!("editor.save_anyway.text"), t!("editor.save_anyway.button"));
+            return crate::dialogs::dialog_window::question(title, text, button, true, window, cx, move |window, cx| {
+                let _ = this.update(cx, |this, cx| {
+                    this.forced = false;
+                    this.save(window, cx)
+                });
+            });
+        }
         window.open_dialog(cx, move |dialog, _, _| {
             let save = this.clone();
             let buttons = h_flex()
                 .gap_2()
                 .justify_end()
                 .child(Button::new("editor-save-anyway").danger().label(t!("editor.save_anyway.button")).on_click(move |_, window, cx| {
-                    window.close_dialog(cx);
+                    crate::dialogs::dialog_window::close(window, cx);
                     let _ = save.update(cx, |this, cx| {
                         this.forced = false;
                         this.save(window, cx)
                     });
                 }))
-                .child(Button::new("editor-save-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| window.close_dialog(cx)));
+                .child(Button::new("editor-save-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
             dialog
                 .title(t!("editor.save_anyway.title"))
                 .overlay_closable(false)
@@ -598,6 +613,33 @@ impl TextEditor {
             true => t!("editor.close.unsaved", name = name),
             false => t!("editor.close.unsent", name = name),
         };
+        if crate::dialogs::dialog_window::separate() {
+            use crate::dialogs::dialog_window::{Choice, Style};
+            let save = move |window: &mut Window, cx: &mut App| {
+                // A server's copy: closed once sent.
+                let saved = this.update(cx, |this, cx| {
+                    let saved = match this.edited {
+                        true => this.save(window, cx),
+                        false => {
+                            this.send(window, cx);
+                            true
+                        }
+                    };
+                    this.close_after = saved && this.unsent;
+                    saved && !this.unsent
+                });
+                if let Ok(true) = saved {
+                    window.remove_window();
+                }
+            };
+            let choices = vec![
+                Choice { label: t!("editor.close.save"), style: Style::Primary, run: Rc::new(save) },
+                Choice { label: t!("editor.close.discard"), style: Style::Outline, run: Rc::new(|window, _| window.remove_window()) },
+                Choice { label: t!("editor.dialog.cancel"), style: Style::Outline, run: Rc::new(|_, _| {}) },
+            ];
+            crate::dialogs::dialog_window::choose(t!("editor.close.title"), None, what, choices, px(480.), window, cx);
+            return false;
+        }
         window.open_dialog(cx, move |dialog, _, _| {
             let save = this.clone();
             let buttons = h_flex()
@@ -618,11 +660,11 @@ impl TextEditor {
                     });
                     match saved {
                         Ok(true) => window.remove_window(),
-                        _ => window.close_dialog(cx),
+                        _ => crate::dialogs::dialog_window::close(window, cx),
                     }
                 }))
                 .child(Button::new("editor-discard").outline().label(t!("editor.close.discard")).on_click(|_, window, _| window.remove_window()))
-                .child(Button::new("editor-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| window.close_dialog(cx)));
+                .child(Button::new("editor-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
             dialog
                 .title(t!("editor.close.title"))
                 .overlay_closable(false)

@@ -69,6 +69,7 @@ impl Commander {
             .collect();
         let (fs, folder) = (panel.fs(), panel.folder().to_owned());
         let commander = cx.entity().downgrade();
+        let build = move |_, window: &mut Window, cx: &mut App| {
         let input = |value: &str, window: &mut Window, cx: &mut App| {
             let value = value.to_owned();
             cx.new(|cx| InputState::new(window, cx).default_value(value))
@@ -120,14 +121,10 @@ impl Commander {
                 _changes: subscriptions,
             }
         });
-        window.open_dialog(cx, move |dialog, _, _| {
-            dialog
-                .title(sc_core::t!("rename.dialog_title"))
-                .width(px(980.))
-                .overlay_closable(false)
-                .child(view.clone())
-        });
         crate::dialogs::pack_dialog::focus_all(&name_mask, window, cx);
+        view
+        };
+        crate::dialogs::dialog_window::show(sc_core::t!("rename.dialog_title"), size(px(980.), px(600.)), window, cx, build, |_, _, _| false);
     }
 }
 
@@ -477,7 +474,7 @@ impl Render for RenameDialog {
                             .outline()
                             .label(sc_core::t!("rename.close"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     ),
             )
     }

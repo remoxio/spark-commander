@@ -153,6 +153,23 @@ pub fn offer(
 ) {
     let text = t!("addons.offer.text", name = name, addon = addon.name());
     let go_on: Rc<dyn Fn(&mut Window, &mut App)> = Rc::new(go_on);
+    if crate::dialogs::dialog_window::separate() {
+        let build = move |main, _: &mut Window, cx: &mut App| {
+            let view = cx.new(|_| Offer { text, commander, go_on, main, answered: false });
+            // Closed unanswered (Escape): as Cancel, it goes on without.
+            view.update(cx, |_, cx| {
+                cx.on_release(|this: &mut Offer, cx| {
+                    if !this.answered {
+                        let go_on = this.go_on.clone();
+                        this.main.run(cx, move |window, cx| go_on(window, cx));
+                    }
+                })
+                .detach()
+            });
+            (view, None)
+        };
+        return crate::dialogs::dialog_window::open(t!("addons.offer.title"), size(px(480.), px(170.)), window, cx, build);
+    }
     window.open_dialog(cx, move |dialog, _, _| {
         let (yes, no, never, cancel) = (commander.clone(), go_on.clone(), go_on.clone(), go_on.clone());
         let commander = commander.clone();
@@ -174,18 +191,18 @@ pub fn offer(
                             .gap_2()
                             .justify_end()
                             .child(Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(move |_, window, cx| {
-                                window.close_dialog(cx);
+                                crate::dialogs::dialog_window::close(window, cx);
                                 let Some(settings) = yes.upgrade().map(|this| this.read(cx).settings.clone()) else { return };
                                 let page = sc_core::settings::PAGES.iter().position(|&page| page == "Add-ons").unwrap_or(0);
                                 crate::dialogs::settings_dialog::open(yes.clone(), settings, page, window, cx);
                             }))
                             .child(Button::new("offer-no").outline().label(t!("addons.offer.no")).on_click(move |_, window, cx| {
-                                window.close_dialog(cx);
+                                crate::dialogs::dialog_window::close(window, cx);
                                 no(window, cx);
                             }))
                             .child(Button::new("offer-never").outline().label(t!("addons.offer.never")).on_click(
                                 move |_, window, cx| {
-                                    window.close_dialog(cx);
+                                    crate::dialogs::dialog_window::close(window, cx);
                                     let _ = commander.update(cx, |this, cx| {
                                         this.settings.never_offer_addons = true;
                                         this.save_settings(window, cx);
@@ -285,4 +302,57 @@ pub fn remove(addon: Addon, cx: &mut App) {
 /// "24.3 MB".
 pub fn megabytes(bytes: u64) -> String {
     t!("addons.megabytes", size = format!("{:.1}", bytes as f64 / 1_000_000.))
+}
+
+/// The offer in a dialog window: its answer goes to the main window.
+struct Offer {
+    text: String,
+    commander: WeakEntity<crate::Commander>,
+    go_on: Rc<dyn Fn(&mut Window, &mut App)>,
+    main: crate::dialogs::dialog_window::Main,
+    answered: bool,
+}
+
+impl Offer {
+    fn answer(&mut self, window: &mut Window, cx: &mut App, then: impl FnOnce(&mut Window, &mut App) + 'static) {
+        self.answered = true;
+        crate::dialogs::dialog_window::close(window, cx);
+        self.main.run(cx, then);
+    }
+}
+
+impl Render for Offer {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        v_flex()
+            .gap_3()
+            .text_sm()
+            .child(div().whitespace_normal().child(self.text.clone()))
+            .child(
+                h_flex()
+                    .gap_2()
+                    .justify_end()
+                    .child(Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(cx.listener(|this, _, window, cx| {
+                        let commander = this.commander.clone();
+                        this.answer(window, cx, move |window, cx| {
+                            let Some(settings) = commander.upgrade().map(|this| this.read(cx).settings.clone()) else { return };
+                            let page = sc_core::settings::PAGES.iter().position(|&page| page == "Add-ons").unwrap_or(0);
+                            crate::dialogs::settings_dialog::open(commander, settings, page, window, cx);
+                        });
+                    })))
+                    .child(Button::new("offer-no").outline().label(t!("addons.offer.no")).on_click(cx.listener(|this, _, window, cx| {
+                        let go_on = this.go_on.clone();
+                        this.answer(window, cx, move |window, cx| go_on(window, cx));
+                    })))
+                    .child(Button::new("offer-never").outline().label(t!("addons.offer.never")).on_click(cx.listener(|this, _, window, cx| {
+                        let (commander, go_on) = (this.commander.clone(), this.go_on.clone());
+                        this.answer(window, cx, move |window, cx| {
+                            let _ = commander.update(cx, |this, cx| {
+                                this.settings.never_offer_addons = true;
+                                this.save_settings(window, cx);
+                            });
+                            go_on(window, cx);
+                        });
+                    }))),
+            )
+    }
 }

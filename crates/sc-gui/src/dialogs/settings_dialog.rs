@@ -73,6 +73,7 @@ pub fn open(
     window: &mut Window,
     cx: &mut App,
 ) {
+    let build = move |owner: Option<crate::dialogs::dialog_window::Main>, window: &mut Window, cx: &mut App| {
     // At most `digits` digits; any text with none.
     let mut input = |value: String, digits: usize, cx: &mut App| {
         cx.new(|cx| {
@@ -202,6 +203,7 @@ pub fn open(
             saved: settings.clone(),
             draft: settings,
             page,
+            owner,
         }
     });
     if PAGES[page] == "Add-ons" {
@@ -210,6 +212,15 @@ pub fn open(
     if PAGES[page] == "Passwords" {
         view.update(cx, |this, cx| this.read_passwords(cx));
     }
+    // Closed however, the sidebar and the terminal are back as applied.
+    view.update(cx, |_, cx| cx.on_release(|this, cx| this.untry_later(cx)).detach());
+    view
+    };
+    if crate::dialogs::dialog_window::separate() {
+        let size = size(px(WIDTH), px(BODY_HEIGHT + 90.));
+        return crate::dialogs::dialog_window::open(t!("settings.title"), size, window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
+    }
+    let view = build(None, window, cx);
     window.open_dialog(cx, move |dialog, _, cx| {
         let closing = view.clone();
         dialog
@@ -217,7 +228,7 @@ pub fn open(
             .width(px(WIDTH))
             .overlay_closable(false)
             .child(view.clone())
-            .footer(buttons(&view, cx))
+            .footer(buttons(&view, view.read(cx).draft != view.read(cx).saved))
             .on_close(move |_, window, cx| closing.update(cx, |this, cx| this.untry(window, cx)))
     });
 }
@@ -374,6 +385,8 @@ impl Picker {
 
 struct SettingsDialog {
     commander: WeakEntity<Commander>,
+    /// In a window of its own: the main window, which it changes.
+    owner: Option<crate::dialogs::dialog_window::Main>,
     /// As last applied.
     saved: Settings,
     draft: Settings,
@@ -429,14 +442,28 @@ impl SettingsDialog {
 
     /// The sidebar and the terminal as last applied, whatever was tried.
     fn untry(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let look = self.saved.clone();
-        let _ = self.commander.update(cx, |commander, cx| commander.show_backdrop(&look, window, cx));
+        let (look, commander) = (self.saved.clone(), self.commander.clone());
+        crate::dialogs::dialog_window::answer(self.owner, window, cx, move |window, cx| {
+            let _ = commander.update(cx, |commander, cx| commander.show_backdrop(&look, window, cx));
+        });
+    }
+
+    /// As `untry`, as its window closes.
+    fn untry_later(&self, cx: &mut App) {
+        let (look, commander) = (self.saved.clone(), self.commander.clone());
+        if let Some(main) = self.owner {
+            main.run(cx, move |window, cx| {
+                let _ = commander.update(cx, |commander, cx| commander.show_backdrop(&look, window, cx));
+            });
+        }
     }
 
     /// The draft's sidebar and terminal shown, before they are applied.
     fn try_backdrop(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let look = self.draft.clone();
-        let _ = self.commander.update(cx, |commander, cx| commander.show_backdrop(&look, window, cx));
+        let (look, commander) = (self.draft.clone(), self.commander.clone());
+        crate::dialogs::dialog_window::answer(self.owner, window, cx, move |window, cx| {
+            let _ = commander.update(cx, |commander, cx| commander.show_backdrop(&look, window, cx));
+        });
         cx.notify();
     }
 
@@ -444,9 +471,9 @@ impl SettingsDialog {
         if self.draft == self.saved {
             return;
         }
-        let draft = self.draft.clone();
-        let _ = self.commander.update(cx, |commander, cx| {
-            commander.apply_settings(draft, window, cx)
+        let (draft, commander) = (self.draft.clone(), self.commander.clone());
+        crate::dialogs::dialog_window::answer(self.owner, window, cx, move |window, cx| {
+            let _ = commander.update(cx, |commander, cx| commander.apply_settings(draft, window, cx));
         });
         self.saved = self.draft.clone();
         cx.notify();
@@ -1283,20 +1310,22 @@ impl SettingsDialog {
 
 impl Render for SettingsDialog {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        h_flex()
+        let page = h_flex()
             .w_full()
             .h(px(BODY_HEIGHT))
             .items_start()
             .gap_3()
             .text_sm()
             .child(self.render_rail(cx))
-            .child(self.render_page(cx))
+            .child(self.render_page(cx));
+        // In a window of its own: the footer's buttons under it.
+        let footer = self.owner.is_some().then(|| div().pt_4().child(buttons(&cx.entity(), self.draft != self.saved)));
+        v_flex().w_full().child(page).children(footer)
     }
 }
 
 /// OK, Cancel and Apply, in the dialog's footer.
-fn buttons(view: &Entity<SettingsDialog>, cx: &App) -> impl IntoElement {
-    let changed = view.read(cx).draft != view.read(cx).saved;
+fn buttons(view: &Entity<SettingsDialog>, changed: bool) -> impl IntoElement {
     let (ok, cancel, apply) = (view.clone(), view.clone(), view.clone());
     h_flex()
         .gap_2()
@@ -1308,7 +1337,7 @@ fn buttons(view: &Entity<SettingsDialog>, cx: &App) -> impl IntoElement {
                 .min_w(px(80.))
                 .on_click(move |_, window, cx| {
                     ok.update(cx, |this, cx| this.apply(window, cx));
-                    window.close_dialog(cx);
+                    crate::dialogs::dialog_window::close(window, cx);
                 }),
         )
         .child(
@@ -1318,7 +1347,7 @@ fn buttons(view: &Entity<SettingsDialog>, cx: &App) -> impl IntoElement {
                 .min_w(px(80.))
                 .on_click(move |_, window, cx| {
                     cancel.update(cx, |this, cx| this.untry(window, cx));
-                    window.close_dialog(cx);
+                    crate::dialogs::dialog_window::close(window, cx);
                 }),
         )
         .child(

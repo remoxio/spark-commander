@@ -309,26 +309,22 @@ struct Connecting;
 
 /// A share's user and password, after `why` it would not open.
 fn ask_login(commander: Entity<Commander>, side: usize, url: String, user: String, why: String, window: &mut Window, cx: &mut App) {
-    let user = cx.new(|cx| InputState::new(window, cx).default_value(user));
-    let password = cx.new(|cx| InputState::new(window, cx).masked(true));
-    let focus = match user.read(cx).value().is_empty() {
-        true => user.clone(),
-        false => password.clone(),
+    let build = move |main, window: &mut Window, cx: &mut App| {
+        let user = cx.new(|cx| InputState::new(window, cx).default_value(user));
+        let password = cx.new(|cx| InputState::new(window, cx).masked(true));
+        let focus = match user.read(cx).value().is_empty() {
+            true => user.clone(),
+            false => password.clone(),
+        };
+        crate::dialogs::pack_dialog::focus_all(&focus, window, cx);
+        cx.new(|_| LoginDialog { why, commander, side, url, user, password, remember: false, main })
     };
-    let view = cx.new(|_| LoginDialog { why, commander, side, url, user, password, remember: false });
-    window.open_dialog(cx, move |dialog, _, _| {
-        let enter = view.clone();
-        dialog
-            .title(t!("remote.login.title"))
-            .width(px(520.))
-            .overlay_closable(false)
-            .child(view.clone())
-            .on_ok(move |_, window, cx| {
-                enter.update(cx, |this, cx| this.finish(window, cx));
-                false
-            })
-    });
-    focus.update(cx, |input, cx| input.focus(window, cx));
+    // It closes itself.
+    let ok = |view: &Entity<LoginDialog>, window: &mut Window, cx: &mut App| {
+        view.update(cx, |this, cx| this.finish(window, cx));
+        false
+    };
+    crate::dialogs::dialog_window::show(t!("remote.login.title"), size(px(560.), px(240.)), window, cx, build, ok);
 }
 
 struct LoginDialog {
@@ -339,6 +335,7 @@ struct LoginDialog {
     user: Entity<InputState>,
     password: Entity<InputState>,
     remember: bool,
+    main: Option<crate::dialogs::dialog_window::Main>,
 }
 
 impl LoginDialog {
@@ -346,9 +343,12 @@ impl LoginDialog {
         let user = self.user.read(cx).value().trim().to_string();
         let password = self.password.read(cx).value().to_string();
         let (side, url, remember) = (self.side, self.url.clone(), self.remember);
-        window.close_dialog(cx);
-        self.commander.update(cx, |commander, cx| {
-            commander.mount_as(side, url, Some(Login { user, password }), remember, window, cx);
+        crate::dialogs::dialog_window::close(window, cx);
+        let commander = self.commander.clone();
+        crate::dialogs::dialog_window::answer(self.main, window, cx, move |window, cx| {
+            commander.update(cx, |commander, cx| {
+                commander.mount_as(side, url, Some(Login { user, password }), remember, window, cx);
+            });
         });
     }
 }
@@ -391,7 +391,7 @@ impl Render for LoginDialog {
                             .outline()
                             .label(t!("remote.dialog.cancel"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     ),
             )
     }
@@ -474,6 +474,10 @@ fn ask_user(
             fingerprint,
         } => {
             let text = t!("remote.unknown_host.text", host = host, key_type = key_type, fingerprint = fingerprint);
+            if crate::dialogs::dialog_window::separate() {
+                let build = move |_, _: &mut Window, cx: &mut App| cx.new(|_| HostKeyDialog { text, answer });
+                return crate::dialogs::dialog_window::show(t!("remote.unknown_host.title"), size(px(560.), px(200.)), window, cx, build, |_, _, _| false);
+            }
             window.open_dialog(cx, move |dialog, _, _| {
                 let button = |id: &'static str, label: String, reply: Reply| {
                     let answer = answer.clone();
@@ -481,7 +485,7 @@ fn ask_user(
                         .label(label)
                         .on_click(move |_, window, cx| {
                             answer.borrow_mut().send(reply.clone());
-                            window.close_dialog(cx);
+                            crate::dialogs::dialog_window::close(window, cx);
                         })
                 };
                 dialog
@@ -521,29 +525,48 @@ fn ask_user(
             text,
             keyring,
         } => {
-            let input = cx.new(|cx| InputState::new(window, cx).masked(true));
-            let view = cx.new(|_| SecretDialog {
-                text,
-                input: input.clone(),
-                answer,
-                keyring,
-                remember: false,
-                keep,
-            });
-            window.open_dialog(cx, move |dialog, _, _| {
-                let enter = view.clone();
-                dialog
-                    .title(title.clone())
-                    .width(px(460.))
-                    .overlay_closable(false)
-                    .child(view.clone())
-                    .on_ok(move |_, window, cx| {
-                        enter.update(cx, |this, cx| this.finish(window, cx));
-                        false
-                    })
-            });
-            input.update(cx, |input, cx| input.focus(window, cx));
+            let build = move |_, window: &mut Window, cx: &mut App| {
+                let input = cx.new(|cx| InputState::new(window, cx).masked(true));
+                crate::dialogs::pack_dialog::focus_all(&input, window, cx);
+                cx.new(|_| SecretDialog { text, input, answer, keyring, remember: false, keep })
+            };
+            // It closes itself.
+            let ok = |view: &Entity<SecretDialog>, window: &mut Window, cx: &mut App| {
+                view.update(cx, |this, cx| this.finish(window, cx));
+                false
+            };
+            crate::dialogs::dialog_window::show(title, size(px(460.), px(180.)), window, cx, build, ok);
         }
+    }
+}
+
+/// An unknown server's key, in a dialog window: trusted and kept, trusted once, or not.
+struct HostKeyDialog {
+    text: String,
+    answer: Rc<RefCell<Answer>>,
+}
+
+impl Render for HostKeyDialog {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let button = |id: &'static str, label: String, reply: Reply| {
+            let answer = self.answer.clone();
+            Button::new(id).label(label).on_click(move |_, window, cx| {
+                answer.borrow_mut().send(reply.clone());
+                crate::dialogs::dialog_window::close(window, cx);
+            })
+        };
+        v_flex()
+            .gap_3()
+            .text_sm()
+            .child(div().whitespace_normal().child(self.text.clone()))
+            .child(
+                h_flex()
+                    .gap_2()
+                    .justify_end()
+                    .child(button("Connect and remember", t!("remote.unknown_host.remember"), Reply::Trust { remember: true }).primary())
+                    .child(button("Connect once", t!("remote.unknown_host.once"), Reply::Trust { remember: false }).outline())
+                    .child(button("Cancel", t!("remote.dialog.cancel"), Reply::Cancel).outline()),
+            )
     }
 }
 
@@ -564,7 +587,7 @@ impl SecretDialog {
             *self.keep.lock().unwrap() = Some((key, secret.clone()));
         }
         self.answer.borrow_mut().send(Reply::Secret(secret));
-        window.close_dialog(cx);
+        crate::dialogs::dialog_window::close(window, cx);
     }
 }
 
@@ -609,7 +632,7 @@ impl Render for SecretDialog {
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.answer.borrow_mut().send(Reply::Cancel);
-                                window.close_dialog(cx);
+                                crate::dialogs::dialog_window::close(window, cx);
                             })),
                     ),
             )

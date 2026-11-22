@@ -48,13 +48,8 @@ impl Commander {
 
     pub(crate) fn internal_associations(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let commander = cx.entity().downgrade();
-        let view = cx.new(|_| AssociationsDialog { commander });
-        window.open_dialog(cx, move |dialog, _, _| {
-            dialog
-                .title(sc_core::t!("associations.title"))
-                .width(px(820.))
-                .child(view.clone())
-        });
+        let build = move |_, _: &mut Window, cx: &mut App| cx.new(|_| AssociationsDialog { commander });
+        crate::dialogs::dialog_window::show(sc_core::t!("associations.title"), size(px(820.), px(440.)), window, cx, build, |_, _, _| false);
     }
 
     fn save_associations(
@@ -189,7 +184,7 @@ impl Render for AssociationsDialog {
                             .primary()
                             .label(sc_core::t!("associations.close"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     ),
             )
     }
@@ -202,6 +197,8 @@ fn edit(
     cx: &mut App,
     done: impl Fn(Association, &mut Window, &mut App) + 'static,
 ) {
+    let done: Saved = Rc::new(done);
+    let build = move |main, window: &mut Window, cx: &mut App| {
     let fields = [
         &association.mask,
         &association.open,
@@ -212,27 +209,18 @@ fn edit(
         let value = value.clone();
         cx.new(|cx| InputState::new(window, cx).default_value(value))
     });
-    let mask = fields[0].clone();
-    let view = cx.new(|_| EditAssociation {
-        fields,
-        done: Rc::new(done),
-    });
-    window.open_dialog(cx, move |dialog, _, _| {
-        let ok = view.clone();
-        dialog
-            .title(sc_core::t!("associations.edit_dialog.title"))
-            .width(px(560.))
-            .overlay_closable(false)
-            .child(view.clone())
-            .on_ok(move |_, window, cx| ok.update(cx, |this, cx| this.finish(window, cx)))
-    });
-    crate::dialogs::pack_dialog::focus_all(&mask, window, cx);
+    crate::dialogs::pack_dialog::focus_all(&fields[0], window, cx);
+    cx.new(|_| EditAssociation { fields, done, main })
+    };
+    let ok = |view: &Entity<EditAssociation>, window: &mut Window, cx: &mut App| view.update(cx, |this, cx| this.finish(window, cx));
+    crate::dialogs::dialog_window::show(sc_core::t!("associations.edit_dialog.title"), size(px(560.), px(260.)), window, cx, build, ok);
 }
 
 struct EditAssociation {
     /// Mask, open, view, edit.
     fields: [Entity<InputState>; 4],
     done: Saved,
+    main: Option<crate::dialogs::dialog_window::Main>,
 }
 
 impl EditAssociation {
@@ -245,16 +233,8 @@ impl EditAssociation {
             window.push_notification(Notification::error(sc_core::t!("associations.mask_needed")), cx);
             return false;
         }
-        (self.done)(
-            Association {
-                mask,
-                open,
-                view,
-                edit,
-            },
-            window,
-            cx,
-        );
+        let done = self.done.clone();
+        crate::dialogs::dialog_window::answer(self.main, window, cx, move |window, cx| done(Association { mask, open, view, edit }, window, cx));
         true
     }
 }
@@ -288,7 +268,7 @@ impl Render for EditAssociation {
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 if this.finish(window, cx) {
-                                    window.close_dialog(cx);
+                                    crate::dialogs::dialog_window::close(window, cx);
                                 }
                             })),
                     )
@@ -297,7 +277,7 @@ impl Render for EditAssociation {
                             .outline()
                             .label(sc_core::t!("associations.cancel"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     ),
             )
     }

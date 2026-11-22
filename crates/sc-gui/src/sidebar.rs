@@ -414,13 +414,9 @@ impl Commander {
             return delete(self, window, cx);
         }
         let this = cx.entity().downgrade();
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let (this, delete) = (this.clone(), delete.clone());
-            alert.title(t!("connections.folder.delete_title")).description(text.clone()).ok_text(t!("connections.delete")).show_cancel(true).on_ok(move |_, window, cx| {
-                let delete = delete.clone();
-                let _ = this.update(cx, |this, cx| delete(this, window, cx));
-                true
-            })
+        crate::dialogs::dialog_window::question(t!("connections.folder.delete_title"), text, t!("connections.delete"), false, window, cx, move |window, cx| {
+            let delete = delete.clone();
+            let _ = this.update(cx, |this, cx| delete(this, window, cx));
         });
     }
 
@@ -1362,16 +1358,12 @@ impl Commander {
     /// Back to the bookmarks it starts with; asked first, as the user's go.
     pub(crate) fn confirm_reset_bookmarks(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let commander = cx.entity().downgrade();
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let commander = commander.clone();
-            alert.title(t!("bookmarks.reset_title")).description(t!("bookmarks.reset_confirm")).ok_text(t!("bookmarks.reset_button")).show_cancel(true).on_ok(move |_, window, cx| {
-                let _ = commander.update(cx, |this, cx| {
-                    this.settings.reset_bookmarks();
-                    this.save_settings(window, cx);
-                    cx.notify();
-                });
-                true
-            })
+        crate::dialogs::dialog_window::question(t!("bookmarks.reset_title"), t!("bookmarks.reset_confirm"), t!("bookmarks.reset_button"), false, window, cx, move |window, cx| {
+            let _ = commander.update(cx, |this, cx| {
+                this.settings.reset_bookmarks();
+                this.save_settings(window, cx);
+                cx.notify();
+            });
         });
     }
 

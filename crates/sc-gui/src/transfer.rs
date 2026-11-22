@@ -244,9 +244,8 @@ impl Commander {
         };
         let verb = verb(kind);
         let commander = cx.entity().downgrade();
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let (commander, batch, archive, dir, title) = (commander.clone(), batch.clone(), archive.clone(), dir.clone(), title.clone());
-            alert.title(verb.clone()).description(text.clone()).ok_text(verb.clone()).show_cancel(true).on_ok(move |_, window, cx| {
+        crate::dialogs::dialog_window::question(verb.clone(), text, verb, false, window, cx, move |window, cx| {
+            {
                 let (batch, archive, dir, title) = (batch.clone(), archive.clone(), dir.clone(), title.clone());
                 let _ = commander.update(cx, |this, cx| {
                     let queue = this.transfers.queue.clone();
@@ -281,8 +280,7 @@ impl Commander {
                     }
                     cx.notify();
                 });
-                true
-            })
+            }
         });
     }
 
@@ -400,7 +398,7 @@ impl Commander {
 
     fn queue_changed(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         // The question's dialog gone unanswered (closed in place of another): asked again.
-        let lost = self.transfers.asked.is_some() && !window.has_active_dialog(cx);
+        let lost = self.transfers.asked.is_some() && !window.has_active_dialog(cx) && !crate::dialogs::dialog_window::any_open(cx);
         let transfers = &mut self.transfers;
         let version = transfers.queue.version();
         if version == transfers.version && !lost {
@@ -484,14 +482,13 @@ fn open_dialog(
 ) {
     // Linux: a window of its own, framed by the desktop; its answer goes to the main window.
     if crate::dialogs::dialog_window::separate() {
-        let main = window.window_handle();
-        return crate::dialogs::dialog_window::open(title, size(px(560.), px(300.)), window, cx, move |window, cx| {
+        return crate::dialogs::dialog_window::open(title, size(px(560.), px(300.)), window, cx, move |main, window, cx| {
             let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
             input.update(cx, |input, cx| {
                 input.focus(window, cx);
                 input.select_all(window, cx);
             });
-            cx.new(|cx| {
+            let view = cx.new(|cx| {
                 let enter = cx.subscribe_in(&input, window, |this: &mut TransferDialog, _, event: &InputEvent, window, cx| {
                     if let InputEvent::PressEnter { .. } = event {
                         this.finish(window, cx);
@@ -499,7 +496,8 @@ fn open_dialog(
                     }
                 });
                 TransferDialog { label, input, overwrite: Overwrite::Ask, done: Rc::new(done), main: Some(main), _enter: Some(enter) }
-            })
+            });
+            (view, None)
         });
     }
     let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
@@ -535,7 +533,7 @@ struct TransferDialog {
     overwrite: Overwrite,
     done: Done,
     /// In a window of its own: the main window, which takes the answer.
-    main: Option<AnyWindowHandle>,
+    main: Option<crate::dialogs::dialog_window::Main>,
     _enter: Option<Subscription>,
 }
 
@@ -545,17 +543,14 @@ impl TransferDialog {
         match self.main {
             Some(main) => {
                 let (done, overwrite) = (self.done.clone(), self.overwrite);
-                let _ = main.update(cx, |_, window, cx| done(target, overwrite, window, cx));
+                main.run(cx, move |window, cx| done(target, overwrite, window, cx));
             }
             None => (self.done)(target, self.overwrite, window, cx),
         }
     }
 
     fn close(&self, window: &mut Window, cx: &mut App) {
-        match self.main {
-            Some(_) => window.remove_window(),
-            None => window.close_dialog(cx),
-        }
+        crate::dialogs::dialog_window::close(window, cx);
     }
 }
 
@@ -659,6 +654,19 @@ fn ask(queue: &Queue, job: &JobView, window: &mut Window, cx: &mut App) {
     };
     let (queue, id) = (queue.clone(), job.id);
     let job_title = job.title.clone();
+    if crate::dialogs::dialog_window::separate() {
+        use crate::dialogs::dialog_window::{Choice, Style};
+        let choices = answers.into_iter().map(|(answer, label)| {
+            let queue = queue.clone();
+            let style = match answer {
+                Answer::Overwrite | Answer::Retry => Style::Primary,
+                Answer::Cancel => Style::Danger,
+                _ => Style::Outline,
+            };
+            Choice { label, style, run: Rc::new(move |_, _| queue.answer(id, answer)) }
+        });
+        return crate::dialogs::dialog_window::choose(title, Some(job_title), text, choices.collect(), px(560.), window, cx);
+    }
     window.open_dialog(cx, move |dialog, _, _| {
         let buttons = answers.iter().map(|(answer, label)| {
             let (queue, answer) = (queue.clone(), *answer);
@@ -666,7 +674,7 @@ fn ask(queue: &Queue, job: &JobView, window: &mut Window, cx: &mut App) {
                 .label(label.clone())
                 .on_click(move |_, window, cx| {
                     queue.answer(id, answer);
-                    window.close_dialog(cx);
+                    crate::dialogs::dialog_window::close(window, cx);
                 });
             match answer {
                 Answer::Overwrite | Answer::Retry => button.primary(),

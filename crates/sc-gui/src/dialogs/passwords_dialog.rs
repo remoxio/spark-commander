@@ -67,28 +67,26 @@ pub fn keep(key: String, password: String, window: &mut Window, cx: &mut App) {
 /// Asks for the master password (a new one twice) and unlocks or sets it in
 /// the background; `done` hears once that has worked.
 pub fn ask(what: Ask, window: &mut Window, cx: &mut App, done: impl Fn(&mut Window, &mut App) + 'static) {
-    let mut masked = |cx: &mut App| cx.new(|cx| InputState::new(window, cx).masked(true));
-    let first = masked(cx);
-    let again = matches!(what, Ask::Set | Ask::First).then(|| masked(cx));
-    let view = cx.new(|_| MasterDialog { what, first: first.clone(), again, problem: None, working: false, done: Rc::new(done) });
+    let done: Done = Rc::new(done);
+    let build = move |main, window: &mut Window, cx: &mut App| {
+        let mut masked = |cx: &mut App| cx.new(|cx| InputState::new(window, cx).masked(true));
+        let first = masked(cx);
+        let again = matches!(what, Ask::Set | Ask::First).then(|| masked(cx));
+        crate::dialogs::pack_dialog::focus_all(&first, window, cx);
+        cx.new(|_| MasterDialog { what, first, again, problem: None, working: false, done, main })
+    };
     let title = match what {
         Ask::Unlock => t!("passwords.title.unlock"),
         Ask::Set | Ask::First => t!("passwords.title.set"),
         Ask::Reveal => t!("passwords.title.reveal"),
     };
-    window.open_dialog(cx, move |dialog, _, _| {
-        let ok = view.clone();
-        dialog
-            .title(title.clone())
-            .width(px(480.))
-            .overlay_closable(false)
-            .child(view.clone())
-            .on_ok(move |_, window, cx| {
-                ok.update(cx, |this, cx| this.finish(window, cx));
-                false
-            })
-    });
-    first.update(cx, |input, cx| input.focus(window, cx));
+    let height = if matches!(what, Ask::Set | Ask::First) { 300. } else { 230. };
+    // It closes itself once the password has worked.
+    let ok = |view: &Entity<MasterDialog>, window: &mut Window, cx: &mut App| {
+        view.update(cx, |this, cx| this.finish(window, cx));
+        false
+    };
+    crate::dialogs::dialog_window::show(title, size(px(480.), px(height)), window, cx, build, ok);
 }
 
 struct MasterDialog {
@@ -99,6 +97,7 @@ struct MasterDialog {
     problem: Option<String>,
     working: bool,
     done: Done,
+    main: Option<crate::dialogs::dialog_window::Main>,
 }
 
 impl MasterDialog {
@@ -132,17 +131,20 @@ impl MasterDialog {
                 this.working = false;
                 match worked {
                     Ok(()) => {
-                        window.close_dialog(cx);
+                        crate::dialogs::dialog_window::close(window, cx);
                         let text = match this.what {
                             Ask::Unlock => Some(t!("passwords.done.unlocked")),
                             Ask::Set | Ask::First => Some(t!("passwords.done.set")),
                             Ask::Reveal => None,
                         };
-                        window.remove_notification::<Locked>(cx);
-                        if let Some(text) = text {
-                            window.push_notification(Notification::success(text), cx);
-                        }
-                        (this.done)(window, cx);
+                        let done = this.done.clone();
+                        crate::dialogs::dialog_window::answer(this.main, window, cx, move |window, cx| {
+                            window.remove_notification::<Locked>(cx);
+                            if let Some(text) = text {
+                                window.push_notification(Notification::success(text), cx);
+                            }
+                            done(window, cx);
+                        });
                     }
                     Err(err) => {
                         let text = err.to_string();
@@ -186,7 +188,7 @@ impl Render for MasterDialog {
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
                     )
-                    .child(Button::new("master-cancel").outline().label(t!("passwords.cancel")).min_w(px(80.)).on_click(|_, window, cx| window.close_dialog(cx))),
+                    .child(Button::new("master-cancel").outline().label(t!("passwords.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
             )
     }
 }

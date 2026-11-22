@@ -87,6 +87,7 @@ impl Commander {
     pub(crate) fn manage_tools(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let commander = cx.entity().downgrade();
         let tools = self.settings.tools.clone();
+        let build = move |_, window: &mut Window, cx: &mut App| {
         let name = cx.new(|cx| InputState::new(window, cx).placeholder(sc_core::t!("tools.name.placeholder")));
         let command = cx.new(|cx| InputState::new(window, cx).placeholder("meld \"%P%N\" \"%T%N\""));
         let view = cx.new(|cx| {
@@ -115,7 +116,9 @@ impl Commander {
             ToolsDialog { commander, tools, selected: None, name, command, capturing: false, note: None, _capture: capture, _events: events }
         });
         view.update(cx, |this, cx| this.select(Some(0), window, cx));
-        window.open_dialog(cx, move |dialog, _, _| dialog.title(sc_core::t!("tools.title")).width(px(680.)).overlay_closable(false).child(view.clone()));
+        view
+        };
+        crate::dialogs::dialog_window::show(sc_core::t!("tools.title"), size(px(680.), px(420.)), window, cx, build, |_, _, _| false);
     }
 }
 
@@ -291,6 +294,6 @@ impl Render for ToolsDialog {
             .child(list)
             .child(buttons)
             .child(editor)
-            .child(h_flex().child(div().flex_1()).child(Button::new("tools-close").primary().label(sc_core::t!("tools.close")).min_w(px(80.)).on_click(|_, window, cx| window.close_dialog(cx))))
+            .child(h_flex().child(div().flex_1()).child(Button::new("tools-close").primary().label(sc_core::t!("tools.close")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))))
     }
 }

@@ -245,15 +245,11 @@ impl SyncDirs {
         let trash = if gone_left + gone_right > 0 { "yes" } else { "no" };
         let text = t!("sync.confirm.text", actions = lines.join(", "), trash = trash);
         let (commander, roots) = (self.commander.clone(), (self.left.clone(), self.right.clone()));
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let (commander, todo, roots) = (commander.clone(), todo.clone(), roots.clone());
-            alert.title(t!("sync.confirm.title")).description(text.clone()).ok_text(t!("sync.confirm.ok")).show_cancel(true).on_ok(move |_, window, cx| {
-                let task = sync_dirs::synchronize(roots.0.clone(), roots.1.clone(), todo.clone());
-                let _ = commander.update(cx, |this, _| this.transfers.queue.push_task(task));
-                // The queue under the panels shows how it goes.
-                window.remove_window();
-                true
-            })
+        crate::dialogs::dialog_window::question(t!("sync.confirm.title"), text, t!("sync.confirm.ok"), false, window, cx, move |window, cx| {
+            let task = sync_dirs::synchronize(roots.0.clone(), roots.1.clone(), todo.clone());
+            let _ = commander.update(cx, |this, _| this.transfers.queue.push_task(task));
+            // The queue under the panels shows how it goes.
+            window.remove_window();
         });
     }
 

@@ -51,6 +51,7 @@ impl Commander {
         let fs = panel.fs();
         let queue = self.transfers.queue.clone();
         let time_text = sc_core::local_time(time, "%Y-%m-%d %H:%M:%S");
+        let build = move |_, window: &mut Window, cx: &mut App| {
         let time = cx.new(|cx| InputState::new(window, cx).default_value(time_text));
         let octal = cx.new(|cx| InputState::new(window, cx));
         let view = cx.new(|cx| {
@@ -81,15 +82,10 @@ impl Commander {
             }
         });
         view.update(cx, |this, cx| this.show_octal(window, cx));
-        window.open_dialog(cx, move |dialog, _, _| {
-            let ok = view.clone();
-            dialog
-                .title(title.clone())
-                .width(px(460.))
-                .overlay_closable(false)
-                .child(view.clone())
-                .on_ok(move |_, window, cx| ok.update(cx, |this, cx| this.finish(window, cx)))
-        });
+        view
+        };
+        let ok = |view: &Entity<AttributesDialog>, window: &mut Window, cx: &mut App| view.update(cx, |this, cx| this.finish(window, cx));
+        crate::dialogs::dialog_window::show(title, size(px(460.), px(420.)), window, cx, build, ok);
     }
 }
 
@@ -283,7 +279,7 @@ impl Render for AttributesDialog {
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 if this.finish(window, cx) {
-                                    window.close_dialog(cx);
+                                    crate::dialogs::dialog_window::close(window, cx);
                                 }
                             })),
                     )
@@ -292,7 +288,7 @@ impl Render for AttributesDialog {
                             .outline()
                             .label(sc_core::t!("attributes.cancel"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     ),
             )
     }

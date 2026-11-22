@@ -28,6 +28,7 @@ pub(crate) fn open_edit(
     cx: &mut App,
     done: impl Fn(Connection, &mut Window, &mut App) + 'static,
 ) {
+    let build = move |main, window: &mut Window, cx: &mut App| {
     let mut input = |value: Option<String>, placeholder: &str, cx: &mut App| {
         let placeholder = placeholder.to_owned();
         cx.new(|cx| {
@@ -88,20 +89,17 @@ pub(crate) fn open_edit(
         shown: None,
         folder: connection.folder.clone(),
         done: Rc::new(done),
-    });
-    window.open_dialog(cx, move |dialog, _, _| {
-        let enter = view.clone();
-        dialog
-            .title(t!("connections.dialog.title"))
-            .width(px(560.))
-            .overlay_closable(false)
-            .child(view.clone())
-            .on_ok(move |_, window, cx| {
-                enter.update(cx, |this, cx| this.finish(window, cx));
-                false
-            })
+        main,
     });
     crate::dialogs::pack_dialog::focus_all(&name, window, cx);
+    view
+    };
+    // It closes itself once the server is given.
+    let ok = |view: &Entity<EditConnection>, window: &mut Window, cx: &mut App| {
+        view.update(cx, |this, cx| this.finish(window, cx));
+        false
+    };
+    crate::dialogs::dialog_window::show(t!("connections.dialog.title"), size(px(560.), px(400.)), window, cx, build, ok);
 }
 
 struct EditConnection {
@@ -120,6 +118,7 @@ struct EditConnection {
     /// The list's folder it is in, kept.
     folder: Option<String>,
     done: Saved,
+    main: Option<crate::dialogs::dialog_window::Main>,
 }
 
 impl EditConnection {
@@ -157,11 +156,14 @@ impl EditConnection {
         // The one the eye showed is saved already.
         let unchanged = self.shown.as_ref() == Some(&password) && self.saved.as_ref() == Some(&key);
         let keep = self.scheme.logs_in() && !password.is_empty() && !unchanged;
-        (self.done)(connection, window, cx);
-        window.close_dialog(cx);
-        if keep {
-            super::passwords_dialog::keep(key, password, window, cx);
-        }
+        let done = self.done.clone();
+        crate::dialogs::dialog_window::close(window, cx);
+        crate::dialogs::dialog_window::answer(self.main, window, cx, move |window, cx| {
+            done(connection, window, cx);
+            if keep {
+                super::passwords_dialog::keep(key, password, window, cx);
+            }
+        });
     }
 
     /// Shows or hides what is typed; an empty field, the saved password,
@@ -202,14 +204,8 @@ impl EditConnection {
     /// Deletes the saved password, once that is confirmed.
     fn delete(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let view = cx.entity().downgrade();
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let view = view.clone();
-            alert
-                .title(t!("connections.password.delete_title"))
-                .description(t!("connections.password.delete_confirm"))
-                .ok_text(t!("connections.password.delete_button"))
-                .show_cancel(true)
-                .on_ok(move |_, window, cx| {
+        let (title, text, button) = (t!("connections.password.delete_title"), t!("connections.password.delete_confirm"), t!("connections.password.delete_button"));
+        crate::dialogs::dialog_window::question(title, text, button, true, window, cx, move |window, cx| {
                     let _ = view.update(cx, |this, cx| {
                         if let Some(key) = this.saved.take() {
                             cx.background_spawn(async move { secrets::forget(&key) }).detach();
@@ -222,8 +218,6 @@ impl EditConnection {
                         });
                         cx.notify();
                     });
-                    true
-                })
         });
     }
 }
@@ -325,7 +319,7 @@ impl Render for EditConnection {
                             .outline()
                             .label(t!("remote.dialog.cancel"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     ),
             )
     }

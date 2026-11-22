@@ -6,7 +6,7 @@ use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::kbd::Kbd;
 use gpui_kit::component::select::{Select, SelectEvent, SelectState};
 use gpui_kit::component::tooltip::Tooltip;
-use gpui_kit::component::{ActiveTheme, Disableable, Icon, IconName, IndexPath, Sizable, WindowExt, h_flex, v_flex};
+use gpui_kit::component::{ActiveTheme, Disableable, Icon, IconName, IndexPath, Sizable, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
 use sc_core::keymap::{self, Choice, KeySettings, Preset};
@@ -46,6 +46,7 @@ pub fn open(
     window: &mut Window,
     cx: &mut App,
 ) {
+    let build = move |main, window: &mut Window, cx: &mut App| {
     let search = cx.new(|cx| InputState::new(window, cx).placeholder(sc_core::t!("keys.search.placeholder")));
     let (items, label) = choices(&keys);
     let at = items.iter().position(|item| *item == label);
@@ -66,6 +67,7 @@ pub fn open(
             this.choose(label, cx);
         });
         KeysDialog {
+            main: None,
             commander,
             saved: keys.clone(),
             draft: keys,
@@ -84,13 +86,10 @@ pub fn open(
             groups: menu::groups(),
         }
     });
-    window.open_dialog(cx, move |dialog, _, _| {
-        dialog
-            .title(sc_core::t!("keys.title"))
-            .width(px(WIDTH))
-            .overlay_closable(false)
-            .child(view.clone())
-    });
+    view.update(cx, |this, _| this.main = main);
+    view
+    };
+    crate::dialogs::dialog_window::show(sc_core::t!("keys.title"), size(px(WIDTH), px(560.)), window, cx, build, |_, _, _| false);
 }
 
 /// The dropdown's items (the presets, the user's sets, Custom while the
@@ -116,6 +115,8 @@ fn choices(keys: &KeySettings) -> (Vec<SharedString>, SharedString) {
 }
 
 struct KeysDialog {
+    /// In a window of its own: the main window, whose keys they are.
+    main: Option<crate::dialogs::dialog_window::Main>,
     commander: WeakEntity<Commander>,
     /// As last applied.
     saved: KeySettings,
@@ -166,11 +167,13 @@ impl KeysDialog {
         if self.draft == self.saved {
             return;
         }
-        let keys = self.draft.clone();
-        let _ = self.commander.update(cx, |commander, cx| {
-            let mut settings = commander.settings.clone();
-            settings.keys = keys;
-            commander.apply_settings(settings, window, cx)
+        let (keys, commander) = (self.draft.clone(), self.commander.clone());
+        crate::dialogs::dialog_window::answer(self.main, window, cx, move |window, cx| {
+            let _ = commander.update(cx, |commander, cx| {
+                let mut settings = commander.settings.clone();
+                settings.keys = keys;
+                commander.apply_settings(settings, window, cx)
+            });
         });
         self.saved = self.draft.clone();
         cx.notify();
@@ -425,7 +428,7 @@ impl Render for KeysDialog {
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.apply(window, cx);
-                                window.close_dialog(cx);
+                                crate::dialogs::dialog_window::close(window, cx);
                             })),
                     )
                     .child(
@@ -433,7 +436,7 @@ impl Render for KeysDialog {
                             .outline()
                             .label(sc_core::t!("keys.cancel"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     )
                     .child(
                         Button::new("keys-apply")

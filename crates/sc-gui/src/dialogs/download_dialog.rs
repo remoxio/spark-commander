@@ -43,6 +43,8 @@ impl Commander {
 /// `done` gets them once they will do.
 fn open(dir: PathBuf, window: &mut Window, cx: &mut App, done: impl Fn(String, Option<String>, &mut Window, &mut App) + 'static) {
     let clipboard = cx.read_from_clipboard().and_then(|item| item.text()).filter(|text| download::is_link(text));
+    let done: Done = Rc::new(done);
+    let build = move |main, window: &mut Window, cx: &mut App| {
     let link = cx.new(|cx| InputState::new(window, cx).placeholder(sc_core::t!("download.link_placeholder")).default_value(clipboard.unwrap_or_default()));
     let name = cx.new(|cx| InputState::new(window, cx).placeholder(sc_core::t!("download.name_placeholder")));
     let view = cx.new(|cx| {
@@ -62,22 +64,19 @@ fn open(dir: PathBuf, window: &mut Window, cx: &mut App, done: impl Fn(String, O
             dir,
             problem: None,
             replace: None,
-            done: Rc::new(done),
+            done,
+            main,
         }
     });
-    window.open_dialog(cx, move |dialog, _, _| {
-        let ok = view.clone();
-        dialog
-            .title(sc_core::t!("download.dialog_title"))
-            .width(px(560.))
-            .overlay_closable(false)
-            .child(view.clone())
-            .on_ok(move |_, window, cx| {
-                ok.update(cx, |this, cx| this.finish(window, cx));
-                false
-            })
-    });
     crate::dialogs::pack_dialog::focus_all(&link, window, cx);
+    view
+    };
+    // It closes itself once the link will do.
+    let ok = |view: &Entity<DownloadDialog>, window: &mut Window, cx: &mut App| {
+        view.update(cx, |this, cx| this.finish(window, cx));
+        false
+    };
+    crate::dialogs::dialog_window::show(sc_core::t!("download.dialog_title"), size(px(560.), px(220.)), window, cx, build, ok);
 }
 
 struct DownloadDialog {
@@ -89,6 +88,7 @@ struct DownloadDialog {
     /// The name the user was told is taken: OK again replaces it.
     replace: Option<String>,
     done: Done,
+    main: Option<crate::dialogs::dialog_window::Main>,
 }
 
 impl DownloadDialog {
@@ -109,8 +109,9 @@ impl DownloadDialog {
         if self.problem.is_some() {
             return cx.notify();
         }
-        (self.done)(link, name, window, cx);
-        window.close_dialog(cx);
+        let done = self.done.clone();
+        crate::dialogs::dialog_window::close(window, cx);
+        crate::dialogs::dialog_window::answer(self.main, window, cx, move |window, cx| done(link, name, window, cx));
     }
 }
 
@@ -135,7 +136,7 @@ impl Render for DownloadDialog {
                     .gap_2()
                     .justify_end()
                     .child(Button::new("download-ok").primary().label(ok).min_w(px(80.)).on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))))
-                    .child(Button::new("download-cancel").outline().label(sc_core::t!("download.cancel")).min_w(px(80.)).on_click(|_, window, cx| window.close_dialog(cx))),
+                    .child(Button::new("download-cancel").outline().label(sc_core::t!("download.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
             )
     }
 }

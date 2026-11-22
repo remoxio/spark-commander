@@ -9,10 +9,8 @@ use sc_core::activity::{self, Outcome};
 use sc_core::t;
 
 pub fn open(window: &mut Window, cx: &mut App) {
-    let view = cx.new(|_| ActivityLog { entries: activity::recent() });
-    window.open_dialog(cx, move |dialog, _, _| {
-        dialog.title(t!("activity.title")).width(px(760.)).overlay_closable(false).child(view.clone())
-    });
+    let build = |_, _: &mut Window, cx: &mut App| cx.new(|_| ActivityLog { entries: activity::recent() });
+    crate::dialogs::dialog_window::show(t!("activity.title"), size(px(760.), px(480.)), window, cx, build, |_, _, _| false);
 }
 
 struct ActivityLog {

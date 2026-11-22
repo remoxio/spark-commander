@@ -123,12 +123,7 @@ impl Commander {
                         commander,
                     }
                 });
-                window.open_dialog(cx, move |dialog, _, _| {
-                    dialog
-                        .title(sc_core::t!("properties.dialog_title"))
-                        .width(px(520.))
-                        .child(view.clone())
-                });
+                crate::dialogs::dialog_window::show(sc_core::t!("properties.dialog_title"), size(px(520.), px(380.)), window, cx, move |_, _, _| view, |_, _, _| false);
             });
         })
         .detach();
@@ -227,7 +222,7 @@ impl Render for PropertiesDialog {
                                 .outline()
                                 .label(sc_core::t!("properties.change_attributes"))
                                 .on_click(move |_, window, cx| {
-                                    window.close_dialog(cx);
+                                    crate::dialogs::dialog_window::close(window, cx);
                                     let _ = commander.update(cx, |commander, cx| {
                                         commander.change_attributes(window, cx)
                                     });
@@ -239,7 +234,7 @@ impl Render for PropertiesDialog {
                             .primary()
                             .label(sc_core::t!("properties.close"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                     ),
             )
     }

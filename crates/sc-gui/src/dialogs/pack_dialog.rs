@@ -72,6 +72,7 @@ impl Commander {
         let target = self.local_target().join(format.rename(&base));
         let label = sc_core::t!("pack.label", count = names.len());
         let queue = self.transfers.queue.clone();
+        let build = move |_, window: &mut Window, cx: &mut App| {
         let target =
             cx.new(|cx| InputState::new(window, cx).default_value(target.display().to_string()));
         let password = cx.new(|cx| InputState::new(window, cx).masked(true));
@@ -91,10 +92,10 @@ impl Commander {
             names,
             queue,
         });
-        open(view, sc_core::t!("pack.dialog_title"), window, cx, |this, window, cx| {
-            this.finish(window, cx)
-        });
         focus_all(&target, window, cx);
+        view
+        };
+        open(sc_core::t!("pack.dialog_title"), 520., window, cx, build, |this, window, cx| this.finish(window, cx));
     }
 
     pub(crate) fn unpack(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -113,11 +114,12 @@ impl Commander {
         }
         let label = sc_core::t!("pack.unpack.label", count = archives.len());
         let target = self.local_target().display().to_string();
+        let queue = self.transfers.queue.clone();
+        let base = panel.folder().to_owned();
+        let build = move |_, window: &mut Window, cx: &mut App| {
         let target = cx.new(|cx| InputState::new(window, cx).default_value(target));
         let mask = cx.new(|cx| InputState::new(window, cx).default_value("*"));
         let password = cx.new(|cx| InputState::new(window, cx).masked(true));
-        let queue = self.transfers.queue.clone();
-        let base = panel.folder().to_owned();
         let view = cx.new(|_| UnpackDialog {
             label,
             target: target.clone(),
@@ -130,10 +132,10 @@ impl Commander {
             base,
             queue,
         });
-        open(view, sc_core::t!("pack.unpack.dialog_title"), window, cx, |this, window, cx| {
-            this.finish(window, cx)
-        });
         focus_all(&target, window, cx);
+        view
+        };
+        open(sc_core::t!("pack.unpack.dialog_title"), 420., window, cx, build, |this, window, cx| this.finish(window, cx));
     }
 
     pub(crate) fn test_archives(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -157,23 +159,17 @@ impl Commander {
     }
 }
 
-/// A dialog of `view`; OK runs `finish`, which keeps it open by returning false.
+/// A dialog of `build`'s view, about `height` tall; OK runs `finish`, which keeps it open by returning false.
 pub(crate) fn open<V: Render>(
-    view: Entity<V>,
     title: String,
+    height: f32,
     window: &mut Window,
     cx: &mut App,
+    build: impl FnOnce(Option<crate::dialogs::dialog_window::Main>, &mut Window, &mut App) -> Entity<V> + 'static,
     finish: fn(&mut V, &mut Window, &mut Context<V>) -> bool,
 ) {
-    window.open_dialog(cx, move |dialog, _, _| {
-        let ok = view.clone();
-        dialog
-            .title(title.clone())
-            .width(px(600.))
-            .overlay_closable(false)
-            .child(view.clone())
-            .on_ok(move |_, window, cx| ok.update(cx, |this, cx| finish(this, window, cx)))
-    });
+    let ok = move |view: &Entity<V>, window: &mut Window, cx: &mut App| view.update(cx, |this, cx| finish(this, window, cx));
+    crate::dialogs::dialog_window::show(title, size(px(600.), px(height)), window, cx, build, ok);
 }
 
 /// After the menu that opened the dialog has given the focus back to the panel.
@@ -202,7 +198,7 @@ pub(crate) fn buttons<V: 'static>(
                 .min_w(px(80.))
                 .on_click(cx.listener(move |this, _, window, cx| {
                     if finish(this, window, cx) {
-                        window.close_dialog(cx);
+                        crate::dialogs::dialog_window::close(window, cx);
                     }
                 })),
         )
@@ -211,7 +207,7 @@ pub(crate) fn buttons<V: 'static>(
                 .outline()
                 .label(sc_core::t!("pack.cancel"))
                 .min_w(px(80.))
-                .on_click(|_, window, cx| window.close_dialog(cx)),
+                .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
         )
 }
 

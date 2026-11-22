@@ -101,12 +101,7 @@ impl Commander {
             .detach();
             SpaceDialog { found, stop }
         });
-        window.open_dialog(cx, move |dialog, _, _| {
-            dialog
-                .title(sc_core::t!("panel.space.title"))
-                .width(px(420.))
-                .child(view.clone())
-        });
+        crate::dialogs::dialog_window::show(sc_core::t!("panel.space.title"), size(px(420.), px(200.)), window, cx, move |_, _, _| view, |_, _, _| false);
     }
 }
 
@@ -227,7 +222,7 @@ impl Render for SpaceDialog {
                         .primary()
                         .label(sc_core::t!("panel.space.close"))
                         .min_w(px(80.))
-                        .on_click(|_, window, cx| window.close_dialog(cx)),
+                        .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
                 ),
             )
     }

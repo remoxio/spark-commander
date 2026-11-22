@@ -5,17 +5,22 @@ use std::sync::{Arc, OnceLock};
 
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::scroll::ScrollableElement as _;
-use gpui_kit::component::{ActiveTheme, StyledExt, WindowExt, h_flex, v_flex};
+use gpui_kit::component::{ActiveTheme, StyledExt, h_flex, v_flex};
 use gpui_kit::*;
 use sc_core::about;
 use sc_core::addons::{Addon, Builtin};
 use sc_core::t;
 
 pub fn open(window: &mut Window, cx: &mut App) {
-    // Closed by its ×, as Settings: not by a click beside it.
-    window.open_dialog(cx, |dialog, _, cx| {
-        dialog.title(t!("about.title")).width(px(600.)).overlay_closable(false).child(content(cx))
-    });
+    crate::dialogs::dialog_window::show(t!("about.title"), size(px(600.), px(560.)), window, cx, |_, _, cx| cx.new(|_| About), |_, _, _| false);
+}
+
+struct About;
+
+impl Render for About {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        content(cx)
+    }
 }
 
 /// The window's icon, as GPUI draws pictures (BGRA); made once.

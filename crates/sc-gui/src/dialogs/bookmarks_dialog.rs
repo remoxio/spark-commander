@@ -14,13 +14,15 @@ use crate::panel::drag_drop::Dragged;
 impl Commander {
     pub(crate) fn manage_bookmarks(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let commander = cx.entity();
-        let view = cx.new(|cx| BookmarksDialog {
-            // Renamed, dropped on the sidebar: shown here too.
-            _changed: cx.observe(&commander, |_, _, cx| cx.notify()),
-            commander: commander.downgrade(),
-            selected: None,
-        });
-        window.open_dialog(cx, move |dialog, _, _| dialog.title(t!("bookmarks.title")).width(px(720.)).child(view.clone()));
+        let build = move |_, _: &mut Window, cx: &mut App| {
+            cx.new(|cx| BookmarksDialog {
+                // Renamed, dropped on the sidebar: shown here too.
+                _changed: cx.observe(&commander, |_, _, cx| cx.notify()),
+                commander: commander.downgrade(),
+                selected: None,
+            })
+        };
+        crate::dialogs::dialog_window::show(t!("bookmarks.title"), size(px(720.), px(420.)), window, cx, build, |_, _, _| false);
     }
 }
 
@@ -187,7 +189,7 @@ impl Render for BookmarksDialog {
                         this.selected = None;
                     })),
             )
-            .child(Button::new("bookmarks-close").primary().label(t!("bookmarks.close")).min_w(px(80.)).ml_auto().on_click(|_, window, cx| window.close_dialog(cx)));
+            .child(Button::new("bookmarks-close").primary().label(t!("bookmarks.close")).min_w(px(80.)).ml_auto().on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
         v_flex()
             .w_full()
             .gap_2()

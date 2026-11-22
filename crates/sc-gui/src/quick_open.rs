@@ -88,7 +88,7 @@ impl Render for QuickOpen {
                 let Some(pick) = pick else {
                     return;
                 };
-                window.close_dialog(cx);
+                crate::dialogs::dialog_window::close(window, cx);
                 let _ = commander.update(cx, |this, cx| this.quick_pick(pick, window, cx));
             });
         let palette = match panels {

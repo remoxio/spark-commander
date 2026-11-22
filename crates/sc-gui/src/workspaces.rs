@@ -183,12 +183,9 @@ impl Commander {
             (false, true) => sc_core::t!("workspaces.delete.closed_shells", name = name),
         };
         let commander = cx.entity().downgrade();
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let commander = commander.clone();
-            alert.title(sc_core::t!("workspaces.delete.title")).description(text.clone()).ok_text(sc_core::t!("workspaces.delete.button")).show_cancel(true).on_ok(move |_, window, cx| {
-                let _ = commander.update(cx, |this, cx| this.delete_workspace(ix, window, cx));
-                true
-            })
+        let (title, button) = (sc_core::t!("workspaces.delete.title"), sc_core::t!("workspaces.delete.button"));
+        crate::dialogs::dialog_window::question(title, text, button, false, window, cx, move |window, cx| {
+            let _ = commander.update(cx, |this, cx| this.delete_workspace(ix, window, cx));
         });
     }
 
@@ -207,14 +204,17 @@ impl Commander {
     }
 
     pub(crate) fn manage_workspaces(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let commander = cx.entity();
-        let view = cx.new(|cx| WorkspacesDialog {
-            _changed: cx.observe(&commander, |_, _, cx| cx.notify()),
-            commander: commander.downgrade(),
-            selected: Some(self.workspaces.current),
-            shown_open: self.workspaces.current,
-        });
-        window.open_dialog(cx, move |dialog, _, _| dialog.title(sc_core::t!("workspaces.title")).width(px(560.)).child(view.clone()));
+        let (commander, current) = (cx.entity(), self.workspaces.current);
+        let build = move |main, _: &mut Window, cx: &mut App| {
+            cx.new(|cx| WorkspacesDialog {
+                _changed: cx.observe(&commander, |_, _, cx| cx.notify()),
+                commander: commander.downgrade(),
+                selected: Some(current),
+                shown_open: current,
+                main,
+            })
+        };
+        crate::dialogs::dialog_window::show(sc_core::t!("workspaces.title"), size(px(560.), px(360.)), window, cx, build, |_, _, _| false);
     }
 }
 
@@ -235,6 +235,8 @@ struct WorkspacesDialog {
     /// The open one at the last look: one made or opened here gets selected.
     shown_open: usize,
     _changed: Subscription,
+    /// In a window of its own: the main window, where the workspaces open.
+    main: Option<crate::dialogs::dialog_window::Main>,
 }
 
 impl Render for WorkspacesDialog {
@@ -286,7 +288,10 @@ impl Render for WorkspacesDialog {
         let on_selected = |button: Button, run: fn(&mut Commander, usize, &mut Window, &mut Context<Commander>)| {
             button.outline().disabled(selected.is_none()).on_click(cx.listener(move |this, _, window, cx| {
                 if let Some(ix) = this.selected {
-                    let _ = this.commander.update(cx, |commander, cx| run(commander, ix, window, cx));
+                    let commander = this.commander.clone();
+                    crate::dialogs::dialog_window::answer(this.main, window, cx, move |window, cx| {
+                        let _ = commander.update(cx, |commander, cx| run(commander, ix, window, cx));
+                    });
                 }
             }))
         };
@@ -294,13 +299,16 @@ impl Render for WorkspacesDialog {
         let buttons = h_flex()
             .gap_2()
             .child(Button::new("workspaces-new").outline().label(sc_core::t!("workspaces.button.new")).on_click(cx.listener(|this, _, window, cx| {
-                let _ = this.commander.update(cx, |commander, cx| commander.new_workspace(window, cx));
+                let commander = this.commander.clone();
+                crate::dialogs::dialog_window::answer(this.main, window, cx, move |window, cx| {
+                    let _ = commander.update(cx, |commander, cx| commander.new_workspace(window, cx));
+                });
             })))
             .child(on_selected(Button::new("workspaces-duplicate").label(sc_core::t!("workspaces.button.duplicate")), Commander::duplicate_workspace))
             .child(on_selected(Button::new("workspaces-rename").label(sc_core::t!("workspaces.button.rename")), Commander::rename_workspace))
             .child(on_selected(Button::new("workspaces-delete").label(sc_core::t!("workspaces.button.delete")), Commander::confirm_delete_workspace).disabled(selected.is_none() || count < 2))
             .child(div().flex_1())
-            .child(Button::new("workspaces-close").primary().label(sc_core::t!("workspaces.button.close")).min_w(px(80.)).on_click(|_, window, cx| window.close_dialog(cx)));
+            .child(Button::new("workspaces-close").primary().label(sc_core::t!("workspaces.button.close")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
         v_flex()
             .w_full()
             .gap_2()

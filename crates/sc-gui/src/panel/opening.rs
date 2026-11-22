@@ -12,14 +12,14 @@ use sc_core::archive::Watch;
 
 /// Closes itself once `done`; Cancel, Escape or the close button stop the listing.
 pub fn show(name: String, watch: Watch, done: Arc<AtomicBool>, window: &mut Window, cx: &mut App) {
-    let view = cx.new(|cx| {
+    let build = move |window: &mut Window, cx: &mut App| cx.new(|cx| {
         let poll = cx.spawn_in(window, async move |this: WeakEntity<Opening>, cx| {
             loop {
                 cx.background_executor().timer(Duration::from_millis(100)).await;
                 let finished = this.update_in(cx, |this, window, cx| {
                     let finished = this.done.load(Ordering::Relaxed);
                     match finished {
-                        true => window.close_dialog(cx),
+                        true => crate::dialogs::dialog_window::close(window, cx),
                         false => cx.notify(),
                     }
                     finished
@@ -31,6 +31,16 @@ pub fn show(name: String, watch: Watch, done: Arc<AtomicBool>, window: &mut Wind
         });
         Opening { name, watch, done, _poll: poll }
     });
+    if crate::dialogs::dialog_window::separate() {
+        let build = move |_, window: &mut Window, cx: &mut App| {
+            let view = build(window, cx);
+            // Closed (Escape, its close button) before it is done: the listing stops.
+            view.update(cx, |_, cx| cx.on_release(|this: &mut Opening, _| this.watch.stop.store(true, Ordering::Relaxed)).detach());
+            (view, None)
+        };
+        return crate::dialogs::dialog_window::open(sc_core::t!("panel.opening.title"), size(px(480.), px(150.)), window, cx, build);
+    }
+    let view = build(window, cx);
     window.open_dialog(cx, move |dialog, _, cx| {
         let stop = view.read(cx).watch.stop.clone();
         dialog
@@ -86,7 +96,7 @@ impl Render for Opening {
                         .min_w(px(80.))
                         .on_click(move |_, window, cx| {
                             stop.store(true, Ordering::Relaxed);
-                            window.close_dialog(cx);
+                            crate::dialogs::dialog_window::close(window, cx);
                         }),
                 ),
             )

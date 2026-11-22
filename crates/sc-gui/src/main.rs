@@ -30,7 +30,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
-use gpui_kit::component::button::{Button, ButtonVariant, ButtonVariants, DropdownButton};
+use gpui_kit::component::button::{Button, ButtonVariants, DropdownButton};
 use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::menu::{AppMenuBar, ContextMenuExt, PopupMenu, PopupMenuItem};
 use gpui_kit::component::notification::Notification;
@@ -125,11 +125,11 @@ pub(crate) fn offer_admin_in(
     let pending = Rc::new(std::cell::RefCell::new(Some((action, Box::new(done) as Done))));
     // After the dialog that asked for this closes: closing takes the topmost.
     window.defer(cx, move |window, cx| {
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let (pending, what) = (pending.clone(), what.clone());
-            alert.title(sc_core::t!("main.admin.title")).description(text.clone()).ok_text(sc_core::t!("main.admin.button")).show_cancel(true).on_ok(move |_, window, cx| {
+        let (title, button) = (sc_core::t!("main.admin.title"), sc_core::t!("main.admin.button"));
+        crate::dialogs::dialog_window::question(title, text, button, false, window, cx, move |window, cx| {
+            {
                 let Some((action, done)) = pending.borrow_mut().take() else {
-                    return true;
+                    return;
                 };
                 let what = what.clone();
                 let ran = cx.background_executor().spawn(async move {
@@ -150,9 +150,8 @@ pub(crate) fn offer_admin_in(
                         });
                     })
                     .detach();
-                true
-            })
-        })
+            }
+        });
     });
 }
 
@@ -258,6 +257,7 @@ fn main() {
         std::thread::spawn(archive::remove_stale_scratch);
         viewer::bind_keys(cx);
         search_window::bind_keys(cx);
+        dialogs::dialog_window::bind_keys(cx);
         sync_window::bind_keys(cx);
         editor::bind_keys(cx);
         terminal::bind_keys(cx);
@@ -1119,19 +1119,8 @@ impl Commander {
             false => (sc_core::t!("main.delete.title_permanently"), sc_core::t!("main.delete.permanently", kind = kind, name = name, count = count)),
         };
         let commander = cx.entity().downgrade();
-        window.open_alert_dialog(cx, move |alert, _, _| {
-            let commander = commander.clone();
-            alert
-                .title(title.clone())
-                .ok_variant(ButtonVariant::Danger)
-                .description(text.clone())
-                .ok_text(title.clone())
-                .show_cancel(true)
-                .on_ok(move |_, window, cx| {
-                    let _ =
-                        commander.update(cx, |this, cx| this.delete(side, to_trash, window, cx));
-                    true
-                })
+        crate::dialogs::dialog_window::question(title.clone(), text, title, true, window, cx, move |window, cx| {
+            let _ = commander.update(cx, |this, cx| this.delete(side, to_trash, window, cx));
         });
     }
 

@@ -39,9 +39,10 @@ impl Commander {
             }),
         };
         let file = folder.join(format!("{base}.{}", method.extension()));
+        let queue = self.transfers.queue.clone();
+        let build = move |_, window: &mut Window, cx: &mut App| {
         let file =
             cx.new(|cx| InputState::new(window, cx).default_value(file.display().to_string()));
-        let queue = self.transfers.queue.clone();
         let view = cx.new(|_| ChecksumDialog {
             file: file.clone(),
             method,
@@ -50,14 +51,10 @@ impl Commander {
             names,
             queue,
         });
-        open(
-            view,
-            sc_core::t!("checksum.dialog_title"),
-            window,
-            cx,
-            ChecksumDialog::finish,
-        );
         focus_all(&file, window, cx);
+        view
+        };
+        open(sc_core::t!("checksum.dialog_title"), 230., window, cx, build, ChecksumDialog::finish);
     }
 
     /// Ctrl+Shift+F5: links to the chosen in the other panel's folder.
@@ -77,9 +74,11 @@ impl Commander {
             [one] => (sc_core::t!("ops.link.label_one", name = one.to_string_lossy()), into.join(one)),
             many => (sc_core::t!("ops.link.label_many", count = many.len()), into),
         };
-        let at = cx.new(|cx| InputState::new(window, cx).default_value(at.display().to_string()));
         let (commander, side) = (cx.entity().downgrade(), self.active);
+        let build = move |main, window: &mut Window, cx: &mut App| {
+        let at = cx.new(|cx| InputState::new(window, cx).default_value(at.display().to_string()));
         let view = cx.new(|_| LinkDialog {
+            main,
             label,
             at: at.clone(),
             kind: Kind::Symbolic,
@@ -90,8 +89,10 @@ impl Commander {
             commander,
             side,
         });
-        open(view, sc_core::t!("ops.link.dialog_title"), window, cx, LinkDialog::finish);
         focus_all(&at, window, cx);
+        view
+        };
+        open(sc_core::t!("ops.link.dialog_title"), 250., window, cx, build, LinkDialog::finish);
     }
 
     pub(crate) fn verify_checksums(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -123,10 +124,11 @@ impl Commander {
         let file = panel.folder().join(&entry.name);
         let label = sc_core::t!("split.label", name = entry.display_name());
         let target = self.local_target().display().to_string();
-        let target = cx.new(|cx| InputState::new(window, cx).default_value(target));
-        let size = cx.new(|cx| InputState::new(window, cx).default_value(SIZES[1]));
         let base = panel.folder().to_owned();
         let queue = self.transfers.queue.clone();
+        let build = move |_, window: &mut Window, cx: &mut App| {
+        let target = cx.new(|cx| InputState::new(window, cx).default_value(target));
+        let size = cx.new(|cx| InputState::new(window, cx).default_value(SIZES[1]));
         let view = cx.new(|_| SplitDialog {
             label,
             target: target.clone(),
@@ -135,8 +137,10 @@ impl Commander {
             base,
             queue,
         });
-        open(view, sc_core::t!("split.dialog_title"), window, cx, SplitDialog::finish);
         focus_all(&target, window, cx);
+        view
+        };
+        open(sc_core::t!("split.dialog_title"), 250., window, cx, build, SplitDialog::finish);
     }
 
     pub(crate) fn combine_files(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -172,6 +176,7 @@ impl Commander {
 }
 
 struct LinkDialog {
+    main: Option<crate::dialogs::dialog_window::Main>,
     label: String,
     at: Entity<InputState>,
     kind: Kind,
@@ -197,7 +202,9 @@ impl LinkDialog {
         };
         let kind = self.kind;
         let made = links::create(kind, &items);
-        let _ = self.commander.update(cx, |this, cx| {
+        let (commander, side) = (self.commander.clone(), self.side);
+        crate::dialogs::dialog_window::answer(self.main, window, cx, move |window, cx| {
+        let _ = commander.update(cx, |this, cx| {
             let into = match items.as_slice() {
                 [(_, link)] => link.parent().unwrap_or(&at).to_owned(),
                 _ => at,
@@ -209,9 +216,10 @@ impl LinkDialog {
                 }
                 Err((err, _)) => window.push_notification(Notification::error(sc_core::t!("ops.link.failed", err = err)), cx),
                 // The marks have done their work.
-                Ok(()) => this.panels[self.side].tabs.current_mut().mark_all(false),
+                Ok(()) => this.panels[side].tabs.current_mut().mark_all(false),
             }
             this.refresh_folder(&into, cx);
+        });
         });
         true
     }
