@@ -5,7 +5,7 @@ use std::ffi::OsString;
 use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui_kit::component::button::{Button, ButtonVariant, ButtonVariants};
 use gpui_kit::component::input::{Input, InputState};
@@ -61,8 +61,10 @@ pub struct Transfers {
     seen: HashSet<u64>,
     /// The job whose question is on screen.
     asked: Option<u64>,
-    /// The newest job's id: a newer one opens the sidebar's Operations.
+    /// The newest job's id seen.
     newest: u64,
+    /// The first job queued since, and when: still going a while later, it opens the sidebar's Operations.
+    pending: Option<(u64, Instant)>,
 }
 
 /// Where files go: a panel's folder, or a folder shown in it.
@@ -370,6 +372,7 @@ impl Commander {
                     .await;
                 let watched = this.update_in(cx, |this, window, cx| {
                     this.queue_changed(window, cx);
+                    this.show_slow_jobs(window, cx);
                     // After the finished were taken in (their notes, the panels read again);
                     // failed and cancelled ones stay until cleared.
                     let minutes = u64::from(this.settings.queue.clear_after_minutes);
@@ -381,6 +384,18 @@ impl Commander {
             }
         })
         .detach();
+    }
+
+    /// Jobs still going 2 seconds after they were queued: the sidebar's Operations
+    /// shows their progress. A quick one (a server's file opened) leaves it as it is.
+    fn show_slow_jobs(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some((first, _)) = self.transfers.pending.filter(|(_, at)| at.elapsed() >= Duration::from_secs(2)) else {
+            return;
+        };
+        self.transfers.pending = None;
+        if self.transfers.queue.jobs().iter().any(|job| job.id >= first && !job.status.finished()) {
+            self.show_operations(window, cx);
+        }
     }
 
     fn queue_changed(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -397,8 +412,10 @@ impl Commander {
         transfers.version = version;
         let jobs = transfers.queue.jobs();
         let newest = jobs.iter().map(|job| job.id).max().unwrap_or(0);
-        let started = newest > transfers.newest;
-        transfers.newest = transfers.newest.max(newest);
+        if newest > transfers.newest {
+            transfers.pending.get_or_insert((transfers.newest + 1, Instant::now()));
+            transfers.newest = newest;
+        }
         let finished: Vec<u64> = jobs
             .iter()
             .filter(|job| job.status.finished())
@@ -441,10 +458,6 @@ impl Commander {
         {
             self.transfers.asked = Some(job.id);
             ask(&self.transfers.queue, job, window, cx);
-        }
-        // Its progress is shown there.
-        if started {
-            self.show_operations(window, cx);
         }
         cx.notify();
     }
