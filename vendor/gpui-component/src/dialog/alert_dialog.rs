@@ -1,4 +1,4 @@
-// Modified for SparkCommander: on macOS, AppKit's alert. Changes are marked
+// Modified for SparkCommander: on macOS, AppKit's alert; on KDE and Windows the title in the title bar. Changes are marked
 // "SparkCommander patch".
 
 use gpui::{
@@ -330,11 +330,22 @@ impl AlertDialog {
             return self.build_mac_surface(mac, window, cx);
         }
         let button_props = self.base.button_props.clone();
-        let has_title = self.icon.is_some() || self.title.is_some();
+        // SparkCommander patch: KDE's and Windows' message boxes are windows: the
+        // title in the title bar, see `NativeControls::dialog_frame` (GNOME's have none).
+        let framed = cx
+            .try_global::<crate::NativeControls>()
+            .and_then(|native| native.dialog_frame)
+            .is_some_and(|frame| frame.close != crate::WindowClose::Adwaita);
+        let (band, title) = match framed {
+            true => (self.title, None),
+            false => (None, self.title),
+        };
+        let has_title = self.icon.is_some() || title.is_some();
         let has_header = has_title || self.description.is_some();
         let has_footer = self.base.footer.is_some();
 
         self.base
+            .when_some(band, |this, band| this.title(band).close_button(true))
             .when(has_header, |this| {
                 this.header(
                     DialogHeader::new().child(
@@ -347,7 +358,7 @@ impl AlertDialog {
                                     .flex_1()
                                     .min_w_0()
                                     .gap_1()
-                                    .when_some(self.title, |this, title| {
+                                    .when_some(title, |this, title| {
                                         this.child(DialogTitle::new().child(title))
                                     })
                                     .when_some(self.description, |this, desc| {

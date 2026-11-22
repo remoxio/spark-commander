@@ -2,7 +2,8 @@
 // its title, can open centred over a part of the window, and fades in
 // without sliding. Changes are marked "SparkCommander patch".
 // Modified for SparkCommander: the title is smaller and ends in "…" when
-// long; on macOS the frame is a window's. Changes are marked "SparkCommander patch".
+// long; on macOS, KDE, GNOME and Windows the frame is a window's there; a
+// dialog opens in the middle. Changes are marked "SparkCommander patch".
 
 use super::entrance::{DialogEntrance, EntranceSurface};
 use crate::root::WindowState;
@@ -399,6 +400,52 @@ fn mac_close_button(button: gpui_base::Button, mac: crate::MacControls, active: 
         )
 }
 
+/// SparkCommander patch: the desktop's close button in the title bar, see `WindowClose`.
+fn window_close_button(close: gpui_base::DialogClose, frame: crate::DialogFrame, band: Pixels, corner: Pixels) -> gpui_base::DialogClose {
+    let red = |dark: u32| -> Hsla { gpui::rgb(dark).into() };
+    let cross = |size: f32| crate::Icon::new(IconName::Close).size(px(size));
+    match frame.close {
+        // Breeze's: a cross, a red circle under it under the pointer, the cross white then.
+        crate::WindowClose::Breeze => close.top((band - px(20.)) / 2.).right(px(6.)).trigger(move |button| {
+            button
+                .group("dialog-close")
+                .size(px(20.))
+                .rounded_full()
+                .flex()
+                .items_center()
+                .justify_center()
+                .hover(move |this| this.bg(red(0xda4453)))
+                .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(12.)))
+        }),
+        // GNOME's: a cross on a faint circle, darker under the pointer.
+        crate::WindowClose::Adwaita => close.top((band - px(24.)) / 2.).right(px(9.)).trigger(move |button| {
+            let ink = frame.text[0];
+            button
+                .size(px(24.))
+                .rounded_full()
+                .bg(ink.opacity(0.1))
+                .hover(move |this| this.bg(ink.opacity(0.15)))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(cross(14.))
+        }),
+        // Windows 11's: a 46 px cell of the title bar's height, red under the pointer.
+        crate::WindowClose::Fluent => close.top_0().right_0().trigger(move |button| {
+            button
+                .group("dialog-close")
+                .w(px(46.))
+                .h(band)
+                .rounded_tr(corner - px(1.))
+                .flex()
+                .items_center()
+                .justify_center()
+                .hover(move |this| this.bg(red(0xc42b1c)))
+                .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(14.)))
+        }),
+    }
+}
+
 /// SparkCommander patch: an AppKit alert's has a line around it, `edge`.
 fn dialog_shadow(delta: f32, edge: Option<Hsla>) -> Vec<BoxShadow> {
     let edge = edge.map(|color| BoxShadow {
@@ -730,17 +777,21 @@ impl RenderOnce for Dialog {
         let rem_size = window.rem_size();
 
         // SparkCommander patch: moved, the dialog stays where it was put; else centred
-        // over `center_over`, else at `margin_top`.
+        // over `center_over`, else at `margin_top` where given, else in the middle.
         let placed = moving.origin.get().is_some() || self.props.center_over.is_some();
-        let (anchor, position) = match (moving.origin.get(), self.props.center_over) {
-            (Some(origin), _) => (Anchor::TopLeft, origin),
-            (None, Some(over)) => (
+        let (anchor, position) = match (moving.origin.get(), self.props.center_over, self.props.margin_top) {
+            (Some(origin), _, _) => (Anchor::TopLeft, origin),
+            (None, Some(over), _) => (
                 Anchor::LeftCenter,
                 point(over.center().x - width / 2., over.center().y),
             ),
-            (None, None) => (
+            (None, None, Some(_)) => (
                 Anchor::TopLeft,
                 point(window_paddings.left + x, window_paddings.top + y),
+            ),
+            (None, None, None) => (
+                Anchor::LeftCenter,
+                point(window_paddings.left + x, window_paddings.top + view_size.height / 2. + layer_offset),
             ),
         };
         let laid_out = moving.clone();
@@ -752,9 +803,15 @@ impl RenderOnce for Dialog {
             .try_global::<crate::MacControls>()
             .copied()
             .filter(|_| !cx.has_global::<crate::NativeControls>());
-        // SparkCommander patch: WinUI's ContentDialog, see `NativeControls::command_bar`.
+        // SparkCommander patch: WinUI's ContentDialog's buttons, see `NativeControls::command_bar`.
         let command_bar = cx.try_global::<crate::NativeControls>().and_then(|native| native.command_bar);
-        let band = px(if mac.is_some() { 32. } else if command_bar.is_some() { 52. } else { TITLE_BAND_HEIGHT });
+        // SparkCommander patch: the desktop's window title bar, see `NativeControls::dialog_frame`.
+        let frame = cx.try_global::<crate::NativeControls>().and_then(|native| native.dialog_frame).filter(|_| mac.is_none());
+        let band = match (mac, frame) {
+            (Some(_), _) => px(32.),
+            (None, Some(frame)) => frame.height,
+            (None, None) => px(TITLE_BAND_HEIGHT),
+        };
         // An alert's, 24 px corners, in its own fill and rim; see `AlertDialog`.
         let alert = mac.filter(|_| matches!(self.base, Some(BaseDialogRoot::AlertDialog(_))));
         let edge = alert.map(|mac| mac.alert_edge);
@@ -887,10 +944,17 @@ impl RenderOnce for Dialog {
                                                     .items_center()
                                                     .pl(paddings.left)
                                                     .pr(paddings.right + px(28.))
-                                                    .map(|this| match mac {
-                                                        Some(_) => this.pl(px(36.)).pr(paddings.right),
-                                                        None if command_bar.is_some() => this.pt(px(8.)),
-                                                        None => this.bg(theme.muted).border_b_1().border_color(theme.border),
+                                                    .map(|this| match (mac, frame) {
+                                                        (Some(_), _) => this.pl(px(36.)).pr(paddings.right),
+                                                        (None, Some(frame)) => {
+                                                            let this = this.bg(frame.fill[usize::from(!active)]).text_color(frame.text[usize::from(!active)]);
+                                                            match frame.close {
+                                                                crate::WindowClose::Fluent => this.pl(px(12.)).pr(px(46.)),
+                                                                // Clear of the close button on both sides, so the title is centred.
+                                                                _ => this.px(band),
+                                                            }
+                                                        }
+                                                        (None, None) => this.bg(theme.muted).border_b_1().border_color(theme.border),
                                                     })
                                                     .rounded_t(corner - px(1.))
                                                     // SparkCommander patch: the window title's size; a long one ends in "…".
@@ -900,7 +964,11 @@ impl RenderOnce for Dialog {
                                                             .when(mac.is_some(), |this| {
                                                                 this.font_semibold().text_color(theme.muted_foreground)
                                                             })
-                                                            .when(command_bar.is_some(), |this| this.text_xl().font_semibold())
+                                                            .when_some(frame, |this, frame| match frame.close {
+                                                                crate::WindowClose::Breeze => this.text_center(),
+                                                                crate::WindowClose::Adwaita => this.text_center().font_bold(),
+                                                                crate::WindowClose::Fluent => this.text_xs(),
+                                                            })
                                                             .flex_1()
                                                             .min_w_0()
                                                             .truncate()
@@ -984,11 +1052,12 @@ impl RenderOnce for Dialog {
                                             let right = (paddings.right - px(10.)).max(px(8.));
 
                                             let close = gpui_base::DialogClose::new().absolute();
-                                            match mac {
-                                                Some(mac) => close.top((band - px(14.)) / 2.).left(px(11.)).trigger(|button| {
+                                            match (mac, frame.filter(|_| has_title)) {
+                                                (Some(mac), _) => close.top((band - px(14.)) / 2.).left(px(11.)).trigger(|button| {
                                                     mac_close_button(button, mac, active)
                                                 }),
-                                                None => close.top(top).right(right).trigger(|button| {
+                                                (None, Some(frame)) => window_close_button(close, frame, band, corner),
+                                                (None, None) => close.top(top).right(right).trigger(|button| {
                                                     Button::new("close")
                                                         .with_base(button)
                                                         .small()

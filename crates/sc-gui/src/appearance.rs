@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 #[cfg(target_os = "macos")]
 use gpui_kit::component::MacControls;
-use gpui_kit::component::{NativeControls, Theme as KitTheme, ThemeMode};
+use gpui_kit::component::{DialogFrame, NativeControls, Theme as KitTheme, ThemeMode, WindowClose};
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
 use gpui_kit::component::{ActiveTheme, StateImages, ToolkitControls};
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
@@ -119,7 +119,7 @@ pub fn apply(palette: &Palette, cx: &mut App) -> PanelColors {
     });
     // The desktop style's controls (KDE's Breeze, Windows 11's), in its colours.
     if let Some(style) = sc_core::system::theme::control_style() {
-        cx.set_global(native_controls(style, &palette.controls(style), palette.dark));
+        cx.set_global(native_controls(style, &palette.controls(style), dialog_frame(style, palette), palette.dark));
         // Windows' and GNOME's corners, and their fields' frame, a button's
         // (GNOME's unframed: its fill).
         let radius = match style {
@@ -207,8 +207,28 @@ fn mac_controls(palette: &Palette) -> MacControls {
     }
 }
 
+/// A dialog's title bar as the desktop's windows': KWin's Breeze in the scheme's
+/// header colours, GNOME's header bar, Windows 11's caption.
+fn dialog_frame(style: ControlStyle, palette: &Palette) -> DialogFrame {
+    let color = |value: u32| Hsla::from(rgb(value));
+    let text = [color(palette.text), color(palette.dim)];
+    let (height, fill, close) = match style {
+        ControlStyle::Breeze => (30., [palette.bar, palette.window], WindowClose::Breeze),
+        ControlStyle::Adwaita => {
+            let header = sc_core::system::theme::header_bar();
+            let fill = |focused| header.map_or(palette.bar, |header| header.color(palette.dark, focused));
+            (header.map_or(47., |header| header.height), [fill(true), fill(false)], WindowClose::Adwaita)
+        }
+        ControlStyle::Fluent => {
+            let caption = if palette.dark { 0x202020 } else { 0xffffff };
+            (32., [caption, caption], WindowClose::Fluent)
+        }
+    };
+    DialogFrame { height: px(height), fill: fill.map(color), text, close }
+}
+
 /// The controls in `colors`, at the style's sizes.
-fn native_controls(style: ControlStyle, colors: &ControlColors, dark: bool) -> NativeControls {
+fn native_controls(style: ControlStyle, colors: &ControlColors, dialog_frame: DialogFrame, dark: bool) -> NativeControls {
     let color = |value: u32| Hsla::from(rgb(value));
     let pair = |[fill, frame]: [u32; 2]| (color(fill), color(frame));
     // The sizes: a check box, its corners and frame, a radio's dot; a slider's
@@ -254,6 +274,7 @@ fn native_controls(style: ControlStyle, colors: &ControlColors, dark: bool) -> N
             false => (hsla(0., 0., 1., 0.7), hsla(0., 0., 0., 0.06)),
         }),
         command_bar: (style == ControlStyle::Fluent).then(|| hsla(0., 0., 0., if dark { 0.15 } else { 0.03 })),
+        dialog_frame: Some(dialog_frame),
     }
 }
 

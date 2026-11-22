@@ -22,7 +22,7 @@ mod virtual_list;
 mod window_border;
 // SparkCommander patch: see `NativeControls`.
 mod native;
-pub use native::NativeControls;
+pub use native::{DialogFrame, NativeControls, WindowClose};
 // SparkCommander patch: see `ToolkitControls`.
 mod toolkit;
 pub use toolkit::{StateImages, ToolkitControls, state_layers};

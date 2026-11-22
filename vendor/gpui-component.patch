@@ -515,10 +515,10 @@ diff -ruN a/src/command/state.rs b/src/command/state.rs
      }
  
 diff -ruN a/src/dialog/alert_dialog.rs b/src/dialog/alert_dialog.rs
---- a/src/dialog/alert_dialog.rs	2026-11-20 11:57:02.420093530 +0100
-+++ b/src/dialog/alert_dialog.rs	2026-11-20 22:20:00.695483436 +0100
+--- a/src/dialog/alert_dialog.rs	2006-07-24 03:21:28.000000000 +0200
++++ b/src/dialog/alert_dialog.rs	2026-11-22 19:10:17.187421787 +0100
 @@ -1,11 +1,15 @@
-+// Modified for SparkCommander: on macOS, AppKit's alert. Changes are marked
++// Modified for SparkCommander: on macOS, AppKit's alert; on KDE and Windows the title in the title bar. Changes are marked
 +// "SparkCommander patch".
 +
  use gpui::{
@@ -562,7 +562,7 @@ diff -ruN a/src/dialog/alert_dialog.rs b/src/dialog/alert_dialog.rs
          self.base = self.base.width(width);
          self
      }
-@@ -314,6 +322,13 @@
+@@ -314,12 +322,30 @@
  
      /// Build the styled dialog surface around the Base alert-dialog host.
      pub(crate) fn build_surface(self, window: &mut Window, cx: &mut App) -> Dialog {
@@ -574,9 +574,36 @@ diff -ruN a/src/dialog/alert_dialog.rs b/src/dialog/alert_dialog.rs
 +            return self.build_mac_surface(mac, window, cx);
 +        }
          let button_props = self.base.button_props.clone();
-         let has_title = self.icon.is_some() || self.title.is_some();
+-        let has_title = self.icon.is_some() || self.title.is_some();
++        // SparkCommander patch: KDE's and Windows' message boxes are windows: the
++        // title in the title bar, see `NativeControls::dialog_frame` (GNOME's have none).
++        let framed = cx
++            .try_global::<crate::NativeControls>()
++            .and_then(|native| native.dialog_frame)
++            .is_some_and(|frame| frame.close != crate::WindowClose::Adwaita);
++        let (band, title) = match framed {
++            true => (self.title, None),
++            false => (None, self.title),
++        };
++        let has_title = self.icon.is_some() || title.is_some();
          let has_header = has_title || self.description.is_some();
-@@ -355,6 +370,102 @@
+         let has_footer = self.base.footer.is_some();
+ 
+         self.base
++            .when_some(band, |this, band| this.title(band).close_button(true))
+             .when(has_header, |this| {
+                 this.header(
+                     DialogHeader::new().child(
+@@ -332,7 +358,7 @@
+                                     .flex_1()
+                                     .min_w_0()
+                                     .gap_1()
+-                                    .when_some(self.title, |this, title| {
++                                    .when_some(title, |this, title| {
+                                         this.child(DialogTitle::new().child(title))
+                                     })
+                                     .when_some(self.description, |this, desc| {
+@@ -355,6 +381,102 @@
              })
      }
  }
@@ -680,14 +707,15 @@ diff -ruN a/src/dialog/alert_dialog.rs b/src/dialog/alert_dialog.rs
  impl Styled for AlertDialog {
      fn style(&mut self) -> &mut StyleRefinement {
 diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
---- a/src/dialog/dialog.rs	2026-11-20 11:57:02.420157091 +0100
-+++ b/src/dialog/dialog.rs	2026-11-20 22:20:00.695533401 +0100
-@@ -1,13 +1,20 @@
+--- a/src/dialog/dialog.rs	2006-07-24 03:21:28.000000000 +0200
++++ b/src/dialog/dialog.rs	2026-11-22 19:10:17.187474077 +0100
+@@ -1,13 +1,21 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a dialog moves by
 +// its title, can open centred over a part of the window, and fades in
 +// without sliding. Changes are marked "SparkCommander patch".
 +// Modified for SparkCommander: the title is smaller and ends in "…" when
-+// long; on macOS the frame is a window's. Changes are marked "SparkCommander patch".
++// long; on macOS, KDE, GNOME and Windows the frame is a window's there; a
++// dialog opens in the middle. Changes are marked "SparkCommander patch".
 +
  use super::entrance::{DialogEntrance, EntranceSurface};
  use crate::root::WindowState;
@@ -708,7 +736,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
  };
  use gpui_base::{ElementExt as _, TextSelectionScopeId};
  use rust_i18n::t;
-@@ -28,6 +35,20 @@
+@@ -28,6 +36,20 @@
  type CancelHandler = Rc<dyn Fn(&ClickEvent, &mut Window, &mut App) -> bool + 'static>;
  type CloseHandler = Rc<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>;
  
@@ -729,7 +757,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
  /// Overwrite `slot` only when `value` was explicitly set.
  fn merge_field<T>(slot: &mut Option<T>, value: Option<T>) {
      if value.is_some() {
-@@ -147,38 +168,60 @@
+@@ -147,38 +169,60 @@
      }
  
      pub(crate) fn render_ok(&self, _: &mut Window, _: &mut App) -> AnyElement {
@@ -805,7 +833,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
  /// A default dialog button: activating it dispatches `action` on the dialog
  /// it sits in, whatever holds focus at that moment.
  #[derive(IntoElement)]
-@@ -205,6 +248,8 @@
+@@ -205,6 +249,8 @@
      width: Pixels,
      max_width: Option<Pixels>,
      margin_top: Option<Pixels>,
@@ -814,7 +842,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
      close_button: bool,
  
      overlay: bool,
-@@ -218,6 +263,7 @@
+@@ -218,6 +264,7 @@
      fn default() -> Self {
          Self {
              margin_top: None,
@@ -822,7 +850,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
              width: px(448.),
              max_width: None,
              overlay: true,
-@@ -225,7 +271,8 @@
+@@ -225,7 +272,8 @@
              overlay_visible: false,
              close_button: true,
              overlay_closable: true,
@@ -832,7 +860,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          }
      }
  }
-@@ -327,7 +374,40 @@
+@@ -327,7 +375,86 @@
      cx.theme().overlay
  }
  
@@ -862,6 +890,52 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +        )
 +}
 +
++/// SparkCommander patch: the desktop's close button in the title bar, see `WindowClose`.
++fn window_close_button(close: gpui_base::DialogClose, frame: crate::DialogFrame, band: Pixels, corner: Pixels) -> gpui_base::DialogClose {
++    let red = |dark: u32| -> Hsla { gpui::rgb(dark).into() };
++    let cross = |size: f32| crate::Icon::new(IconName::Close).size(px(size));
++    match frame.close {
++        // Breeze's: a cross, a red circle under it under the pointer, the cross white then.
++        crate::WindowClose::Breeze => close.top((band - px(20.)) / 2.).right(px(6.)).trigger(move |button| {
++            button
++                .group("dialog-close")
++                .size(px(20.))
++                .rounded_full()
++                .flex()
++                .items_center()
++                .justify_center()
++                .hover(move |this| this.bg(red(0xda4453)))
++                .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(12.)))
++        }),
++        // GNOME's: a cross on a faint circle, darker under the pointer.
++        crate::WindowClose::Adwaita => close.top((band - px(24.)) / 2.).right(px(9.)).trigger(move |button| {
++            let ink = frame.text[0];
++            button
++                .size(px(24.))
++                .rounded_full()
++                .bg(ink.opacity(0.1))
++                .hover(move |this| this.bg(ink.opacity(0.15)))
++                .flex()
++                .items_center()
++                .justify_center()
++                .child(cross(14.))
++        }),
++        // Windows 11's: a 46 px cell of the title bar's height, red under the pointer.
++        crate::WindowClose::Fluent => close.top_0().right_0().trigger(move |button| {
++            button
++                .group("dialog-close")
++                .w(px(46.))
++                .h(band)
++                .rounded_tr(corner - px(1.))
++                .flex()
++                .items_center()
++                .justify_center()
++                .hover(move |this| this.bg(red(0xc42b1c)))
++                .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(14.)))
++        }),
++    }
++}
++
 +/// SparkCommander patch: an AppKit alert's has a line around it, `edge`.
 +fn dialog_shadow(delta: f32, edge: Option<Hsla>) -> Vec<BoxShadow> {
 +    let edge = edge.map(|color| BoxShadow {
@@ -874,7 +948,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
      vec![
          BoxShadow {
              color: hsla(0., 0., 0., 0.1 * delta),
-@@ -344,6 +424,9 @@
+@@ -344,6 +471,9 @@
              inset: false,
          },
      ]
@@ -884,7 +958,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
  }
  
  impl Dialog {
-@@ -475,6 +558,13 @@
+@@ -475,6 +605,13 @@
          self
      }
  
@@ -898,7 +972,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
      /// Sets the width of the dialog, defaults to 448px.
      ///
      /// The dialog is never wider than the viewport minus a margin on each side.
-@@ -598,6 +688,13 @@
+@@ -598,6 +735,13 @@
  
          let layer_ix = self.layer_ix;
          let selection_scope = self.selection_scope;
@@ -912,22 +986,26 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          let on_close = self.button_props.close_handler();
          let on_ok = self.button_props.ok_handler();
          let on_cancel = self.button_props.cancel_handler();
-@@ -632,6 +729,42 @@
+@@ -632,6 +776,52 @@
          let base_size = window.text_style().font_size;
          let rem_size = window.rem_size();
  
 +        // SparkCommander patch: moved, the dialog stays where it was put; else centred
-+        // over `center_over`, else at `margin_top`.
++        // over `center_over`, else at `margin_top` where given, else in the middle.
 +        let placed = moving.origin.get().is_some() || self.props.center_over.is_some();
-+        let (anchor, position) = match (moving.origin.get(), self.props.center_over) {
-+            (Some(origin), _) => (Anchor::TopLeft, origin),
-+            (None, Some(over)) => (
++        let (anchor, position) = match (moving.origin.get(), self.props.center_over, self.props.margin_top) {
++            (Some(origin), _, _) => (Anchor::TopLeft, origin),
++            (None, Some(over), _) => (
 +                Anchor::LeftCenter,
 +                point(over.center().x - width / 2., over.center().y),
 +            ),
-+            (None, None) => (
++            (None, None, Some(_)) => (
 +                Anchor::TopLeft,
 +                point(window_paddings.left + x, window_paddings.top + y),
++            ),
++            (None, None, None) => (
++                Anchor::LeftCenter,
++                point(window_paddings.left + x, window_paddings.top + view_size.height / 2. + layer_offset),
 +            ),
 +        };
 +        let laid_out = moving.clone();
@@ -939,9 +1017,15 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +            .try_global::<crate::MacControls>()
 +            .copied()
 +            .filter(|_| !cx.has_global::<crate::NativeControls>());
-+        // SparkCommander patch: WinUI's ContentDialog, see `NativeControls::command_bar`.
++        // SparkCommander patch: WinUI's ContentDialog's buttons, see `NativeControls::command_bar`.
 +        let command_bar = cx.try_global::<crate::NativeControls>().and_then(|native| native.command_bar);
-+        let band = px(if mac.is_some() { 32. } else if command_bar.is_some() { 52. } else { TITLE_BAND_HEIGHT });
++        // SparkCommander patch: the desktop's window title bar, see `NativeControls::dialog_frame`.
++        let frame = cx.try_global::<crate::NativeControls>().and_then(|native| native.dialog_frame).filter(|_| mac.is_none());
++        let band = match (mac, frame) {
++            (Some(_), _) => px(32.),
++            (None, Some(frame)) => frame.height,
++            (None, None) => px(TITLE_BAND_HEIGHT),
++        };
 +        // An alert's, 24 px corners, in its own fill and rim; see `AlertDialog`.
 +        let alert = mac.filter(|_| matches!(self.base, Some(BaseDialogRoot::AlertDialog(_))));
 +        let edge = alert.map(|mac| mac.alert_edge);
@@ -955,7 +1039,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          let mut paddings = Edges::all(px(16.));
          if let Some(pl) = self.style.padding.left {
              paddings.left = pl.to_pixels(base_size, rem_size);
-@@ -708,29 +841,86 @@
+@@ -708,29 +898,97 @@
                              })
                              .popup(
                                  gpui_base::Positioner::corner(
@@ -1010,10 +1094,17 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +                                                    .items_center()
 +                                                    .pl(paddings.left)
 +                                                    .pr(paddings.right + px(28.))
-+                                                    .map(|this| match mac {
-+                                                        Some(_) => this.pl(px(36.)).pr(paddings.right),
-+                                                        None if command_bar.is_some() => this.pt(px(8.)),
-+                                                        None => this.bg(theme.muted).border_b_1().border_color(theme.border),
++                                                    .map(|this| match (mac, frame) {
++                                                        (Some(_), _) => this.pl(px(36.)).pr(paddings.right),
++                                                        (None, Some(frame)) => {
++                                                            let this = this.bg(frame.fill[usize::from(!active)]).text_color(frame.text[usize::from(!active)]);
++                                                            match frame.close {
++                                                                crate::WindowClose::Fluent => this.pl(px(12.)).pr(px(46.)),
++                                                                // Clear of the close button on both sides, so the title is centred.
++                                                                _ => this.px(band),
++                                                            }
++                                                        }
++                                                        (None, None) => this.bg(theme.muted).border_b_1().border_color(theme.border),
 +                                                    })
 +                                                    .rounded_t(corner - px(1.))
 +                                                    // SparkCommander patch: the window title's size; a long one ends in "…".
@@ -1023,7 +1114,11 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +                                                            .when(mac.is_some(), |this| {
 +                                                                this.font_semibold().text_color(theme.muted_foreground)
 +                                                            })
-+                                                            .when(command_bar.is_some(), |this| this.text_xl().font_semibold())
++                                                            .when_some(frame, |this, frame| match frame.close {
++                                                                crate::WindowClose::Breeze => this.text_center(),
++                                                                crate::WindowClose::Adwaita => this.text_center().font_bold(),
++                                                                crate::WindowClose::Fluent => this.text_xs(),
++                                                            })
 +                                                            .flex_1()
 +                                                            .min_w_0()
 +                                                            .truncate()
@@ -1047,7 +1142,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          .child(
                                              v_flex()
                                                  .flex_1()
-@@ -744,14 +934,6 @@
+@@ -744,14 +1002,6 @@
                                                              .child(header),
                                                      )
                                                  })
@@ -1062,7 +1157,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                  .when_some(self.content_builder, |this, builder| {
                                                      this.child(builder(
                                                          DialogContent::new()
-@@ -781,24 +963,39 @@
+@@ -781,24 +1031,40 @@
                                                  div()
                                                      .pl(paddings.left)
                                                      .pr(paddings.right)
@@ -1093,11 +1188,12 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 -                                                .right(right)
 -                                                .trigger(|button| {
 +                                            let close = gpui_base::DialogClose::new().absolute();
-+                                            match mac {
-+                                                Some(mac) => close.top((band - px(14.)) / 2.).left(px(11.)).trigger(|button| {
++                                            match (mac, frame.filter(|_| has_title)) {
++                                                (Some(mac), _) => close.top((band - px(14.)) / 2.).left(px(11.)).trigger(|button| {
 +                                                    mac_close_button(button, mac, active)
 +                                                }),
-+                                                None => close.top(top).right(right).trigger(|button| {
++                                                (None, Some(frame)) => window_close_button(close, frame, band, corner),
++                                                (None, None) => close.top(top).right(right).trigger(|button| {
                                                      Button::new("close")
                                                          .with_base(button)
                                                          .small()
@@ -1109,7 +1205,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          }))
                                          .map(|surface| {
                                              if animated {
-@@ -806,15 +1003,15 @@
+@@ -806,15 +1072,15 @@
                                                      .with_animation(
                                                          "slide-down-shadow",
                                                          animation.clone(),
@@ -1128,7 +1224,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                      .text_selection_scope(selection_scope)
                                                      .into_any_element()
                                              }
-@@ -841,7 +1038,8 @@
+@@ -841,7 +1107,8 @@
                                          }),
                                  )
                                  .map(|positioner| {
@@ -1138,7 +1234,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          positioner
                                              .with_animation(
                                                  "slide-down",
-@@ -876,6 +1074,38 @@
+@@ -876,6 +1143,38 @@
      }
  }
  
@@ -1480,15 +1576,15 @@ diff -ruN a/src/kbd.rs b/src/kbd.rs
      }
  }
 diff -ruN a/src/lib.rs b/src/lib.rs
---- a/src/lib.rs	2026-11-20 11:57:02.422457573 +0100
-+++ b/src/lib.rs	2026-11-20 22:20:00.736514018 +0100
+--- a/src/lib.rs	2006-07-24 03:21:28.000000000 +0200
++++ b/src/lib.rs	2026-11-22 19:10:17.194654052 +0100
 @@ -20,6 +20,15 @@
  mod touch_selection;
  mod virtual_list;
  mod window_border;
 +// SparkCommander patch: see `NativeControls`.
 +mod native;
-+pub use native::NativeControls;
++pub use native::{DialogFrame, NativeControls, WindowClose};
 +// SparkCommander patch: see `ToolkitControls`.
 +mod toolkit;
 +pub use toolkit::{StateImages, ToolkitControls, state_layers};
@@ -2620,77 +2716,6 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      }
  }
  
-diff -ruN a/src/native.rs b/src/native.rs
---- a/src/native.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/native.rs	2026-11-20 22:20:00.735706143 +0100
-@@ -0,0 +1,67 @@
-+// SparkCommander patch: this file is new.
-+use gpui::{Global, Hsla, Pixels};
-+
-+/// Controls drawn as the desktop's own style draws them (KDE's Breeze,
-+/// Windows 11's): its colours and the sizes that differ; without it, GPUI
-+/// Kit's own look.
-+#[derive(Clone, Copy, Debug)]
-+pub struct NativeControls {
-+    /// Check boxes and radio buttons, a check box's corners, their frame's
-+    /// width (GNOME's is 2 px), and a radio button's dot.
-+    pub check_size: Pixels,
-+    pub check_radius: Pixels,
-+    pub check_border: Pixels,
-+    pub radio_dot: Pixels,
-+    /// Unchecked, their frame and fill; checked; the mark or dot on them.
-+    pub check_frame: Hsla,
-+    pub check_fill: Hsla,
-+    pub checked_frame: Hsla,
-+    pub checked_fill: Hsla,
-+    pub mark: Hsla,
-+    /// Sliders' and progress bars' groove, and what fills it.
-+    pub groove: Hsla,
-+    pub fill: Hsla,
-+    /// A slider's groove; a progress bar's groove and fill.
-+    pub slider_groove: Pixels,
-+    pub progress: [Pixels; 2],
-+    /// A slider's 20 px handle, its middle, and the rim around the middle.
-+    pub handle: Hsla,
-+    pub handle_middle: Hsla,
-+    pub handle_rim: Pixels,
-+    /// Windows': the handle's frame.
-+    pub handle_frame: Option<Hsla>,
-+    /// Push buttons' fill and frame, normal, hovered and pressed; the default
-+    /// button's (a dialog's OK); their text.
-+    pub button: [(Hsla, Hsla); 3],
-+    pub default_button: [(Hsla, Hsla); 3],
-+    pub button_text: Hsla,
-+    pub default_button_text: Hsla,
-+    /// Windows': the bottom edge of a button's frame, of the default button's.
-+    pub button_edge: Option<[Hsla; 2]>,
-+    /// Breeze's document-mode tabs: the selected one, the others, the selected one's line.
-+    pub tabs: Option<[Hsla; 3]>,
-+    /// Windows': a text field's bottom line; focused, the checked fill.
-+    pub field_line: Option<Hsla>,
-+    /// Text fields' fill, where the style has its own.
-+    pub field_fill: Option<Hsla>,
-+    /// Combo boxes drawn as push buttons (Windows', GNOME's); buttons' labels
-+    /// and the check mark bold (GNOME's).
-+    pub combo_button: bool,
-+    pub bold: bool,
-+    /// Windows': a group box as a card, its fill and rim, its title bold.
-+    pub card: Option<(Hsla, Hsla)>,
-+    /// Windows': a dialog's buttons in a band of this fill, its title unbanded and large.
-+    pub command_bar: Option<Hsla>,
-+}
-+
-+impl NativeControls {
-+    /// The frame of check boxes and radio buttons, as GPUI's border widths go.
-+    pub(crate) fn check_frame_width<E: gpui::Styled>(&self, element: E) -> E {
-+        match self.check_border >= gpui::px(2.) {
-+            true => element.border_2(),
-+            false => element.border_1(),
-+        }
-+    }
-+}
-+
-+impl Global for NativeControls {}
 diff -ruN a/src/native_menu/macos.rs b/src/native_menu/macos.rs
 --- a/src/native_menu/macos.rs	2026-11-20 11:57:02.422882481 +0100
 +++ b/src/native_menu/macos.rs	2026-11-20 22:20:00.731534394 +0100
@@ -2945,6 +2970,100 @@ diff -ruN a/src/native_menu/mod.rs b/src/native_menu/mod.rs
  #[cfg(target_os = "windows")]
  mod windows;
  
+diff -ruN a/src/native.rs b/src/native.rs
+--- a/src/native.rs	1970-01-01 01:00:00.000000000 +0100
++++ b/src/native.rs	2026-11-22 19:10:17.193867598 +0100
+@@ -0,0 +1,90 @@
++// SparkCommander patch: this file is new.
++use gpui::{Global, Hsla, Pixels};
++
++/// Controls drawn as the desktop's own style draws them (KDE's Breeze,
++/// Windows 11's): its colours and the sizes that differ; without it, GPUI
++/// Kit's own look.
++#[derive(Clone, Copy, Debug)]
++pub struct NativeControls {
++    /// Check boxes and radio buttons, a check box's corners, their frame's
++    /// width (GNOME's is 2 px), and a radio button's dot.
++    pub check_size: Pixels,
++    pub check_radius: Pixels,
++    pub check_border: Pixels,
++    pub radio_dot: Pixels,
++    /// Unchecked, their frame and fill; checked; the mark or dot on them.
++    pub check_frame: Hsla,
++    pub check_fill: Hsla,
++    pub checked_frame: Hsla,
++    pub checked_fill: Hsla,
++    pub mark: Hsla,
++    /// Sliders' and progress bars' groove, and what fills it.
++    pub groove: Hsla,
++    pub fill: Hsla,
++    /// A slider's groove; a progress bar's groove and fill.
++    pub slider_groove: Pixels,
++    pub progress: [Pixels; 2],
++    /// A slider's 20 px handle, its middle, and the rim around the middle.
++    pub handle: Hsla,
++    pub handle_middle: Hsla,
++    pub handle_rim: Pixels,
++    /// Windows': the handle's frame.
++    pub handle_frame: Option<Hsla>,
++    /// Push buttons' fill and frame, normal, hovered and pressed; the default
++    /// button's (a dialog's OK); their text.
++    pub button: [(Hsla, Hsla); 3],
++    pub default_button: [(Hsla, Hsla); 3],
++    pub button_text: Hsla,
++    pub default_button_text: Hsla,
++    /// Windows': the bottom edge of a button's frame, of the default button's.
++    pub button_edge: Option<[Hsla; 2]>,
++    /// Breeze's document-mode tabs: the selected one, the others, the selected one's line.
++    pub tabs: Option<[Hsla; 3]>,
++    /// Windows': a text field's bottom line; focused, the checked fill.
++    pub field_line: Option<Hsla>,
++    /// Text fields' fill, where the style has its own.
++    pub field_fill: Option<Hsla>,
++    /// Combo boxes drawn as push buttons (Windows', GNOME's); buttons' labels
++    /// and the check mark bold (GNOME's).
++    pub combo_button: bool,
++    pub bold: bool,
++    /// Windows': a group box as a card, its fill and rim, its title bold.
++    pub card: Option<(Hsla, Hsla)>,
++    /// Windows': a dialog's buttons in a band of this fill.
++    pub command_bar: Option<Hsla>,
++    /// A dialog's title bar as the desktop's windows have it.
++    pub dialog_frame: Option<DialogFrame>,
++}
++
++/// The desktop's window title bar, for dialogs: its height, its fill and text
++/// with the window focused and not, and its close button.
++#[derive(Clone, Copy, Debug)]
++pub struct DialogFrame {
++    pub height: Pixels,
++    pub fill: [Hsla; 2],
++    pub text: [Hsla; 2],
++    pub close: WindowClose,
++}
++
++/// A window's close button as the desktop draws it, and where the title is.
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum WindowClose {
++    /// KDE's Breeze: a cross, on a red circle under the pointer; the title centred.
++    Breeze,
++    /// GNOME's: a cross on a faint circle; the title bold, centred.
++    Adwaita,
++    /// Windows 11's: a cross in a 46 px wide cell, red under the pointer; the title small, at the left.
++    Fluent,
++}
++
++impl NativeControls {
++    /// The frame of check boxes and radio buttons, as GPUI's border widths go.
++    pub(crate) fn check_frame_width<E: gpui::Styled>(&self, element: E) -> E {
++        match self.check_border >= gpui::px(2.) {
++            true => element.border_2(),
++            false => element.border_1(),
++        }
++    }
++}
++
++impl Global for NativeControls {}
 diff -ruN a/src/progress/progress.rs b/src/progress/progress.rs
 --- a/src/progress/progress.rs	2026-11-20 11:57:02.423115324 +0100
 +++ b/src/progress/progress.rs	2026-11-20 22:20:00.731800971 +0100
@@ -3398,6 +3517,125 @@ diff -ruN a/src/styled.rs b/src/styled.rs
  }
  
  /// shadcn/ui's popup surface shadow — a hairline `ring` plus `shadow-md` — at
+diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
+--- a/src/tab/tab_bar.rs	2026-11-20 11:57:02.424460460 +0100
++++ b/src/tab/tab_bar.rs	2026-11-20 22:20:00.733267358 +0100
+@@ -1,3 +1,6 @@
++// Modified for Spark Commander (Apache-2.0, section 4b): the segmented
++// indicator uses the active tab colour. Changes are marked "SparkCommander patch".
++
+ use std::{cell::RefCell, rc::Rc};
+ 
+ use gpui::{
+@@ -257,7 +260,8 @@
+                     div()
+                         .w_full()
+                         .h(inner_height)
+-                        .bg(cx.theme().tokens.background)
++                        // SparkCommander patch: the theme's active tab colour, not the background.
++                        .bg(cx.theme().tokens.tab_active)
+                         .rounded(inner_radius)
+                         .shadow(raised_shadow()),
+                 ),
+@@ -365,10 +369,40 @@
+             Size::Large => px(16.),
+             _ => px(12.),
+         };
++        // SparkCommander patch: AppKit's window tab bar, see `MacControls`: a
++        // rounded track holding tabs of equal width.
++        let mac = match self.variant {
++            TabVariant::Tab if !cx.has_global::<crate::NativeControls>() => {
++                cx.try_global::<crate::MacControls>().copied()
++            }
++            _ => None,
++        };
++        // And `Underline` tabs as a tab view's: a segmented control, the
++        // selected segment in the accent.
++        let mac_segments = match self.variant {
++            TabVariant::Underline if !cx.has_global::<crate::NativeControls>() => {
++                cx.try_global::<crate::MacControls>().copied()
++            }
++            _ => None,
++        };
+         let (bg, paddings, gap): (Background, _, _) = match self.variant {
++            TabVariant::Underline if mac_segments.is_some() => {
++                let fill = mac_segments.map_or(cx.theme().transparent, |mac| mac.button);
++                (fill.into(), Edges::all(px(0.)), px(0.))
++            }
++            TabVariant::Tab if mac.is_some() => {
++                let track = mac.map_or(cx.theme().transparent, |mac| mac.tab_track);
++                (track.into(), Edges::all(px(2.)), px(0.))
++            }
+             TabVariant::Tab => {
+                 let padding = Edges::all(px(0.));
+-                (cx.theme().tokens.tab_bar.into(), padding, px(0.))
++                // SparkCommander patch: WinUI's TabView, its strip darker than the selected tab.
++                let fluent = cx.try_global::<crate::NativeControls>().filter(|native| native.card.is_some());
++                let fill: Background = match fluent.and_then(|native| native.command_bar) {
++                    Some(fill) => fill.into(),
++                    None => cx.theme().tokens.tab_bar.into(),
++                };
++                (fill, padding, px(0.))
+             }
+             TabVariant::Outline => {
+                 let padding = Edges::all(px(0.));
+@@ -408,7 +442,7 @@
+         let has_indicator = matches!(
+             self.variant,
+             TabVariant::Segmented | TabVariant::Pill | TabVariant::Underline
+-        );
++        ) && mac_segments.is_none();
+         let num_tabs = self.children.len();
+ 
+         // Bounds tracking for tab indicator animation.
+@@ -450,7 +484,10 @@
+         reveal.advance(window, cx);
+ 
+         let padding_x = paddings.left;
+-        let indicator = self.render_indicator(&bounds_rc, window, cx);
++        let indicator = match mac_segments {
++            Some(_) => None,
++            None => self.render_indicator(&bounds_rc, window, cx),
++        };
+         let indicator_epoch = indicator.as_ref().map(|(_, epoch)| *epoch).unwrap_or(0);
+         let mut indicator_element = indicator.map(|(el, _)| el);
+         let indicator_ready = indicator_element.is_some();
+@@ -466,6 +503,7 @@
+         for (ix, child) in self.children.into_iter().enumerate() {
+             item_metas.push((child.label.clone(), child.icon.clone(), child.disabled));
+             let tab_bar_prefix = child.tab_bar_prefix.unwrap_or(true);
++            let child = if mac.is_some() { child.flex_1() } else { child };
+             let mut tab = child
+                 .ix(ix)
+                 .tab_bar_prefix(tab_bar_prefix)
+@@ -510,6 +548,8 @@
+                 // only logical tabs occupy those indices.
+                 div()
+                     .flex_shrink_0()
++                    // SparkCommander patch: macOS's tabs, a share of the bar however long their label.
++                    .when(mac.is_some(), |this| this.min_w(super::tab::MAC_TAB_MIN))
+                     .map(|mut this| {
+                         this.style().flex_grow = flex_grow;
+                         this.style().flex_basis = flex_basis;
+@@ -540,7 +580,8 @@
+             .bg(bg)
+             .text_color(cx.theme().tab_foreground)
+             .when(
+-                self.variant == TabVariant::Underline || self.variant == TabVariant::Tab,
++                (self.variant == TabVariant::Underline && mac_segments.is_none())
++                    || (self.variant == TabVariant::Tab && mac.is_none()),
+                 |this| {
+                     this.child(
+                         div()
+@@ -555,6 +596,8 @@
+                 },
+             )
+             .rounded(self.variant.tab_bar_radius(self.size, cx))
++            .when(mac.is_some(), |this| this.rounded(px(14.)).m(px(4.)))
++            .when(mac_segments.is_some(), |this| this.rounded(px(6.)))
+             .paddings(paddings)
+             .refine_style(&self.style)
+             .when_some(self.prefix, |this, prefix| this.child(prefix))
 diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
 --- a/src/tab/tab.rs	2026-11-20 11:57:02.424426095 +0100
 +++ b/src/tab/tab.rs	2026-11-20 22:20:00.733218034 +0100
@@ -3624,125 +3862,6 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
              .when_some(self.on_click.clone(), |this, on_click| {
                  this.on_click(move |event, window, cx| on_click(event, window, cx))
              })
-diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
---- a/src/tab/tab_bar.rs	2026-11-20 11:57:02.424460460 +0100
-+++ b/src/tab/tab_bar.rs	2026-11-20 22:20:00.733267358 +0100
-@@ -1,3 +1,6 @@
-+// Modified for Spark Commander (Apache-2.0, section 4b): the segmented
-+// indicator uses the active tab colour. Changes are marked "SparkCommander patch".
-+
- use std::{cell::RefCell, rc::Rc};
- 
- use gpui::{
-@@ -257,7 +260,8 @@
-                     div()
-                         .w_full()
-                         .h(inner_height)
--                        .bg(cx.theme().tokens.background)
-+                        // SparkCommander patch: the theme's active tab colour, not the background.
-+                        .bg(cx.theme().tokens.tab_active)
-                         .rounded(inner_radius)
-                         .shadow(raised_shadow()),
-                 ),
-@@ -365,10 +369,40 @@
-             Size::Large => px(16.),
-             _ => px(12.),
-         };
-+        // SparkCommander patch: AppKit's window tab bar, see `MacControls`: a
-+        // rounded track holding tabs of equal width.
-+        let mac = match self.variant {
-+            TabVariant::Tab if !cx.has_global::<crate::NativeControls>() => {
-+                cx.try_global::<crate::MacControls>().copied()
-+            }
-+            _ => None,
-+        };
-+        // And `Underline` tabs as a tab view's: a segmented control, the
-+        // selected segment in the accent.
-+        let mac_segments = match self.variant {
-+            TabVariant::Underline if !cx.has_global::<crate::NativeControls>() => {
-+                cx.try_global::<crate::MacControls>().copied()
-+            }
-+            _ => None,
-+        };
-         let (bg, paddings, gap): (Background, _, _) = match self.variant {
-+            TabVariant::Underline if mac_segments.is_some() => {
-+                let fill = mac_segments.map_or(cx.theme().transparent, |mac| mac.button);
-+                (fill.into(), Edges::all(px(0.)), px(0.))
-+            }
-+            TabVariant::Tab if mac.is_some() => {
-+                let track = mac.map_or(cx.theme().transparent, |mac| mac.tab_track);
-+                (track.into(), Edges::all(px(2.)), px(0.))
-+            }
-             TabVariant::Tab => {
-                 let padding = Edges::all(px(0.));
--                (cx.theme().tokens.tab_bar.into(), padding, px(0.))
-+                // SparkCommander patch: WinUI's TabView, its strip darker than the selected tab.
-+                let fluent = cx.try_global::<crate::NativeControls>().filter(|native| native.card.is_some());
-+                let fill: Background = match fluent.and_then(|native| native.command_bar) {
-+                    Some(fill) => fill.into(),
-+                    None => cx.theme().tokens.tab_bar.into(),
-+                };
-+                (fill, padding, px(0.))
-             }
-             TabVariant::Outline => {
-                 let padding = Edges::all(px(0.));
-@@ -408,7 +442,7 @@
-         let has_indicator = matches!(
-             self.variant,
-             TabVariant::Segmented | TabVariant::Pill | TabVariant::Underline
--        );
-+        ) && mac_segments.is_none();
-         let num_tabs = self.children.len();
- 
-         // Bounds tracking for tab indicator animation.
-@@ -450,7 +484,10 @@
-         reveal.advance(window, cx);
- 
-         let padding_x = paddings.left;
--        let indicator = self.render_indicator(&bounds_rc, window, cx);
-+        let indicator = match mac_segments {
-+            Some(_) => None,
-+            None => self.render_indicator(&bounds_rc, window, cx),
-+        };
-         let indicator_epoch = indicator.as_ref().map(|(_, epoch)| *epoch).unwrap_or(0);
-         let mut indicator_element = indicator.map(|(el, _)| el);
-         let indicator_ready = indicator_element.is_some();
-@@ -466,6 +503,7 @@
-         for (ix, child) in self.children.into_iter().enumerate() {
-             item_metas.push((child.label.clone(), child.icon.clone(), child.disabled));
-             let tab_bar_prefix = child.tab_bar_prefix.unwrap_or(true);
-+            let child = if mac.is_some() { child.flex_1() } else { child };
-             let mut tab = child
-                 .ix(ix)
-                 .tab_bar_prefix(tab_bar_prefix)
-@@ -510,6 +548,8 @@
-                 // only logical tabs occupy those indices.
-                 div()
-                     .flex_shrink_0()
-+                    // SparkCommander patch: macOS's tabs, a share of the bar however long their label.
-+                    .when(mac.is_some(), |this| this.min_w(super::tab::MAC_TAB_MIN))
-                     .map(|mut this| {
-                         this.style().flex_grow = flex_grow;
-                         this.style().flex_basis = flex_basis;
-@@ -540,7 +580,8 @@
-             .bg(bg)
-             .text_color(cx.theme().tab_foreground)
-             .when(
--                self.variant == TabVariant::Underline || self.variant == TabVariant::Tab,
-+                (self.variant == TabVariant::Underline && mac_segments.is_none())
-+                    || (self.variant == TabVariant::Tab && mac.is_none()),
-                 |this| {
-                     this.child(
-                         div()
-@@ -555,6 +596,8 @@
-                 },
-             )
-             .rounded(self.variant.tab_bar_radius(self.size, cx))
-+            .when(mac.is_some(), |this| this.rounded(px(14.)).m(px(4.)))
-+            .when(mac_segments.is_some(), |this| this.rounded(px(6.)))
-             .paddings(paddings)
-             .refine_style(&self.style)
-             .when_some(self.prefix, |this, prefix| this.child(prefix))
 diff -ruN a/src/table/data_table.rs b/src/table/data_table.rs
 --- a/src/table/data_table.rs	2026-11-20 11:57:02.424524742 +0100
 +++ b/src/table/data_table.rs	2026-11-20 22:20:00.733425569 +0100

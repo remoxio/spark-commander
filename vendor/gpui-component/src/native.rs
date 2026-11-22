@@ -50,8 +50,31 @@ pub struct NativeControls {
     pub bold: bool,
     /// Windows': a group box as a card, its fill and rim, its title bold.
     pub card: Option<(Hsla, Hsla)>,
-    /// Windows': a dialog's buttons in a band of this fill, its title unbanded and large.
+    /// Windows': a dialog's buttons in a band of this fill.
     pub command_bar: Option<Hsla>,
+    /// A dialog's title bar as the desktop's windows have it.
+    pub dialog_frame: Option<DialogFrame>,
+}
+
+/// The desktop's window title bar, for dialogs: its height, its fill and text
+/// with the window focused and not, and its close button.
+#[derive(Clone, Copy, Debug)]
+pub struct DialogFrame {
+    pub height: Pixels,
+    pub fill: [Hsla; 2],
+    pub text: [Hsla; 2],
+    pub close: WindowClose,
+}
+
+/// A window's close button as the desktop draws it, and where the title is.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum WindowClose {
+    /// KDE's Breeze: a cross, on a red circle under the pointer; the title centred.
+    Breeze,
+    /// GNOME's: a cross on a faint circle; the title bold, centred.
+    Adwaita,
+    /// Windows 11's: a cross in a 46 px wide cell, red under the pointer; the title small, at the left.
+    Fluent,
 }
 
 impl NativeControls {
