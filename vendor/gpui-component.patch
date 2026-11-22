@@ -708,7 +708,7 @@ diff -ruN a/src/dialog/alert_dialog.rs b/src/dialog/alert_dialog.rs
      fn style(&mut self) -> &mut StyleRefinement {
 diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 --- a/src/dialog/dialog.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/dialog/dialog.rs	2026-11-22 19:10:17.187474077 +0100
++++ b/src/dialog/dialog.rs	2026-11-22 19:25:49.265615763 +0100
 @@ -1,13 +1,21 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a dialog moves by
 +// its title, can open centred over a part of the window, and fades in
@@ -860,7 +860,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          }
      }
  }
-@@ -327,7 +375,86 @@
+@@ -327,7 +375,112 @@
      cx.theme().overlay
  }
  
@@ -907,6 +907,32 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +                .hover(move |this| this.bg(red(0xda4453)))
 +                .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(12.)))
 +        }),
++        // Klassy's: a cross, white on a red rounded cell (60%) of the title bar's height under the pointer.
++        crate::WindowClose::Klassy => close.top(px(3.)).right(px(3.)).trigger(move |button| {
++            button
++                .group("dialog-close")
++                .w(px(36.))
++                .h(band - px(6.))
++                .rounded(px(4.))
++                .flex()
++                .items_center()
++                .justify_center()
++                .hover(move |this| this.bg(red(0xda4453).opacity(0.6)))
++                .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(14.)))
++        }),
++        // Another KDE decoration's: a cross on a faint cell under the pointer.
++        crate::WindowClose::Plain => close.top(px(3.)).right(px(3.)).trigger(move |button| {
++            let ink = frame.text[0];
++            button
++                .w(px(30.))
++                .h(band - px(6.))
++                .rounded(px(4.))
++                .flex()
++                .items_center()
++                .justify_center()
++                .hover(move |this| this.bg(ink.opacity(0.12)))
++                .child(cross(14.))
++        }),
 +        // GNOME's: a cross on a faint circle, darker under the pointer.
 +        crate::WindowClose::Adwaita => close.top((band - px(24.)) / 2.).right(px(9.)).trigger(move |button| {
 +            let ink = frame.text[0];
@@ -948,7 +974,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
      vec![
          BoxShadow {
              color: hsla(0., 0., 0., 0.1 * delta),
-@@ -344,6 +471,9 @@
+@@ -344,6 +497,9 @@
              inset: false,
          },
      ]
@@ -958,7 +984,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
  }
  
  impl Dialog {
-@@ -475,6 +605,13 @@
+@@ -475,6 +631,13 @@
          self
      }
  
@@ -972,7 +998,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
      /// Sets the width of the dialog, defaults to 448px.
      ///
      /// The dialog is never wider than the viewport minus a margin on each side.
-@@ -598,6 +735,13 @@
+@@ -598,6 +761,13 @@
  
          let layer_ix = self.layer_ix;
          let selection_scope = self.selection_scope;
@@ -986,7 +1012,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          let on_close = self.button_props.close_handler();
          let on_ok = self.button_props.ok_handler();
          let on_cancel = self.button_props.cancel_handler();
-@@ -632,6 +776,52 @@
+@@ -632,6 +802,56 @@
          let base_size = window.text_style().font_size;
          let rem_size = window.rem_size();
  
@@ -1021,6 +1047,10 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +        let command_bar = cx.try_global::<crate::NativeControls>().and_then(|native| native.command_bar);
 +        // SparkCommander patch: the desktop's window title bar, see `NativeControls::dialog_frame`.
 +        let frame = cx.try_global::<crate::NativeControls>().and_then(|native| native.dialog_frame).filter(|_| mac.is_none());
++        let icon = frame
++            .filter(|frame| frame.icon)
++            .and_then(|_| cx.try_global::<crate::AlertIcon>())
++            .map(|icon| icon.0.clone());
 +        let band = match (mac, frame) {
 +            (Some(_), _) => px(32.),
 +            (None, Some(frame)) => frame.height,
@@ -1039,7 +1069,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          let mut paddings = Edges::all(px(16.));
          if let Some(pl) = self.style.padding.left {
              paddings.left = pl.to_pixels(base_size, rem_size);
-@@ -708,29 +898,97 @@
+@@ -708,29 +928,111 @@
                              })
                              .popup(
                                  gpui_base::Positioner::corner(
@@ -1065,7 +1095,11 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +                                        .border_color(match (alert, mac) {
 +                                            (Some(mac), _) => mac.alert_rim,
 +                                            (None, Some(mac)) => mac.window_frame,
-+                                            (None, None) => cx.theme().border,
++                                            // SparkCommander patch: the decoration's outline, focused.
++                                            (None, None) => frame
++                                                .and_then(|frame| frame.outline)
++                                                .filter(|_| active)
++                                                .unwrap_or(cx.theme().border),
 +                                        })
 +                                        .rounded(corner)
                                          .min_h_24()
@@ -1115,15 +1149,25 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +                                                                this.font_semibold().text_color(theme.muted_foreground)
 +                                                            })
 +                                                            .when_some(frame, |this, frame| match frame.close {
-+                                                                crate::WindowClose::Breeze => this.text_center(),
 +                                                                crate::WindowClose::Adwaita => this.text_center().font_bold(),
 +                                                                crate::WindowClose::Fluent => this.text_xs(),
++                                                                _ => this.text_center(),
 +                                                            })
 +                                                            .flex_1()
 +                                                            .min_w_0()
 +                                                            .truncate()
 +                                                            .child(title),
 +                                                    )
++                                                    // SparkCommander patch: the app's icon at the left, as KWin's.
++                                                    .when_some(icon.clone(), |this, icon| {
++                                                        this.relative().child(
++                                                            gpui::img(icon)
++                                                                .absolute()
++                                                                .left(px(8.))
++                                                                .top((band - px(16.)) / 2.)
++                                                                .size(px(16.)),
++                                                        )
++                                                    })
 +                                                    .on_mouse_down(
 +                                                        MouseButton::Left,
 +                                                        move |event: &MouseDownEvent, window, _| {
@@ -1142,7 +1186,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          .child(
                                              v_flex()
                                                  .flex_1()
-@@ -744,14 +1002,6 @@
+@@ -744,14 +1046,6 @@
                                                              .child(header),
                                                      )
                                                  })
@@ -1157,7 +1201,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                  .when_some(self.content_builder, |this, builder| {
                                                      this.child(builder(
                                                          DialogContent::new()
-@@ -781,24 +1031,40 @@
+@@ -781,24 +1075,40 @@
                                                  div()
                                                      .pl(paddings.left)
                                                      .pr(paddings.right)
@@ -1205,7 +1249,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          }))
                                          .map(|surface| {
                                              if animated {
-@@ -806,15 +1072,15 @@
+@@ -806,15 +1116,15 @@
                                                      .with_animation(
                                                          "slide-down-shadow",
                                                          animation.clone(),
@@ -1224,7 +1268,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                      .text_selection_scope(selection_scope)
                                                      .into_any_element()
                                              }
-@@ -841,7 +1107,8 @@
+@@ -841,7 +1151,8 @@
                                          }),
                                  )
                                  .map(|positioner| {
@@ -1234,7 +1278,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          positioner
                                              .with_animation(
                                                  "slide-down",
-@@ -876,6 +1143,38 @@
+@@ -876,6 +1187,38 @@
      }
  }
  
@@ -1658,8 +1702,8 @@ diff -ruN a/src/list/list.rs b/src/list/list.rs
                              secondary: e.modifiers().secondary(),
 diff -ruN a/src/mac.rs b/src/mac.rs
 --- a/src/mac.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/mac.rs	2026-11-20 22:20:00.736536010 +0100
-@@ -0,0 +1,56 @@
++++ b/src/mac.rs	2026-11-22 19:25:49.272863158 +0100
+@@ -0,0 +1,57 @@
 +// SparkCommander patch: this file is new.
 +use gpui::{Global, Hsla};
 +
@@ -1708,7 +1752,8 @@ diff -ruN a/src/mac.rs b/src/mac.rs
 +
 +impl Global for MacControls {}
 +
-+/// The app's icon, as Finder draws it, on top of an alert.
++/// The app's icon, as Finder draws it, on top of an alert; SparkCommander patch:
++/// at the left of a dialog's title bar with `DialogFrame::icon`.
 +#[derive(Clone)]
 +pub struct AlertIcon(pub gpui::ImageSource);
 +
@@ -2972,8 +3017,8 @@ diff -ruN a/src/native_menu/mod.rs b/src/native_menu/mod.rs
  
 diff -ruN a/src/native.rs b/src/native.rs
 --- a/src/native.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/native.rs	2026-11-22 19:10:17.193867598 +0100
-@@ -0,0 +1,90 @@
++++ b/src/native.rs	2026-11-22 19:25:49.272054330 +0100
+@@ -0,0 +1,97 @@
 +// SparkCommander patch: this file is new.
 +use gpui::{Global, Hsla, Pixels};
 +
@@ -3033,13 +3078,16 @@ diff -ruN a/src/native.rs b/src/native.rs
 +}
 +
 +/// The desktop's window title bar, for dialogs: its height, its fill and text
-+/// with the window focused and not, and its close button.
++/// with the window focused and not, and its close button; the app's icon at
++/// its left (`AlertIcon`), as KWin draws it; the window's outline, focused.
 +#[derive(Clone, Copy, Debug)]
 +pub struct DialogFrame {
 +    pub height: Pixels,
 +    pub fill: [Hsla; 2],
 +    pub text: [Hsla; 2],
 +    pub close: WindowClose,
++    pub icon: bool,
++    pub outline: Option<Hsla>,
 +}
 +
 +/// A window's close button as the desktop draws it, and where the title is.
@@ -3047,6 +3095,10 @@ diff -ruN a/src/native.rs b/src/native.rs
 +pub enum WindowClose {
 +    /// KDE's Breeze: a cross, on a red circle under the pointer; the title centred.
 +    Breeze,
++    /// KDE's Klassy: a cross, white on a red rounded cell of the title bar's height under the pointer; the title centred.
++    Klassy,
++    /// Another KDE decoration's: a cross on a faint cell under the pointer; the title centred.
++    Plain,
 +    /// GNOME's: a cross on a faint circle; the title bold, centred.
 +    Adwaita,
 +    /// Windows 11's: a cross in a 46 px wide cell, red under the pointer; the title small, at the left.

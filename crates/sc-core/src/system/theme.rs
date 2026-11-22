@@ -326,6 +326,69 @@ fn on_kde() -> bool {
     on_desktop("KDE")
 }
 
+/// KWin's window decoration, which the app's dialogs are drawn as.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Decoration {
+    /// Plasma's own, Breeze.
+    Breeze,
+    /// Klassy, and the outline it draws around a focused window.
+    Klassy(Outline),
+    /// Another (an Aurorae theme, …).
+    Other,
+}
+
+/// A window's outline: the frame's colour, the selection's, or one of its own (0xRRGGBB, opacity in percent).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Outline {
+    Frame,
+    Accent,
+    Custom(u32, u8),
+}
+
+/// KWin's decoration, as kwinrc names it (Breeze where it names none); none off KDE.
+pub fn kwin_decoration() -> Option<Decoration> {
+    let config = dirs::config_dir().filter(|_| on_kde())?;
+    let read = |name: &str| std::fs::read_to_string(config.join(name)).unwrap_or_default();
+    Some(decoration_of(&read("kwinrc"), &read("klassy/klassyrc")))
+}
+
+fn decoration_of(kwinrc: &str, klassyrc: &str) -> Decoration {
+    match ini(kwinrc, "org.kde.kdecoration2", "library").unwrap_or("org.kde.breeze") {
+        "org.kde.breeze" => Decoration::Breeze,
+        "org.kde.klassy" => {
+            let value = |key: &str| ini(klassyrc, "WindowOutlineStyle", key);
+            // Klassy's defaults: the contrasting frame; a custom colour black at 60%.
+            let outline = match value("WindowOutlineStyleActive").unwrap_or("WindowOutlineContrast") {
+                "WindowOutlineCustomColor" | "WindowOutlineCustomWithContrast" => {
+                    let rgb: Vec<u32> = value("WindowOutlineCustomColorActive").unwrap_or("0,0,0").split(',').filter_map(|part| part.trim().parse().ok()).collect();
+                    let opacity = value("WindowOutlineCustomColorOpacityActive").and_then(|value| value.parse().ok()).unwrap_or(60);
+                    match rgb[..] {
+                        [r, g, b] => Outline::Custom(r << 16 | g << 8 | b, opacity),
+                        _ => Outline::Frame,
+                    }
+                }
+                "WindowOutlineAccentColor" | "WindowOutlineAccentWithContrast" => Outline::Accent,
+                _ => Outline::Frame,
+            };
+            Decoration::Klassy(outline)
+        }
+        _ => Decoration::Other,
+    }
+}
+
+/// `key`'s value in `[section]` of a KDE config file.
+fn ini<'a>(text: &'a str, section: &str, key: &str) -> Option<&'a str> {
+    let mut inside = false;
+    for line in text.lines().map(str::trim) {
+        if let Some(name) = line.strip_prefix('[') {
+            inside = name.strip_suffix(']') == Some(section);
+        } else if inside && let Some((name, value)) = line.split_once('=') && name.trim() == key {
+            return Some(value.trim());
+        }
+    }
+    None
+}
+
 /// One of XDG_CURRENT_DESKTOP's names.
 pub(crate) fn on_desktop(name: &str) -> bool {
     std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default().split(':').any(|desktop| desktop == name)
@@ -911,6 +974,17 @@ fn luminance(rgb: u32) -> f32 {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn reads_kwin_decoration() {
+        use super::{Decoration, Outline, decoration_of};
+        assert_eq!(decoration_of("", ""), Decoration::Breeze);
+        let klassy = "[org.kde.kdecoration2]\nlibrary=org.kde.klassy\ntheme=Klassy\n";
+        let blue = "[WindowOutlineStyle]\nWindowOutlineCustomColorActive=0,85,255\nWindowOutlineCustomColorOpacityActive=70\nWindowOutlineStyleActive=WindowOutlineCustomColor\n";
+        assert_eq!(decoration_of(klassy, blue), Decoration::Klassy(Outline::Custom(0x0055ff, 70)));
+        assert_eq!(decoration_of(klassy, ""), Decoration::Klassy(Outline::Frame));
+        assert_eq!(decoration_of("[org.kde.kdecoration2]\nlibrary=org.kde.kwin.aurorae\n", ""), Decoration::Other);
+    }
+
     #[test]
     fn puts_the_languages_script_font_first() {
         let fonts = [("zh-Hans", "YaHei".to_owned()), ("ja", "Droid".to_owned()), ("ko", "Malgun".to_owned()), ("zh-Hant", "Droid".to_owned())];

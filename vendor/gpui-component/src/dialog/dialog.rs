@@ -417,6 +417,32 @@ fn window_close_button(close: gpui_base::DialogClose, frame: crate::DialogFrame,
                 .hover(move |this| this.bg(red(0xda4453)))
                 .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(12.)))
         }),
+        // Klassy's: a cross, white on a red rounded cell (60%) of the title bar's height under the pointer.
+        crate::WindowClose::Klassy => close.top(px(3.)).right(px(3.)).trigger(move |button| {
+            button
+                .group("dialog-close")
+                .w(px(36.))
+                .h(band - px(6.))
+                .rounded(px(4.))
+                .flex()
+                .items_center()
+                .justify_center()
+                .hover(move |this| this.bg(red(0xda4453).opacity(0.6)))
+                .child(div().group_hover("dialog-close", |this| this.text_color(gpui::white())).child(cross(14.)))
+        }),
+        // Another KDE decoration's: a cross on a faint cell under the pointer.
+        crate::WindowClose::Plain => close.top(px(3.)).right(px(3.)).trigger(move |button| {
+            let ink = frame.text[0];
+            button
+                .w(px(30.))
+                .h(band - px(6.))
+                .rounded(px(4.))
+                .flex()
+                .items_center()
+                .justify_center()
+                .hover(move |this| this.bg(ink.opacity(0.12)))
+                .child(cross(14.))
+        }),
         // GNOME's: a cross on a faint circle, darker under the pointer.
         crate::WindowClose::Adwaita => close.top((band - px(24.)) / 2.).right(px(9.)).trigger(move |button| {
             let ink = frame.text[0];
@@ -807,6 +833,10 @@ impl RenderOnce for Dialog {
         let command_bar = cx.try_global::<crate::NativeControls>().and_then(|native| native.command_bar);
         // SparkCommander patch: the desktop's window title bar, see `NativeControls::dialog_frame`.
         let frame = cx.try_global::<crate::NativeControls>().and_then(|native| native.dialog_frame).filter(|_| mac.is_none());
+        let icon = frame
+            .filter(|frame| frame.icon)
+            .and_then(|_| cx.try_global::<crate::AlertIcon>())
+            .map(|icon| icon.0.clone());
         let band = match (mac, frame) {
             (Some(_), _) => px(32.),
             (None, Some(frame)) => frame.height,
@@ -915,7 +945,11 @@ impl RenderOnce for Dialog {
                                         .border_color(match (alert, mac) {
                                             (Some(mac), _) => mac.alert_rim,
                                             (None, Some(mac)) => mac.window_frame,
-                                            (None, None) => cx.theme().border,
+                                            // SparkCommander patch: the decoration's outline, focused.
+                                            (None, None) => frame
+                                                .and_then(|frame| frame.outline)
+                                                .filter(|_| active)
+                                                .unwrap_or(cx.theme().border),
                                         })
                                         .rounded(corner)
                                         .min_h_24()
@@ -965,15 +999,25 @@ impl RenderOnce for Dialog {
                                                                 this.font_semibold().text_color(theme.muted_foreground)
                                                             })
                                                             .when_some(frame, |this, frame| match frame.close {
-                                                                crate::WindowClose::Breeze => this.text_center(),
                                                                 crate::WindowClose::Adwaita => this.text_center().font_bold(),
                                                                 crate::WindowClose::Fluent => this.text_xs(),
+                                                                _ => this.text_center(),
                                                             })
                                                             .flex_1()
                                                             .min_w_0()
                                                             .truncate()
                                                             .child(title),
                                                     )
+                                                    // SparkCommander patch: the app's icon at the left, as KWin's.
+                                                    .when_some(icon.clone(), |this, icon| {
+                                                        this.relative().child(
+                                                            gpui::img(icon)
+                                                                .absolute()
+                                                                .left(px(8.))
+                                                                .top((band - px(16.)) / 2.)
+                                                                .size(px(16.)),
+                                                        )
+                                                    })
                                                     .on_mouse_down(
                                                         MouseButton::Left,
                                                         move |event: &MouseDownEvent, window, _| {

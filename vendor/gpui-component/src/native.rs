@@ -57,13 +57,16 @@ pub struct NativeControls {
 }
 
 /// The desktop's window title bar, for dialogs: its height, its fill and text
-/// with the window focused and not, and its close button.
+/// with the window focused and not, and its close button; the app's icon at
+/// its left (`AlertIcon`), as KWin draws it; the window's outline, focused.
 #[derive(Clone, Copy, Debug)]
 pub struct DialogFrame {
     pub height: Pixels,
     pub fill: [Hsla; 2],
     pub text: [Hsla; 2],
     pub close: WindowClose,
+    pub icon: bool,
+    pub outline: Option<Hsla>,
 }
 
 /// A window's close button as the desktop draws it, and where the title is.
@@ -71,6 +74,10 @@ pub struct DialogFrame {
 pub enum WindowClose {
     /// KDE's Breeze: a cross, on a red circle under the pointer; the title centred.
     Breeze,
+    /// KDE's Klassy: a cross, white on a red rounded cell of the title bar's height under the pointer; the title centred.
+    Klassy,
+    /// Another KDE decoration's: a cross on a faint cell under the pointer; the title centred.
+    Plain,
     /// GNOME's: a cross on a faint circle; the title bold, centred.
     Adwaita,
     /// Windows 11's: a cross in a 46 px wide cell, red under the pointer; the title small, at the left.

@@ -207,13 +207,28 @@ fn mac_controls(palette: &Palette) -> MacControls {
     }
 }
 
-/// A dialog's title bar as the desktop's windows': KWin's Breeze in the scheme's
-/// header colours, GNOME's header bar, Windows 11's caption.
+/// A dialog's title bar as the desktop's windows': KWin's decoration (Breeze,
+/// Klassy, another) in the scheme's header colours with the app's icon, GNOME's
+/// header bar, Windows 11's caption.
 fn dialog_frame(style: ControlStyle, palette: &Palette) -> DialogFrame {
+    use sc_core::system::theme::{Decoration, Outline};
     let color = |value: u32| Hsla::from(rgb(value));
     let text = [color(palette.text), color(palette.dim)];
+    let decoration = (style == ControlStyle::Breeze).then(sc_core::system::theme::kwin_decoration).flatten();
+    let outline = match decoration {
+        Some(Decoration::Klassy(Outline::Accent)) => Some(color(palette.selection)),
+        Some(Decoration::Klassy(Outline::Custom(rgb, opacity))) => Some(color(rgb).opacity(f32::from(opacity) / 100.)),
+        _ => None,
+    };
     let (height, fill, close) = match style {
-        ControlStyle::Breeze => (30., [palette.bar, palette.window], WindowClose::Breeze),
+        ControlStyle::Breeze => {
+            let close = match decoration {
+                Some(Decoration::Klassy(_)) => WindowClose::Klassy,
+                Some(Decoration::Other) => WindowClose::Plain,
+                _ => WindowClose::Breeze,
+            };
+            (30., [palette.bar, palette.window], close)
+        }
         ControlStyle::Adwaita => {
             let header = sc_core::system::theme::header_bar();
             let fill = |focused| header.map_or(palette.bar, |header| header.color(palette.dark, focused));
@@ -224,7 +239,7 @@ fn dialog_frame(style: ControlStyle, palette: &Palette) -> DialogFrame {
             (32., [caption, caption], WindowClose::Fluent)
         }
     };
-    DialogFrame { height: px(height), fill: fill.map(color), text, close }
+    DialogFrame { height: px(height), fill: fill.map(color), text, close, icon: style == ControlStyle::Breeze, outline }
 }
 
 /// The controls in `colors`, at the style's sizes.

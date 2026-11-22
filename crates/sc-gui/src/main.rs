@@ -194,6 +194,12 @@ fn main() {
         dock_icon();
         #[cfg(target_os = "macos")]
         alert_icon(cx);
+        // KDE: at the left of a dialog's title bar, as KWin draws it on windows.
+        #[cfg(not(target_os = "macos"))]
+        cx.set_global(gpui_kit::component::AlertIcon(ImageSource::Image(std::sync::Arc::new(gpui_kit::Image::from_bytes(
+            gpui_kit::ImageFormat::Png,
+            include_bytes!("../../../packaging/linux/hicolor/32x32/apps/sparkcommander.png").to_vec(),
+        )))));
         // Windows: one taskbar app for all its windows and copies, wherever the exe is.
         #[cfg(windows)]
         cx.set_app_identity("Remoxio.SparkCommander", "Spark Commander");

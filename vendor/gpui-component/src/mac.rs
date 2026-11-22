@@ -46,7 +46,8 @@ pub struct MacControls {
 
 impl Global for MacControls {}
 
-/// The app's icon, as Finder draws it, on top of an alert.
+/// The app's icon, as Finder draws it, on top of an alert; SparkCommander patch:
+/// at the left of a dialog's title bar with `DialogFrame::icon`.
 #[derive(Clone)]
 pub struct AlertIcon(pub gpui::ImageSource);
 
