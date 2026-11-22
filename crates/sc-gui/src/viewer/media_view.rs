@@ -398,12 +398,12 @@ impl MediaView {
                 .when(!parts.is_empty(), |el| el.child(line(Lucide::AudioLines, parts.join(" · "))))
         });
         let lyrics = song.as_ref().and_then(|song| song.lyrics.as_ref()).map(|lyrics| self.render_lyrics(lyrics, state.position, cx));
-        let header = h_flex().flex_none().items_start().gap_4().children(names).children(format);
+        let header = h_flex().flex_none().items_stretch().gap_4().children(names).children(format);
         let side = v_flex()
             .flex_1()
             .min_w_0()
             .h_full()
-            .gap_3()
+            .gap_4()
             .map(|el| match lyrics {
                 Some(lyrics) => el.child(header).child(frame(div().flex_1().min_h_0().flex().flex_col()).child(lyrics)),
                 None => el.justify_center().child(header),
