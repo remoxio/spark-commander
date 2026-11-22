@@ -1,7 +1,8 @@
-//! A dialog as a window of its own (Linux): the desktop draws its frame (KWin's
-//! decoration on KDE) and keeps it centred over the window it was opened from,
-//! which takes no input while it is open. As tall as its content; Enter is
-//! its OK, Escape closes it. Elsewhere dialogs stay in the window.
+//! A dialog as a window of its own, as Total Commander's: the system draws its
+//! frame (KWin's decoration on KDE, Windows' caption with the app's icon), it is
+//! centred over the window it was opened from, which takes no input while it
+//! is open, and minimized with it; on macOS a sheet of that window. As tall as
+//! its content; Enter is its OK, Escape closes it.
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -27,9 +28,18 @@ pub(crate) fn bind_keys(cx: &mut App) {
     cx.bind_keys([KeyBinding::new("enter", Confirm, keys), KeyBinding::new("escape", Dismiss, keys)]);
 }
 
-/// Whether dialogs open as windows of their own: on Linux, where the desktop frames them.
+/// Whether dialogs open as windows of their own; else in the window, as before.
 pub(crate) fn separate() -> bool {
-    cfg!(any(target_os = "linux", target_os = "freebsd"))
+    true
+}
+
+/// Windows: the window's handle, for what GPUI does not do.
+#[cfg(windows)]
+fn hwnd(window: &Window) -> Option<isize> {
+    match raw_window_handle::HasWindowHandle::window_handle(window).ok()?.as_raw() {
+        raw_window_handle::RawWindowHandle::Win32(handle) => Some(handle.hwnd.get()),
+        _ => None,
+    }
 }
 
 /// The dialog windows opened (some may be closed since).
@@ -137,6 +147,8 @@ struct DialogWindow {
     /// The page's height last laid out, which the window takes, up to `most`.
     height: Rc<Cell<Pixels>>,
     most: Pixels,
+    /// Its content's width: Windows' window is that plus its frame.
+    width: Pixels,
     /// Its keys' (Enter, Escape) where nothing inside takes them.
     focus: FocusHandle,
 }
@@ -158,17 +170,24 @@ pub(crate) fn open<V: Render>(
     let options = WindowOptions {
         kind: WindowKind::Dialog,
         is_resizable: false,
-        is_minimizable: false,
+        // Windows: it minimizes the app (`native_dialog`).
+        is_minimizable: cfg!(windows),
         ..crate::over_main_window(title.clone(), over, cx)
     };
     let opened = gpui_kit::open_window(options, cx, |window, cx| {
+        #[cfg(windows)]
+        if let Some(hwnd) = hwnd(window) {
+            sc_core::system::theme::native_dialog(hwnd);
+            // The caption as the main window's.
+            sc_core::system::theme::set_caption_color(hwnd, if cx.theme().mode.is_dark() { 0x202020 } else { 0xffffff });
+        }
         let (content, ok) = build(main, window, cx);
         let (most, focus) = (bounds.size.height * 0.9, cx.focus_handle());
         // Unless a field has it already; one focused once shown takes it after.
         if window.focused(cx).is_none() {
             window.focus(&focus, cx);
         }
-        cx.new(|_| DialogWindow { title: title.into(), content: content.into(), ok, height: Rc::default(), most, focus })
+        cx.new(|_| DialogWindow { title: title.into(), content: content.into(), ok, height: Rc::default(), most, width: size.width, focus })
     });
     match opened {
         Ok((handle, _)) => {
@@ -258,13 +277,24 @@ impl Render for DialogWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let viewport = window.viewport_size();
         let wanted = self.height.get().min(self.most);
-        if wanted > px(0.) && (wanted - viewport.height).abs() > px(1.) {
+        let off = |a: Pixels, b: Pixels| (a - b).abs() > px(1.);
+        if wanted > px(0.) && (off(wanted, viewport.height) || cfg!(windows) && off(self.width, viewport.width)) {
+            // Windows: centred over its owner again, after this frame (its messages come at once); elsewhere the system places it.
+            #[cfg(windows)]
+            if let Some(hwnd) = hwnd(window) {
+                let device = |side: Pixels| (f32::from(side) * window.scale_factor()).round() as i32;
+                let (width, height) = (device(self.width), device(wanted));
+                cx.foreground_executor().spawn(async move { sc_core::system::theme::fit_dialog(hwnd, width, height) }).detach();
+            }
+            #[cfg(not(windows))]
             window.resize(size(viewport.width, wanted));
         }
         let theme = cx.theme().clone();
         let height = self.height.clone();
         // GNOME's on Wayland: the app draws the frame.
         let header = crate::header::title_bar(self.title.clone(), window, cx);
+        // macOS: a sheet has no title bar; its title heads it, as an alert's.
+        let heading = cfg!(target_os = "macos").then(|| div().px_4().pt_4().text_sm().font_weight(FontWeight::BOLD).child(self.title.clone()));
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
             let button = Button::new("dialog-ok").label(label).min_w(px(80.));
             let button = if ok.danger { button.danger() } else { button.primary() };
@@ -287,6 +317,7 @@ impl Render for DialogWindow {
             .relative()
             .w_full()
             .children(header)
+            .children(heading)
             .child(v_flex().p_4().child(self.content.clone()).children(buttons))
             .child(
                 canvas(

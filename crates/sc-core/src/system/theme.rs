@@ -1133,3 +1133,89 @@ pub fn set_caption_color(hwnd: isize, rgb: u32) {
     let size = size_of::<COLORREF>() as u32;
     let _ = unsafe { DwmSetWindowAttribute(HWND(hwnd as _), DWMWA_CAPTION_COLOR, (&raw const color).cast(), size) };
 }
+
+/// Windows: a dialog window as Windows' own (Total Commander's): the app's icon
+/// in its caption, and its Minimize takes the app down to the taskbar with it,
+/// where the app's button brings both back.
+#[cfg(windows)]
+pub fn native_dialog(hwnd: isize) {
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::Shell::SetWindowSubclass;
+    use windows::Win32::UI::WindowsAndMessaging::*;
+    let hwnd = HWND(hwnd as _);
+    // SAFETY: a live window of this thread's.
+    unsafe {
+        // GPUI's dialog frame shows no icon.
+        let ex = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+        SetWindowLongPtrW(hwnd, GWL_EXSTYLE, ex & !(WS_EX_DLGMODALFRAME.0 as isize));
+        let flags = SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE;
+        let _ = SetWindowPos(hwnd, None, 0, 0, 0, 0, flags);
+        let _ = SetWindowSubclass(hwnd, Some(dialog_proc), 1, 0);
+    }
+}
+
+
+/// A dialog's Minimize minimizes the app's window instead, which hides the dialog
+/// with it; the app's window brought back (its taskbar button), the dialog takes
+/// the keys again, as Windows' own dialogs do.
+#[cfg(windows)]
+unsafe extern "system" fn dialog_proc(
+    hwnd: windows::Win32::Foundation::HWND,
+    message: u32,
+    wparam: windows::Win32::Foundation::WPARAM,
+    lparam: windows::Win32::Foundation::LPARAM,
+    id: usize,
+    _: usize,
+) -> windows::Win32::Foundation::LRESULT {
+    use windows::Win32::Foundation::{LPARAM, LRESULT, WPARAM};
+    use windows::Win32::UI::Shell::{DefSubclassProc, RemoveWindowSubclass};
+    use windows::Win32::UI::WindowsAndMessaging::*;
+    // SAFETY: called by Windows for the live window `hwnd`.
+    unsafe {
+        // Its caption's button (GPUI minimizes on its mouse-up) or the system menu's.
+        let button = message == WM_NCLBUTTONUP && wparam.0 as u32 == HTMINBUTTON;
+        if button || message == WM_SYSCOMMAND && (wparam.0 as u32 & 0xfff0) == SC_MINIMIZE {
+            let owner = GetAncestor(hwnd, GA_ROOTOWNER);
+            if !owner.is_invalid() && owner != hwnd {
+                let _ = ShowWindow(owner, SW_MINIMIZE);
+                return LRESULT(0);
+            }
+        }
+        // Once the owner is shown: activated after it.
+        const ACTIVATE: u32 = WM_APP + 1;
+        if message == WM_SHOWWINDOW && wparam.0 != 0 && lparam.0 as u32 == SW_PARENTOPENING.0 {
+            let _ = PostMessageW(Some(hwnd), ACTIVATE, WPARAM(0), LPARAM(0));
+        }
+        if message == ACTIVATE {
+            let _ = SetForegroundWindow(hwnd);
+            return LRESULT(0);
+        }
+        if message == WM_NCDESTROY {
+            let _ = RemoveWindowSubclass(hwnd, Some(dialog_proc), id);
+        }
+        DefSubclassProc(hwnd, message, wparam, lparam)
+    }
+}
+
+/// Windows: the dialog window `hwnd` with a client area `width` by `height`
+/// device pixels, centred over the window that owns it.
+#[cfg(windows)]
+pub fn fit_dialog(hwnd: isize, width: i32, height: i32) {
+    use windows::Win32::Foundation::{HWND, RECT};
+    use windows::Win32::UI::WindowsAndMessaging::*;
+    let hwnd = HWND(hwnd as _);
+    let (mut outer, mut inner, mut over) = (RECT::default(), RECT::default(), RECT::default());
+    // SAFETY: a live window of this thread's, and RECTs to fill.
+    unsafe {
+        if GetWindowRect(hwnd, &mut outer).is_err() || GetClientRect(hwnd, &mut inner).is_err() {
+            return;
+        }
+        let (w, h) = (width + outer.right - outer.left - inner.right, height + outer.bottom - outer.top - inner.bottom);
+        let owner = GetWindow(hwnd, GW_OWNER).ok().filter(|owner| GetWindowRect(*owner, &mut over).is_ok());
+        let (x, y) = match owner {
+            Some(_) => (over.left + (over.right - over.left - w) / 2, over.top + (over.bottom - over.top - h) / 2),
+            None => (outer.left, outer.top),
+        };
+        let _ = SetWindowPos(hwnd, None, x, y, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+}
