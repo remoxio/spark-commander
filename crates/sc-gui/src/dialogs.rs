@@ -6,6 +6,7 @@ pub mod associations_dialog;
 pub mod attributes_dialog;
 pub mod bookmarks_dialog;
 pub mod connections_dialog;
+pub mod dialog_window;
 pub mod download_dialog;
 pub mod find_dialog;
 pub mod keys_dialog;

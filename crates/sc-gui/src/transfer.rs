@@ -8,7 +8,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui_kit::component::button::{Button, ButtonVariant, ButtonVariants};
-use gpui_kit::component::input::{Input, InputState};
+use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::notification::Notification;
 use gpui_kit::component::progress::Progress as Bar;
 use gpui_kit::component::radio::RadioGroup;
@@ -482,12 +482,34 @@ fn open_dialog(
     cx: &mut App,
     done: impl Fn(String, Overwrite, &mut Window, &mut App) + 'static,
 ) {
+    // Linux: a window of its own, framed by the desktop; its answer goes to the main window.
+    if crate::dialogs::dialog_window::separate() {
+        let main = window.window_handle();
+        return crate::dialogs::dialog_window::open(title, size(px(560.), px(300.)), window, cx, move |window, cx| {
+            let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
+            input.update(cx, |input, cx| {
+                input.focus(window, cx);
+                input.select_all(window, cx);
+            });
+            cx.new(|cx| {
+                let enter = cx.subscribe_in(&input, window, |this: &mut TransferDialog, _, event: &InputEvent, window, cx| {
+                    if let InputEvent::PressEnter { .. } = event {
+                        this.finish(window, cx);
+                        this.close(window, cx);
+                    }
+                });
+                TransferDialog { label, input, overwrite: Overwrite::Ask, done: Rc::new(done), main: Some(main), _enter: Some(enter) }
+            })
+        });
+    }
     let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
     let view = cx.new(|_| TransferDialog {
         label,
         input: input.clone(),
         overwrite: Overwrite::Ask,
         done: Rc::new(done),
+        main: None,
+        _enter: None,
     });
     window.open_dialog(cx, move |dialog, _, _| {
         let ok = view.clone();
@@ -512,12 +534,28 @@ struct TransferDialog {
     input: Entity<InputState>,
     overwrite: Overwrite,
     done: Done,
+    /// In a window of its own: the main window, which takes the answer.
+    main: Option<AnyWindowHandle>,
+    _enter: Option<Subscription>,
 }
 
 impl TransferDialog {
     fn finish(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let target = self.input.read(cx).value().to_string();
-        (self.done)(target, self.overwrite, window, cx);
+        match self.main {
+            Some(main) => {
+                let (done, overwrite) = (self.done.clone(), self.overwrite);
+                let _ = main.update(cx, |_, window, cx| done(target, overwrite, window, cx));
+            }
+            None => (self.done)(target, self.overwrite, window, cx),
+        }
+    }
+
+    fn close(&self, window: &mut Window, cx: &mut App) {
+        match self.main {
+            Some(_) => window.remove_window(),
+            None => window.close_dialog(cx),
+        }
     }
 }
 
@@ -561,7 +599,7 @@ impl Render for TransferDialog {
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.finish(window, cx);
-                                window.close_dialog(cx);
+                                this.close(window, cx);
                             })),
                     )
                     .child(
@@ -569,7 +607,7 @@ impl Render for TransferDialog {
                             .outline()
                             .label(sc_core::t!("transfer.cancel"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| window.close_dialog(cx)),
+                            .on_click(cx.listener(|this, _, window, cx| this.close(window, cx))),
                     ),
             )
     }
