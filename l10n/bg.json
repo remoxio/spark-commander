@@ -1056,7 +1056,7 @@
     "message": "Начална папка"
   },
   "connections.field.user": {
-    "message": "Потребител"
+    "message": "Потребителско име"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Да се изтрие ли папката {name} и връзката в нея?} other {Да се изтрие ли папката {name} и # връзки в нея?}}"
@@ -2949,7 +2949,7 @@
     "message": "Вход"
   },
   "remote.login.user": {
-    "message": "Потребител"
+    "message": "Потребителско име"
   },
   "remote.mount.login_wrong": {
     "message": "потребителят или паролата са грешни"

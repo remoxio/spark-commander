@@ -1056,7 +1056,7 @@
     "message": "Початкова тека"
   },
   "connections.field.user": {
-    "message": "Користувач"
+    "message": "Ім’я користувача"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Видалити теку «{name}» і # підключення в ній?} few {Видалити теку «{name}» і # підключення в ній?} many {Видалити теку «{name}» і # підключень у ній?} other {Видалити теку «{name}» і # підключення в ній?}}"
@@ -2949,7 +2949,7 @@
     "message": "Вхід"
   },
   "remote.login.user": {
-    "message": "Користувач"
+    "message": "Ім’я користувача"
   },
   "remote.mount.login_wrong": {
     "message": "неправильне ім’я користувача або пароль"

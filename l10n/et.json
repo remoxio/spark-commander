@@ -1056,7 +1056,7 @@
     "message": "Algkaust"
   },
   "connections.field.user": {
-    "message": "Kasutaja"
+    "message": "Kasutajanimi"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Kas kustutada kaust {name} ja selles olev ühendus?} other {Kas kustutada kaust {name} ja selles olevad # ühendust?}}"
@@ -2949,7 +2949,7 @@
     "message": "Sisselogimine"
   },
   "remote.login.user": {
-    "message": "Kasutaja"
+    "message": "Kasutajanimi"
   },
   "remote.mount.login_wrong": {
     "message": "kasutaja või parool on vale"

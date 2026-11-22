@@ -93,7 +93,7 @@ pub(crate) fn open_edit(
         let enter = view.clone();
         dialog
             .title(t!("connections.dialog.title"))
-            .width(px(520.))
+            .width(px(560.))
             .overlay_closable(false)
             .child(view.clone())
             .on_ok(move |_, window, cx| {
@@ -251,11 +251,11 @@ impl Render for EditConnection {
         let field = |label: String, input: &Entity<InputState>| {
             h_flex()
                 .gap_3()
-                .child(div().w(px(96.)).flex_none().child(label))
+                .child(div().w(px(136.)).flex_none().child(label))
                 .child(div().flex_1().child(Input::new(input)))
         };
-        let [name, rest @ ..] = &self.fields;
-        let [first, others @ ..] = labels;
+        let [name, host, port, user, path] = &self.fields;
+        let [first, server_label, port_label, user_label, path_label] = labels;
         v_flex()
             .w_full()
             .gap_2()
@@ -264,16 +264,13 @@ impl Render for EditConnection {
             .child(
                 h_flex()
                     .gap_3()
-                    .child(div().w(px(96.)).flex_none().child(t!("connections.field.protocol")))
+                    .child(div().w(px(136.)).flex_none().child(t!("connections.field.protocol")))
                     .child(div().flex_1().child(Select::new(&self.protocol))),
             )
-            .children(
-                others
-                    .into_iter()
-                    .zip(rest)
-                    .map(|(label, input)| field(label, input)),
-            )
-            .when(self.scheme == Scheme::S3, |el| el.child(field(t!("connections.field.region"), &self.region)))
+            .child(field(server_label, host))
+            .child(field(port_label, port))
+            .child(field(user_label, user))
+            // The password right under its username.
             .when(self.scheme.logs_in(), |el| {
                 let masked = self.password.read(cx).presentation().is_masked();
                 let theme = cx.theme();
@@ -305,10 +302,12 @@ impl Render for EditConnection {
                 el.child(
                     h_flex()
                         .gap_3()
-                        .child(div().w(px(96.)).flex_none().child(secret))
+                        .child(div().w(px(136.)).flex_none().child(secret))
                         .child(div().flex_1().child(Input::new(&self.password).suffix(buttons))),
                 )
             })
+            .child(field(path_label, path))
+            .when(self.scheme == Scheme::S3, |el| el.child(field(t!("connections.field.region"), &self.region)))
             .child(
                 h_flex()
                     .pt_2()

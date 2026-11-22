@@ -1056,7 +1056,7 @@
     "message": "โฟลเดอร์เริ่มต้น"
   },
   "connections.field.user": {
-    "message": "ผู้ใช้"
+    "message": "ชื่อผู้ใช้"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, other {ลบโฟลเดอร์ {name} และการเชื่อมต่อ # รายการในโฟลเดอร์หรือไม่}}"
@@ -2949,7 +2949,7 @@
     "message": "เข้าสู่ระบบ"
   },
   "remote.login.user": {
-    "message": "ผู้ใช้"
+    "message": "ชื่อผู้ใช้"
   },
   "remote.mount.login_wrong": {
     "message": "ผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"

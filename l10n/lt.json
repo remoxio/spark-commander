@@ -1056,7 +1056,7 @@
     "message": "Pradinis aplankas"
   },
   "connections.field.user": {
-    "message": "Naudotojas"
+    "message": "Naudotojo vardas"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, =1 {Ištrinti aplanką „{name}“ ir jame esantį ryšį?} one {Ištrinti aplanką „{name}“ ir jame esantį # ryšį?} few {Ištrinti aplanką „{name}“ ir jame esančius # ryšius?} other {Ištrinti aplanką „{name}“ ir # jame esančių ryšių?}}"
@@ -2949,7 +2949,7 @@
     "message": "Prisijungti"
   },
   "remote.login.user": {
-    "message": "Naudotojas"
+    "message": "Naudotojo vardas"
   },
   "remote.mount.login_wrong": {
     "message": "neteisingas naudotojas arba slaptažodis"

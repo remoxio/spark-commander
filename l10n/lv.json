@@ -1056,7 +1056,7 @@
     "message": "Sākuma mape"
   },
   "connections.field.user": {
-    "message": "Lietotājs"
+    "message": "Lietotājvārds"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, zero {Vai dzēst mapi {name} un tajā esošos # savienojumus?} one {Vai dzēst mapi {name} un tajā esošo # savienojumu?} other {Vai dzēst mapi {name} un tajā esošos # savienojumus?}}"
@@ -2949,7 +2949,7 @@
     "message": "Pieteikties"
   },
   "remote.login.user": {
-    "message": "Lietotājs"
+    "message": "Lietotājvārds"
   },
   "remote.mount.login_wrong": {
     "message": "nepareizs lietotājs vai parole"

@@ -1056,7 +1056,7 @@
     "message": "Αρχικός φάκελος"
   },
   "connections.field.user": {
-    "message": "Χρήστης"
+    "message": "Όνομα χρήστη"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Διαγραφή του φακέλου {name} και της σύνδεσης που περιέχει;} other {Διαγραφή του φακέλου {name} και των # συνδέσεων που περιέχει;}}"
@@ -2949,7 +2949,7 @@
     "message": "Σύνδεση"
   },
   "remote.login.user": {
-    "message": "Χρήστης"
+    "message": "Όνομα χρήστη"
   },
   "remote.mount.login_wrong": {
     "message": "ο χρήστης ή ο κωδικός πρόσβασης είναι λάθος"

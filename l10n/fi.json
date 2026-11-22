@@ -1056,7 +1056,7 @@
     "message": "Aloituskansio"
   },
   "connections.field.user": {
-    "message": "Käyttäjä"
+    "message": "Käyttäjätunnus"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Poistetaanko kansio {name} ja sen sisältämä yhteys?} other {Poistetaanko kansio {name} ja sen sisältämät # yhteyttä?}}"
@@ -2949,7 +2949,7 @@
     "message": "Kirjaudu"
   },
   "remote.login.user": {
-    "message": "Käyttäjä"
+    "message": "Käyttäjätunnus"
   },
   "remote.mount.login_wrong": {
     "message": "käyttäjä tai salasana on väärä"

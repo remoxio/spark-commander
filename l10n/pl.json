@@ -1056,7 +1056,7 @@
     "message": "Folder startowy"
   },
   "connections.field.user": {
-    "message": "Użytkownik"
+    "message": "Nazwa użytkownika"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Usunąć folder {name} i zawarte w nim połączenie?} few {Usunąć folder {name} i # zawarte w nim połączenia?} many {Usunąć folder {name} i # zawartych w nim połączeń?} other {Usunąć folder {name} i # zawartego w nim połączenia?}}"
@@ -2949,7 +2949,7 @@
     "message": "Logowanie"
   },
   "remote.login.user": {
-    "message": "Użytkownik"
+    "message": "Nazwa użytkownika"
   },
   "remote.mount.login_wrong": {
     "message": "błędny użytkownik lub hasło"

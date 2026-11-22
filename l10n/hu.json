@@ -1056,7 +1056,7 @@
     "message": "Kezdőmappa"
   },
   "connections.field.user": {
-    "message": "Felhasználó"
+    "message": "Felhasználónév"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Törlöd a mappát ({name}) a benne lévő kapcsolattal együtt?} other {Törlöd a mappát ({name}) a benne lévő # kapcsolattal együtt?}}"
@@ -2949,7 +2949,7 @@
     "message": "Bejelentkezés"
   },
   "remote.login.user": {
-    "message": "Felhasználó"
+    "message": "Felhasználónév"
   },
   "remote.mount.login_wrong": {
     "message": "hibás felhasználónév vagy jelszó"

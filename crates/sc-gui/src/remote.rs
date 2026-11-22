@@ -356,7 +356,7 @@ impl LoginDialog {
 impl Render for LoginDialog {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let field = |label: String, input: &Entity<InputState>| {
-            h_flex().gap_3().child(div().w(px(80.)).flex_none().child(label)).child(div().flex_1().child(Input::new(input)))
+            h_flex().gap_3().child(div().w(px(136.)).flex_none().child(label)).child(div().flex_1().child(Input::new(input)))
         };
         let why = div().whitespace_normal().text_color(cx.theme().muted_foreground).child(self.why.clone());
         v_flex()
@@ -365,7 +365,7 @@ impl Render for LoginDialog {
             .text_sm()
             .child(why)
             .child(field(t!("remote.login.user"), &self.user))
-            .child(h_flex().gap_3().child(div().w(px(80.)).flex_none().child(t!("remote.login.password"))).child(div().flex_1().child(Input::new(&self.password).mask_toggle())))
+            .child(h_flex().gap_3().child(div().w(px(136.)).flex_none().child(t!("remote.login.password"))).child(div().flex_1().child(Input::new(&self.password).mask_toggle())))
             .child(
                 Checkbox::new("login-remember")
                     .label(t!("remote.remember_password"))

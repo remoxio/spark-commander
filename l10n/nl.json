@@ -1056,7 +1056,7 @@
     "message": "Startmap"
   },
   "connections.field.user": {
-    "message": "Gebruiker"
+    "message": "Gebruikersnaam"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {De map {name} en de verbinding erin verwijderen?} other {De map {name} en de # verbindingen erin verwijderen?}}"
@@ -2949,7 +2949,7 @@
     "message": "Aanmelden"
   },
   "remote.login.user": {
-    "message": "Gebruiker"
+    "message": "Gebruikersnaam"
   },
   "remote.mount.login_wrong": {
     "message": "de gebruiker of het wachtwoord is onjuist"

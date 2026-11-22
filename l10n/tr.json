@@ -1056,7 +1056,7 @@
     "message": "Başlangıç klasörü"
   },
   "connections.field.user": {
-    "message": "Kullanıcı"
+    "message": "Kullanıcı adı"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {{name} klasörü ve içindeki bağlantı silinsin mi?} other {{name} klasörü ve içindeki # bağlantı silinsin mi?}}"
@@ -2949,7 +2949,7 @@
     "message": "Oturum aç"
   },
   "remote.login.user": {
-    "message": "Kullanıcı"
+    "message": "Kullanıcı adı"
   },
   "remote.mount.login_wrong": {
     "message": "kullanıcı adı veya parola yanlış"

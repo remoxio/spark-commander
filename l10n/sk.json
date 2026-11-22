@@ -1056,7 +1056,7 @@
     "message": "Úvodný priečinok"
   },
   "connections.field.user": {
-    "message": "Používateľ"
+    "message": "Používateľské meno"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Odstrániť priečinok {name} a pripojenie v ňom?} few {Odstrániť priečinok {name} a # pripojenia v ňom?} other {Odstrániť priečinok {name} a # pripojení v ňom?}}"
@@ -2949,7 +2949,7 @@
     "message": "Prihlásiť sa"
   },
   "remote.login.user": {
-    "message": "Používateľ"
+    "message": "Používateľské meno"
   },
   "remote.mount.login_wrong": {
     "message": "používateľ alebo heslo je nesprávne"

@@ -1056,7 +1056,7 @@
     "message": "Startordner"
   },
   "connections.field.user": {
-    "message": "Benutzer"
+    "message": "Benutzername"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Den Ordner {name} und die Verbindung darin löschen?} other {Den Ordner {name} und die # Verbindungen darin löschen?}}"
@@ -2949,7 +2949,7 @@
     "message": "Anmelden"
   },
   "remote.login.user": {
-    "message": "Benutzer"
+    "message": "Benutzername"
   },
   "remote.mount.login_wrong": {
     "message": "Benutzer oder Passwort ist falsch"

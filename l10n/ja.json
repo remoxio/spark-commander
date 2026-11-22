@@ -1056,7 +1056,7 @@
     "message": "開始フォルダー"
   },
   "connections.field.user": {
-    "message": "ユーザー"
+    "message": "ユーザー名"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, other {フォルダー「{name}」と、その中の # 個の接続を削除しますか？}}"
@@ -2949,7 +2949,7 @@
     "message": "ログイン"
   },
   "remote.login.user": {
-    "message": "ユーザー"
+    "message": "ユーザー名"
   },
   "remote.mount.login_wrong": {
     "message": "ユーザー名またはパスワードが違います"

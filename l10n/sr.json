@@ -1056,7 +1056,7 @@
     "message": "Почетна фасцикла"
   },
   "connections.field.user": {
-    "message": "Корисник"
+    "message": "Корисничко име"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Избрисати фасциклу {name} и # везу у њој?} few {Избрисати фасциклу {name} и # везе у њој?} other {Избрисати фасциклу {name} и # веза у њој?}}"
@@ -2949,7 +2949,7 @@
     "message": "Пријава"
   },
   "remote.login.user": {
-    "message": "Корисник"
+    "message": "Корисничко име"
   },
   "remote.mount.login_wrong": {
     "message": "корисник или лозинка нису исправни"

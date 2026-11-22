@@ -1056,7 +1056,7 @@
     "message": "起始文件夹"
   },
   "connections.field.user": {
-    "message": "用户"
+    "message": "用户名"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, other {要删除文件夹“{name}”及其中的 # 个连接吗？}}"
@@ -2949,7 +2949,7 @@
     "message": "登录"
   },
   "remote.login.user": {
-    "message": "用户"
+    "message": "用户名"
   },
   "remote.mount.login_wrong": {
     "message": "用户名或密码错误"

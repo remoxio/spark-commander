@@ -1056,7 +1056,7 @@
     "message": "Dossier de départ"
   },
   "connections.field.user": {
-    "message": "Utilisateur"
+    "message": "Nom d’utilisateur"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Supprimer le dossier {name} et la connexion qu’il contient ?} other {Supprimer le dossier {name} et les # connexions qu’il contient ?}}"
@@ -2949,7 +2949,7 @@
     "message": "Se connecter"
   },
   "remote.login.user": {
-    "message": "Utilisateur"
+    "message": "Nom d’utilisateur"
   },
   "remote.mount.login_wrong": {
     "message": "l’utilisateur ou le mot de passe est incorrect"

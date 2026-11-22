@@ -1056,7 +1056,7 @@
     "message": "Začetna mapa"
   },
   "connections.field.user": {
-    "message": "Uporabnik"
+    "message": "Uporabniško ime"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Želite izbrisati mapo {name} in povezavo v njej?} two {Želite izbrisati mapo {name} in # povezavi v njej?} few {Želite izbrisati mapo {name} in # povezave v njej?} other {Želite izbrisati mapo {name} in # povezav v njej?}}"
@@ -2949,7 +2949,7 @@
     "message": "Prijava"
   },
   "remote.login.user": {
-    "message": "Uporabnik"
+    "message": "Uporabniško ime"
   },
   "remote.mount.login_wrong": {
     "message": "uporabnik ali geslo je napačno"

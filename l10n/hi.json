@@ -1056,7 +1056,7 @@
     "message": "शुरुआती फ़ोल्डर"
   },
   "connections.field.user": {
-    "message": "यूज़र"
+    "message": "यूज़रनेम"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {फ़ोल्डर {name} और उसमें मौजूद कनेक्शन डिलीट करें?} other {फ़ोल्डर {name} और उसमें मौजूद # कनेक्शन डिलीट करें?}}"
@@ -2949,7 +2949,7 @@
     "message": "लॉग इन करें"
   },
   "remote.login.user": {
-    "message": "यूज़र"
+    "message": "यूज़रनेम"
   },
   "remote.mount.login_wrong": {
     "message": "यूज़र या पासवर्ड गलत है"

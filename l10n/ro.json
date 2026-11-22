@@ -1056,7 +1056,7 @@
     "message": "Folder inițial"
   },
   "connections.field.user": {
-    "message": "Utilizator"
+    "message": "Nume de utilizator"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Ștergeți folderul {name} și conexiunea din el?} few {Ștergeți folderul {name} și cele # conexiuni din el?} other {Ștergeți folderul {name} și cele # de conexiuni din el?}}"
@@ -2949,7 +2949,7 @@
     "message": "Autentificare"
   },
   "remote.login.user": {
-    "message": "Utilizator"
+    "message": "Nume de utilizator"
   },
   "remote.mount.login_wrong": {
     "message": "utilizatorul sau parola sunt greșite"

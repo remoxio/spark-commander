@@ -1409,7 +1409,7 @@
   },
   "connections.field.user": {
     "description": "Label left of a field in the Connection dialog (a saved server's details). Keep it short: the label column is narrow. The user name to log in with.",
-    "message": "User"
+    "message": "Username"
   },
   "connections.folder.delete_confirm": {
     "description": "Question before deleting a folder of Sidebar › Connections, its connections with it. {name} is the folder's name, as \"Work\"; {count} (#) how many connections it holds, 1 or more.",
@@ -3933,7 +3933,7 @@
   },
   "remote.login.user": {
     "description": "Label of the user name field in the Log in dialog. Keep it short: the label column is narrow.",
-    "message": "User"
+    "message": "Username"
   },
   "remote.mount.login_wrong": {
     "description": "Error opening a network share (SMB, NFS, WebDAV), shown after its address and a colon, as \"smb://nas/media: …\". Starts in lower case: it is shown after a name and a colon.",

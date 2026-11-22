@@ -1056,7 +1056,7 @@
     "message": "Startmappe"
   },
   "connections.field.user": {
-    "message": "Bruker"
+    "message": "Brukernavn"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Vil du slette mappen {name} og tilkoblingen i den?} other {Vil du slette mappen {name} og de # tilkoblingene i den?}}"
@@ -2949,7 +2949,7 @@
     "message": "Logg på"
   },
   "remote.login.user": {
-    "message": "Bruker"
+    "message": "Brukernavn"
   },
   "remote.mount.login_wrong": {
     "message": "brukeren eller passordet er feil"

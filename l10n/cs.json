@@ -1056,7 +1056,7 @@
     "message": "Počáteční složka"
   },
   "connections.field.user": {
-    "message": "Uživatel"
+    "message": "Uživatelské jméno"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Smazat složku „{name}“ i s připojením v ní?} few {Smazat složku „{name}“ i s # připojeními v ní?} other {Smazat složku „{name}“ i s # připojeními v ní?}}"
@@ -2949,7 +2949,7 @@
     "message": "Přihlášení"
   },
   "remote.login.user": {
-    "message": "Uživatel"
+    "message": "Uživatelské jméno"
   },
   "remote.mount.login_wrong": {
     "message": "uživatel nebo heslo je chybné"

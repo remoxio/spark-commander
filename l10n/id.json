@@ -1056,7 +1056,7 @@
     "message": "Folder awal"
   },
   "connections.field.user": {
-    "message": "Pengguna"
+    "message": "Nama pengguna"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, other {Hapus folder {name} beserta # koneksi di dalamnya?}}"
@@ -2949,7 +2949,7 @@
     "message": "Masuk"
   },
   "remote.login.user": {
-    "message": "Pengguna"
+    "message": "Nama pengguna"
   },
   "remote.mount.login_wrong": {
     "message": "pengguna atau kata sandi salah"

@@ -1056,7 +1056,7 @@
     "message": "Thư mục đầu"
   },
   "connections.field.user": {
-    "message": "Người dùng"
+    "message": "Tên người dùng"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, other {Xóa thư mục {name} cùng # kết nối bên trong?}}"
@@ -2949,7 +2949,7 @@
     "message": "Đăng nhập"
   },
   "remote.login.user": {
-    "message": "Người dùng"
+    "message": "Tên người dùng"
   },
   "remote.mount.login_wrong": {
     "message": "sai tên người dùng hoặc mật khẩu"

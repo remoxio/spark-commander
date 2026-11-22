@@ -1056,7 +1056,7 @@
     "message": "Startmapp"
   },
   "connections.field.user": {
-    "message": "Användare"
+    "message": "Användarnamn"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Vill du ta bort mappen {name} och anslutningen i den?} other {Vill du ta bort mappen {name} och de # anslutningarna i den?}}"
@@ -2949,7 +2949,7 @@
     "message": "Logga in"
   },
   "remote.login.user": {
-    "message": "Användare"
+    "message": "Användarnamn"
   },
   "remote.mount.login_wrong": {
     "message": "användarnamnet eller lösenordet är fel"

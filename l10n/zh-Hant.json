@@ -1056,7 +1056,7 @@
     "message": "起始資料夾"
   },
   "connections.field.user": {
-    "message": "使用者"
+    "message": "使用者名稱"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, other {要刪除資料夾 {name} 及其中的 # 個連線嗎？}}"
@@ -2949,7 +2949,7 @@
     "message": "登入"
   },
   "remote.login.user": {
-    "message": "使用者"
+    "message": "使用者名稱"
   },
   "remote.mount.login_wrong": {
     "message": "使用者或密碼錯誤"

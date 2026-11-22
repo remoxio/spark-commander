@@ -1056,7 +1056,7 @@
     "message": "Pasta inicial"
   },
   "connections.field.user": {
-    "message": "Usuário"
+    "message": "Nome de usuário"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Excluir a pasta {name} e a conexão dentro dela?} other {Excluir a pasta {name} e as # conexões dentro dela?}}"
@@ -2949,7 +2949,7 @@
     "message": "Entrar"
   },
   "remote.login.user": {
-    "message": "Usuário"
+    "message": "Nome de usuário"
   },
   "remote.mount.login_wrong": {
     "message": "o usuário ou a senha está incorreto"

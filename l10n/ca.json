@@ -1056,7 +1056,7 @@
     "message": "Carpeta inicial"
   },
   "connections.field.user": {
-    "message": "Usuari"
+    "message": "Nom d’usuari"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, one {Vols suprimir la carpeta {name} i la connexió que conté?} other {Vols suprimir la carpeta {name} i les # connexions que conté?}}"
@@ -2949,7 +2949,7 @@
     "message": "Inicia la sessió"
   },
   "remote.login.user": {
-    "message": "Usuari"
+    "message": "Nom d’usuari"
   },
   "remote.mount.login_wrong": {
     "message": "l’usuari o la contrasenya són incorrectes"

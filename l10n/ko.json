@@ -1056,7 +1056,7 @@
     "message": "시작 폴더"
   },
   "connections.field.user": {
-    "message": "사용자"
+    "message": "사용자 이름"
   },
   "connections.folder.delete_confirm": {
     "message": "{count, plural, other {{name} 폴더와 그 안의 연결 #개를 삭제하시겠습니까?}}"
@@ -2949,7 +2949,7 @@
     "message": "로그인"
   },
   "remote.login.user": {
-    "message": "사용자"
+    "message": "사용자 이름"
   },
   "remote.mount.login_wrong": {
     "message": "사용자 또는 암호가 틀림"
