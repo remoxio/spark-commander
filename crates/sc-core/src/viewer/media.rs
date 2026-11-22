@@ -160,8 +160,6 @@ pub struct State {
     pub muted: bool,
     /// The sound's bits a second as it plays; 0 while unknown.
     pub bitrate: f64,
-    /// Played again from the start at its end.
-    pub repeat: bool,
     /// Pictures are drawn; not for sound alone.
     pub video: bool,
     pub error: Option<String>,
@@ -291,21 +289,6 @@ impl Player {
         let _ = self.command(&["cycle", "mute"]);
     }
 
-    /// Percent.
-    pub fn set_volume(&self, volume: f64) {
-        let _ = self.command(&["set", "volume", &volume.clamp(0., 100.).to_string()]);
-    }
-
-    /// Paused at the start.
-    pub fn stop(&self) {
-        let _ = self.command(&["set", "pause", "yes"]);
-        self.seek_seconds(0.);
-    }
-
-    pub fn toggle_repeat(&self) {
-        let _ = self.command(&["cycle-values", "loop-file", "inf", "no"]);
-    }
-
     /// The file's tags, as mpv names them, once it is loaded.
     pub fn tags(&self) -> Vec<(String, String)> {
         let count = self.int("metadata/list/count").unwrap_or(0);
@@ -350,7 +333,6 @@ impl Player {
             volume: self.double("volume").unwrap_or(100.),
             muted: self.flag("mute"),
             bitrate: self.double("audio-bitrate").unwrap_or(0.),
-            repeat: self.string("loop-file").is_some_and(|times| times != "no"),
             video: self.flag("vo-configured"),
             error: self.shared.error.lock().unwrap().clone(),
         }

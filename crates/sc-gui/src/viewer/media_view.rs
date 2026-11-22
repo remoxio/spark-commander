@@ -12,8 +12,7 @@ use std::time::{Duration, Instant};
 use futures::StreamExt;
 use gpui_kit::assets::IconName as Lucide;
 use gpui_kit::component::button::{Button, ButtonVariants};
-use gpui_kit::component::slider::{Slider, SliderEvent, SliderState};
-use gpui_kit::component::{ActiveTheme, Icon, IconNamed, Selectable, Sizable, StyledExt, h_flex, v_flex};
+use gpui_kit::component::{ActiveTheme, Icon, IconNamed, Sizable, StyledExt, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
 use sc_core::viewer::media::lyrics::Lyrics;
@@ -85,10 +84,6 @@ pub struct MediaView {
     /// Its words' list, and the line last lit.
     lyrics_scroll: ScrollHandle,
     sung: Option<usize>,
-    /// Quick View's: no other files to go to.
-    quick: bool,
-    volume: Entity<SliderState>,
-    _volume: Subscription,
     _frames: Task<()>,
 }
 
@@ -132,11 +127,6 @@ impl MediaView {
                 }
             }
         });
-        let volume = cx.new(|_| SliderState::new().min(0.).max(100.).default_value(100.));
-        let changed = cx.subscribe(&volume, |this: &mut MediaView, _, event: &SliderEvent, _| {
-            let (SliderEvent::Change(value) | SliderEvent::Release(value)) = event;
-            this.player().inspect(|player| player.set_volume(f64::from(value.end())));
-        });
         MediaView {
             player: player.map(Rc::new),
             image: None,
@@ -156,9 +146,6 @@ impl MediaView {
             reading: false,
             lyrics_scroll: ScrollHandle::new(),
             sung: None,
-            quick: paused,
-            volume,
-            _volume: changed,
             _frames: frames,
         }
     }
@@ -308,10 +295,6 @@ impl Render for MediaView {
         };
         let state = player.state();
         let meter = self.music.then(|| self.meter(&state, window));
-        // The keys change the volume too.
-        if (f64::from(self.volume.read(cx).value().end()) - state.volume).abs() >= 0.5 {
-            self.volume.update(cx, |slider, cx| slider.set_value(state.volume as f32, window, cx));
-        }
         let image = self.image.clone();
         let sizing = player.clone();
         // mpv draws at the picture's size in pixels; the frame fills it.
@@ -471,7 +454,7 @@ impl MediaView {
         v_flex().id("lyrics").size_full().p_2().overflow_y_scroll().track_scroll(&self.lyrics_scroll).children(lines)
     }
 
-    /// Previous and next file, play, stop; the place and the seek bar; the volume; repeat, full screen.
+    /// Play, the place, the seek bar, mute and the volume, full screen.
     fn render_controls(&self, state: &State, window: &Window, cx: &mut Context<Self>) -> Div {
         let theme = cx.theme().clone();
         let share = match state.duration > 0. {
@@ -480,12 +463,7 @@ impl MediaView {
         };
         let bar = self.bar.clone();
         let full_screen = window.is_fullscreen();
-        let button = |id: &'static str, icon: Icon| Button::new(id).icon(icon).small().ghost();
-        let step = |id: &'static str, icon: Lucide, action: Box<dyn Action>| {
-            button(id, Icon::new(icon)).on_click(move |_, window, cx| window.dispatch_action(action.boxed_clone(), cx))
-        };
-        let player = |act: fn(&sc_core::viewer::media::Player)| cx.listener(move |this: &mut Self, _, _, _| this.player().inspect(|player| act(player)).map(drop).unwrap_or(()));
-        let divider = || div().flex_none().w(px(1.)).h(px(20.)).bg(theme.border);
+        let button = |id: &'static str, icon: MediaIcon| Button::new(id).icon(icon).small().ghost();
         h_flex()
             .flex_none()
             .gap_2()
@@ -494,15 +472,12 @@ impl MediaView {
             .items_center()
             .border_t_1()
             .border_color(theme.border)
-            .when(!self.quick, |el| el.child(step("media-previous", Lucide::SkipBack, Box::new(super::PreviousFile))))
             .child(
-                button("media-play", Icon::new(if state.paused { MediaIcon::Play } else { MediaIcon::Pause }))
-                    .on_click(player(|player| player.toggle_pause())),
+                button("media-play", if state.paused { MediaIcon::Play } else { MediaIcon::Pause }).on_click(cx.listener(|this, _, _, _| {
+                    this.player().inspect(|player| player.toggle_pause());
+                })),
             )
-            .when(!self.quick, |el| el.child(step("media-next", Lucide::SkipForward, Box::new(super::NextFile))))
-            .child(button("media-stop", Icon::new(Lucide::Square)).on_click(player(|player| player.stop())))
-            .child(divider())
-            .child(div().flex_none().text_sm().child(clock(state.position)))
+            .child(div().flex_none().text_sm().child(format!("{} / {}", clock(state.position), clock(state.duration))))
             .child(
                 div()
                     .id("media-seek")
@@ -529,18 +504,14 @@ impl MediaView {
                             .child(canvas(move |bounds, _, _| bar.set(bounds), |_, _, _, _| {}).absolute().size_full()),
                     ),
             )
-            .child(div().flex_none().text_sm().child(clock(state.duration)))
-            .child(divider())
             .child(
-                button("media-mute", Icon::new(if state.muted { MediaIcon::Muted } else { MediaIcon::Volume }))
-                    .on_click(player(|player| player.toggle_mute())),
+                button("media-mute", if state.muted { MediaIcon::Muted } else { MediaIcon::Volume }).on_click(cx.listener(|this, _, _, _| {
+                    this.player().inspect(|player| player.toggle_mute());
+                })),
             )
-            .child(div().flex_none().w(px(96.)).child(Slider::new(&self.volume)))
             .child(div().flex_none().w(px(40.)).text_sm().child(format!("{:.0}%", state.volume)))
-            .child(divider())
-            .child(button("media-repeat", Icon::new(Lucide::Repeat)).selected(state.repeat).on_click(player(|player| player.toggle_repeat())))
             .child(
-                button("media-full-screen", Icon::new(if full_screen { MediaIcon::Window } else { MediaIcon::FullScreen }))
+                button("media-full-screen", if full_screen { MediaIcon::Window } else { MediaIcon::FullScreen })
                     .on_click(|_, window, _| window.toggle_fullscreen()),
             )
     }
