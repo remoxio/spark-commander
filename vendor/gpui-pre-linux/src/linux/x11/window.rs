@@ -292,6 +292,9 @@ pub struct X11WindowState {
     pub handle: AnyWindowHandle,
     last_insets: [u32; 4],
     accesskit_adapter: Option<accesskit_unix::Adapter>,
+    /// SparkCommander patch: not resizable: as small and as large as it is, so the
+    /// window manager offers no maximize; kept so as the app resizes it.
+    fixed_size: bool,
 }
 
 impl X11WindowState {
@@ -795,6 +798,11 @@ impl X11WindowState {
                     Some((f32::from(size.width) as i32, f32::from(size.height) as i32));
             }
             size_hints.max_size = Some((max_texture_size as i32, max_texture_size as i32));
+            // SparkCommander patch: see `fixed_size`.
+            if !params.is_resizable {
+                let size = (bounds.size.width.0, bounds.size.height.0);
+                (size_hints.min_size, size_hints.max_size) = (Some(size), Some(size));
+            }
             // SparkCommander patch: the window manager keeps a given place (the
             // monitor the window was closed on) rather than choosing one, and puts
             // the window itself there, not its frame.
@@ -872,6 +880,7 @@ impl X11WindowState {
                 last_insets: [0, 0, 0, 0],
                 edge_constraints: None,
                 accesskit_adapter: None,
+                fixed_size: !params.is_resizable,
                 counter_id: sync_request_counter,
                 last_sync_counter: None,
             })
@@ -1464,6 +1473,13 @@ impl PlatformWindow for X11Window {
         let size = size.to_device_pixels(state.scale_factor);
         let width = size.width.0 as u32;
         let height = size.height.0 as u32;
+        // SparkCommander patch: see `fixed_size`.
+        if state.fixed_size {
+            let mut size_hints = WmSizeHints::new();
+            let size = (width as i32, height as i32);
+            (size_hints.min_size, size_hints.max_size) = (Some(size), Some(size));
+            check_reply(|| "X11 change of WM_SIZE_HINTS failed.", size_hints.set_normal_hints(&self.0.xcb, self.0.x_window)).log_err();
+        }
 
         check_reply(
             || {

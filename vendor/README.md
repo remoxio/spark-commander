@@ -63,6 +63,7 @@ diff against upstream; every change is marked `SparkCommander patch`.
 | `src/linux/wayland/client.rs`, `src/linux/wayland/window.rs` | a window's icon (`WindowOptions::icon`) also on Wayland, through `xdg-toplevel-icon-v1` (KWin), as X11's `_NET_WM_ICON`: a build that is not installed shows it too |
 | `src/linux/window_icon.rs` (new), `src/linux/wayland/window.rs`, `src/linux/x11/window.rs` | the window's icon in several sizes (16 to 128 pixels and its own, each shrunk by averaging), on Wayland and X11, so a taskbar takes one near its size rather than scaling one large image roughly |
 | `src/linux/x11/window.rs` | a window given a display (`WindowOptions::display_id`: the main window's saved place, the viewer's over it) opens exactly where asked: its size hints say the place is the user's and the gravity static, so the window manager keeps it and puts the window itself there, not its frame (upstream: the window manager chooses, and every window is nudged 2 px right); the window's origin is asked of the X server on every configure event (upstream kept the old one after a resize, and GNOME moves a window drawing its own frame as it grows it around its shadow) |
+| `src/linux/wayland/window.rs`, `src/linux/x11/window.rs` | a window that is not resizable (`WindowOptions::is_resizable` false: the app's dialog windows) is as small and as large as it is (`xdg_toplevel` min and max size, X11's `WM_NORMAL_HINTS`), kept so as the app resizes it, so the window manager offers no maximize (upstream: ignored on Linux) |
 
 ### Upgrading GPUI Kit
 

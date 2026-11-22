@@ -144,6 +144,9 @@ pub struct WaylandWindowState {
     window_controls: WindowControls,
     client_inset: Option<Pixels>,
     accesskit_adapter: Option<accesskit_unix::Adapter>,
+    /// SparkCommander patch: not resizable: as small and as large as it is, so the
+    /// compositor offers no maximize; kept so as the app resizes it.
+    fixed_size: bool,
 }
 
 pub enum WaylandSurfaceState {
@@ -608,9 +611,15 @@ impl WaylandWindowState {
             // Set max window size based on the GPU's maximum texture dimension.
             // This prevents the window from being resized larger than what the GPU can render.
             let max_texture_size = renderer.max_texture_size() as i32;
-            xdg_state
-                .toplevel
-                .set_max_size(max_texture_size, max_texture_size);
+            // SparkCommander patch: see `fixed_size`.
+            match options.is_resizable {
+                true => xdg_state.toplevel.set_max_size(max_texture_size, max_texture_size),
+                false => {
+                    let size = options.bounds.size.map(|side| f32::from(side) as i32);
+                    xdg_state.toplevel.set_min_size(size.width, size.height);
+                    xdg_state.toplevel.set_max_size(size.width, size.height);
+                }
+            }
         }
 
         Ok(Self {
@@ -650,6 +659,7 @@ impl WaylandWindowState {
             window_controls: WindowControls::default(),
             client_inset: None,
             accesskit_adapter: None,
+            fixed_size: !options.is_resizable,
         })
     }
 
@@ -1805,6 +1815,14 @@ impl PlatformWindow for WaylandWindow {
             window_geometry.size.width,
             window_geometry.size.height,
         );
+        // SparkCommander patch: see `fixed_size`.
+        if state.fixed_size
+            && let WaylandSurfaceState::Xdg(xdg_state) = &state.surface_state
+        {
+            let size = window_geometry.size;
+            xdg_state.toplevel.set_min_size(size.width, size.height);
+            xdg_state.toplevel.set_max_size(size.width, size.height);
+        }
 
         state
             .globals

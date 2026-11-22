@@ -248,8 +248,8 @@ diff -ruN a/src/linux/wayland/clipboard.rs b/src/linux/wayland/clipboard.rs
  
          self.cached_read = Some(item.clone());
 diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
---- a/src/linux/wayland/window.rs	2026-11-19 07:46:00.616272876 +0100
-+++ b/src/linux/wayland/window.rs	2026-11-19 07:46:00.618367046 +0100
+--- a/src/linux/wayland/window.rs	2006-07-24 03:21:28.000000000 +0200
++++ b/src/linux/wayland/window.rs	2026-11-22 19:45:15.309542186 +0100
 @@ -29,6 +29,8 @@
      xdg::dialog::v1::client::xdg_dialog_v1::XdgDialogV1,
  };
@@ -268,7 +268,17 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
      viewport: Option<wp_viewport::WpViewport>,
      outputs: HashMap<ObjectId, Output>,
      display: Option<(ObjectId, Output)>,
-@@ -596,6 +600,11 @@
+@@ -140,6 +144,9 @@
+     window_controls: WindowControls,
+     client_inset: Option<Pixels>,
+     accesskit_adapter: Option<accesskit_unix::Adapter>,
++    /// SparkCommander patch: not resizable: as small and as large as it is, so the
++    /// compositor offers no maximize; kept so as the app resizes it.
++    fixed_size: bool,
+ }
+ 
+ pub enum WaylandSurfaceState {
+@@ -596,12 +603,23 @@
                  xdg_state.toplevel.set_app_id(app_id.clone());
              }
  
@@ -280,7 +290,22 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
              // Set max window size based on the GPU's maximum texture dimension.
              // This prevents the window from being resized larger than what the GPU can render.
              let max_texture_size = renderer.max_texture_size() as i32;
-@@ -611,6 +620,7 @@
+-            xdg_state
+-                .toplevel
+-                .set_max_size(max_texture_size, max_texture_size);
++            // SparkCommander patch: see `fixed_size`.
++            match options.is_resizable {
++                true => xdg_state.toplevel.set_max_size(max_texture_size, max_texture_size),
++                false => {
++                    let size = options.bounds.size.map(|side| f32::from(side) as i32);
++                    xdg_state.toplevel.set_min_size(size.width, size.height);
++                    xdg_state.toplevel.set_max_size(size.width, size.height);
++                }
++            }
+         }
+ 
+         Ok(Self {
+@@ -611,6 +629,7 @@
              surface,
              app_id: options.app_id,
              blur: None,
@@ -288,7 +313,15 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
              viewport,
              globals,
              outputs: HashMap::default(),
-@@ -786,6 +796,10 @@
+@@ -640,6 +659,7 @@
+             window_controls: WindowControls::default(),
+             client_inset: None,
+             accesskit_adapter: None,
++            fixed_size: !options.is_resizable,
+         })
+     }
+ 
+@@ -786,6 +806,10 @@
          if let Some(blur) = &state.blur {
              blur.release();
          }
@@ -299,7 +332,7 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
  
          // Decorations must be destroyed before the xdg state.
          // See https://wayland.app/protocols/xdg-decoration-unstable-v1#zxdg_toplevel_decoration_v1
-@@ -1518,6 +1532,8 @@
+@@ -1518,6 +1542,8 @@
              if let Some(scale) = scale {
                  state.scale = scale;
              }
@@ -308,7 +341,22 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
              let device_bounds = state.bounds.to_device_pixels(state.scale);
              if let Some(renderer) = &mut state.renderer {
                  renderer.update_drawable_size(device_bounds.size);
-@@ -2335,6 +2351,34 @@
+@@ -1789,6 +1815,14 @@
+             window_geometry.size.width,
+             window_geometry.size.height,
+         );
++        // SparkCommander patch: see `fixed_size`.
++        if state.fixed_size
++            && let WaylandSurfaceState::Xdg(xdg_state) = &state.surface_state
++        {
++            let size = window_geometry.size;
++            xdg_state.toplevel.set_min_size(size.width, size.height);
++            xdg_state.toplevel.set_max_size(size.width, size.height);
++        }
+ 
+         state
+             .globals
+@@ -2335,6 +2369,34 @@
          }
      }
  
@@ -343,7 +391,7 @@ diff -ruN a/src/linux/wayland/window.rs b/src/linux/wayland/window.rs
      region.destroy();
  }
  
-@@ -2414,3 +2458,53 @@
+@@ -2414,3 +2476,53 @@
  
      bounds
  }
@@ -591,8 +639,8 @@ diff -ruN a/src/linux/x11/clipboard.rs b/src/linux/x11/clipboard.rs
          match format {
              ImageFormat::Png => self.inner.atoms.PNG__MIME,
 diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
---- a/src/linux/x11/window.rs	2026-11-19 07:46:00.616606490 +0100
-+++ b/src/linux/x11/window.rs	2026-11-19 07:46:00.618681794 +0100
+--- a/src/linux/x11/window.rs	2006-07-24 03:21:28.000000000 +0200
++++ b/src/linux/x11/window.rs	2026-11-22 19:45:15.309881281 +0100
 @@ -7,8 +7,8 @@
      Pixels, PlatformAtlas, PlatformDisplay, PlatformInput, PlatformInputHandler, PlatformWindow,
      Point, PromptButton, PromptLevel, RequestFrameOptions, ResizeEdge, ScaledPixels, Scene, Size,
@@ -613,7 +661,17 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
      protocol::{
          sync,
          xinput::{self, ConnectionExt as _},
-@@ -533,6 +533,11 @@
+@@ -292,6 +292,9 @@
+     pub handle: AnyWindowHandle,
+     last_insets: [u32; 4],
+     accesskit_adapter: Option<accesskit_unix::Adapter>,
++    /// SparkCommander patch: not resizable: as small and as large as it is, so the
++    /// window manager offers no maximize; kept so as the app resizes it.
++    fixed_size: bool,
+ }
+ 
+ impl X11WindowState {
+@@ -533,6 +536,11 @@
              bounds.size.height = 600.into();
          }
  
@@ -625,7 +683,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
          check_reply(
              || {
                  format!(
-@@ -540,7 +545,7 @@
+@@ -540,7 +548,7 @@
                      visual.depth,
                      x_window,
                      visual_set.root,
@@ -634,7 +692,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
                      bounds.origin.y.0,
                      bounds.size.width.0,
                      bounds.size.height.0
-@@ -550,7 +555,7 @@
+@@ -550,7 +558,7 @@
                  visual.depth,
                  x_window,
                  visual_set.root,
@@ -643,10 +701,15 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
                  bounds.origin.y.0 as i16,
                  bounds.size.width.0 as u16,
                  bounds.size.height.0 as u16,
-@@ -790,6 +795,13 @@
+@@ -790,6 +798,18 @@
                      Some((f32::from(size.width) as i32, f32::from(size.height) as i32));
              }
              size_hints.max_size = Some((max_texture_size as i32, max_texture_size as i32));
++            // SparkCommander patch: see `fixed_size`.
++            if !params.is_resizable {
++                let size = (bounds.size.width.0, bounds.size.height.0);
++                (size_hints.min_size, size_hints.max_size) = (Some(size), Some(size));
++            }
 +            // SparkCommander patch: the window manager keeps a given place (the
 +            // monitor the window was closed on) rather than choosing one, and puts
 +            // the window itself there, not its frame.
@@ -657,7 +720,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
              check_reply(
                  || {
                      format!(
-@@ -802,14 +814,18 @@
+@@ -802,14 +822,18 @@
  
              if let Some(image) = params.icon {
                  // https://specifications.freedesktop.org/wm-spec/1.4/ar01s05.html#id-1.6.13
@@ -684,7 +747,15 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
  
                  check_reply(
                      || "X11 ChangeProperty32 for _NET_ICON_NAME failed.",
-@@ -1298,13 +1314,20 @@
+@@ -856,6 +880,7 @@
+                 last_insets: [0, 0, 0, 0],
+                 edge_constraints: None,
+                 accesskit_adapter: None,
++                fixed_size: !params.is_resizable,
+                 counter_id: sync_request_counter,
+                 last_sync_counter: None,
+             })
+@@ -1298,13 +1323,20 @@
              let is_resize = bounds.size.width != state.bounds.size.width
                  || bounds.size.height != state.bounds.size.height;
  
@@ -712,6 +783,20 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
  
              let gpu_size = query_render_extent(&self.xcb, self.x_window)?;
              if let Some(renderer) = &mut state.renderer {
+@@ -1441,6 +1473,13 @@
+         let size = size.to_device_pixels(state.scale_factor);
+         let width = size.width.0 as u32;
+         let height = size.height.0 as u32;
++        // SparkCommander patch: see `fixed_size`.
++        if state.fixed_size {
++            let mut size_hints = WmSizeHints::new();
++            let size = (width as i32, height as i32);
++            (size_hints.min_size, size_hints.max_size) = (Some(size), Some(size));
++            check_reply(|| "X11 change of WM_SIZE_HINTS failed.", size_hints.set_normal_hints(&self.0.xcb, self.0.x_window)).log_err();
++        }
+ 
+         check_reply(
+             || {
 diff -ruN a/src/linux.rs b/src/linux.rs
 --- a/src/linux.rs	2026-11-19 07:46:00.616729293 +0100
 +++ b/src/linux.rs	2026-11-19 07:46:00.619132962 +0100
