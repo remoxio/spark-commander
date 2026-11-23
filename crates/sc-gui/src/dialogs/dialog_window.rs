@@ -23,11 +23,31 @@ pub(crate) type Confirming = Rc<dyn Fn(&mut Window, &mut App) -> bool>;
 /// What a button does on the window asked over.
 pub(crate) type Acting = Rc<dyn Fn(&mut Window, &mut App)>;
 
-actions!(dialog_window, [Confirm, Dismiss]);
+actions!(dialog_window, [Confirm, Dismiss, WindowMenu]);
 
 pub(crate) fn bind_keys(cx: &mut App) {
     let keys = Some(CONTEXT);
     cx.bind_keys([KeyBinding::new("enter", Confirm, keys), KeyBinding::new("escape", Dismiss, keys)]);
+    // Windows: Alt+Space, the window's menu under its caption, as Windows' own.
+    #[cfg(windows)]
+    {
+        cx.bind_keys([KeyBinding::new("alt-space", WindowMenu, None)]);
+        cx.on_action(|_: &WindowMenu, cx| {
+            let Some(handle) = cx.active_window() else { return };
+            cx.spawn(async move |cx| {
+                // Opened while Alt is down, its release would close it; the window is free once the key is over.
+                while sc_core::system::theme::alt_held() {
+                    cx.background_executor().timer(std::time::Duration::from_millis(15)).await;
+                }
+                cx.background_executor().timer(std::time::Duration::from_millis(50)).await;
+                let at = cx.update_window(handle, |_, window, _| (hwnd(window), (32. * window.scale_factor()).round() as i32));
+                if let Ok((Some(hwnd), below)) = at {
+                    sc_core::system::theme::system_menu(hwnd, Some(below));
+                }
+            })
+            .detach();
+        });
+    }
 }
 
 /// Whether dialogs open as windows of their own; Windows' in the window, as WinUI's ContentDialog.
@@ -426,7 +446,7 @@ pub(crate) fn caption(title: SharedString, maximize: bool, lead: Pixels, window:
 #[cfg(windows)]
 fn system_menu(window: &Window, cx: &mut App) {
     if let Some(hwnd) = hwnd(window) {
-        cx.spawn(async move |_| sc_core::system::theme::system_menu(hwnd)).detach();
+        cx.spawn(async move |_| sc_core::system::theme::system_menu(hwnd, None)).detach();
     }
 }
 
