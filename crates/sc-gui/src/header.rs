@@ -116,7 +116,6 @@ impl Commander {
         let shade = cx.theme().foreground.opacity(0.06);
         div()
             .id("caption-sidebar")
-            .ml(px(4.))
             .w(px(40.))
             .h(px(32.))
             .flex()
