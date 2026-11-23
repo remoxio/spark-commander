@@ -3005,7 +3005,26 @@ impl ToolbarFit {
 }
 
 pub(crate) fn toolbar_menu(commander: WeakEntity<Commander>) -> impl Fn(PopupMenu, &mut Window, &mut Context<PopupMenu>) -> PopupMenu + 'static {
-    move |menu, _, _| {
+    move |menu, _, cx| {
+        // Windows and Linux: what the buttons show, as Settings > Toolbar.
+        let current = commander.upgrade().map(|this| this.read(cx).settings.toolbar_style);
+        let styles = [(settings::ToolbarStyle::Icons, sc_core::t!("settings.toolbar.icons")), (settings::ToolbarStyle::IconsAndText, sc_core::t!("settings.toolbar.icons_text"))];
+        let menu = match cfg!(target_os = "macos") {
+            true => menu,
+            false => styles
+                .into_iter()
+                .fold(menu, |menu, (style, label)| {
+                    let commander = commander.clone();
+                    menu.item(PopupMenuItem::new(label).checked(current == Some(style)).on_click(move |_, window, cx| {
+                        let _ = commander.update(cx, |this, cx| {
+                            this.settings.toolbar_style = style;
+                            this.save_settings(window, cx);
+                            cx.notify();
+                        });
+                    }))
+                })
+                .separator(),
+        };
         let commander = commander.clone();
         let item = PopupMenuItem::new(sc_core::t!("toolbar.customize")).when_some(menus::menu_icon(Command::Settings), |item, icon| item.icon(Icon::new(icon)));
         menu.item(item.on_click(move |_, window, cx| {
