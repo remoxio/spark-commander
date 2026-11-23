@@ -3953,6 +3953,15 @@
   "settings.shell.title": {
     "message": "Parancsértelmező"
   },
+  "settings.sidebar.button": {
+    "message": "A gombja:"
+  },
+  "settings.sidebar.button_title_bar": {
+    "message": "A címsorban (☰)"
+  },
+  "settings.sidebar.button_toolbar": {
+    "message": "Az eszköztáron"
+  },
   "settings.sidebar.horizontal": {
     "message": "Vízszintes: az ikonjaik egy sorban felül"
   },

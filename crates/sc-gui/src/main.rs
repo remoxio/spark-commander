@@ -1623,9 +1623,11 @@ impl Commander {
         };
         // The buttons in groups, as the separators part them.
         let mut groups: Vec<Vec<AnyElement>> = vec![Vec::new()];
-        // Windows and Linux: the sidebar's button first, apart (macOS has its own by the window's buttons).
+        // Windows and Linux: the sidebar's button first, apart (macOS has its own by the window's buttons,
+        // Windows the title bar's unless chosen here).
         let sidebar = [ToolbarItem::Button(Command::ToggleSidebar), ToolbarItem::Separator];
-        let first = if mac || shown.contains(&sidebar[0]) { &[][..] } else { &sidebar[..] };
+        let title_bar = cfg!(windows) && self.settings.sidebar_button == sc_core::settings::SidebarButton::TitleBar;
+        let first = if mac || title_bar || shown.contains(&sidebar[0]) { &[][..] } else { &sidebar[..] };
         for item in first.iter().chain(shown) {
             match *item {
                 ToolbarItem::Separator => groups.push(Vec::new()),

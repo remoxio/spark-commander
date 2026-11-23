@@ -51,6 +51,14 @@ pub enum SidebarLayout {
     Vertical,
 }
 
+/// Windows: where the sidebar's button is, WinUI's navigation button (☰) in the title bar or the toolbar's.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SidebarButton {
+    #[default]
+    TitleBar,
+    Toolbar,
+}
+
 impl Default for SidebarLayout {
     fn default() -> Self {
         match cfg!(target_os = "macos") {
@@ -91,6 +99,7 @@ pub struct Settings {
     pub show_hidden: bool,
     pub show_system: bool,
     pub sidebar_layout: SidebarLayout,
+    pub sidebar_button: SidebarButton,
     pub sidebar_opacity: SidebarOpacity,
     pub sidebar_blur: Blur,
     pub terminal_opacity: TerminalOpacity,

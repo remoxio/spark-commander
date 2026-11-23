@@ -17,7 +17,7 @@ use gpui_kit::component::{Icon, IndexPath};
 use gpui_kit::component::menu::{DropdownMenu, PopupMenu, PopupMenuItem};
 use sc_core::dates::{self, Clock};
 use sc_core::menu::{self, ToolbarItem};
-use sc_core::settings::{AddonUpdates, FontChoice, MenuStyle, PAGES, Settings, Blur, SidebarLayout, SidebarOpacity, TerminalOpacity, StartFont, StartMode};
+use sc_core::settings::{AddonUpdates, FontChoice, MenuStyle, PAGES, Settings, Blur, SidebarButton, SidebarLayout, SidebarOpacity, TerminalOpacity, StartFont, StartMode};
 use sc_core::system::theme::Appearance;
 use sc_core::t;
 
@@ -1059,9 +1059,24 @@ impl SettingsDialog {
                     cx.notify();
                 })),
         );
+        let buttons = [SidebarButton::TitleBar, SidebarButton::Toolbar];
+        let button = v_flex().gap_2().child(t!("settings.sidebar.button")).child(
+            RadioGroup::vertical("sidebar-button")
+                .children([t!("settings.sidebar.button_title_bar"), t!("settings.sidebar.button_toolbar")])
+                .selected_index(buttons.iter().position(|button| *button == self.draft.sidebar_button))
+                .on_click(cx.listener(move |this, at: &usize, _, cx| {
+                    this.draft.sidebar_button = buttons[*at];
+                    cx.notify();
+                })),
+        );
         let see_through = sc_core::system::theme::see_through();
         GroupBox::new().outline().title(t!("settings.backdrop.sidebar")).child(
-            v_flex().gap_4().child(layout).when(see_through, |el| el.child(self.render_backdrop(false, cx))),
+            v_flex()
+                .gap_4()
+                .child(layout)
+                // Windows: WinUI's navigation button in the title bar, or the toolbar's.
+                .when(cfg!(windows), |el| el.child(button))
+                .when(see_through, |el| el.child(self.render_backdrop(false, cx))),
         )
     }
 

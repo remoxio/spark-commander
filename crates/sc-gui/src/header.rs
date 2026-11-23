@@ -37,7 +37,8 @@ impl Commander {
         // Windows: drawn here, as WinUI's, so a dialog's backdrop dims it with the window.
         if cfg!(windows) {
             let caption = crate::dialogs::dialog_window::caption("Spark Commander".into(), true, window, cx).flex_1().bg(self.colors.bar);
-            return Some(h_flex().bg(self.colors.bar).child(self.windows_sidebar_toggle(cx)).child(caption).into_any_element());
+            let toggle = (self.settings.sidebar_button == sc_core::settings::SidebarButton::TitleBar).then(|| self.windows_sidebar_toggle(cx));
+            return Some(h_flex().bg(self.colors.bar).children(toggle).child(caption).into_any_element());
         }
         // The title kept clear of the toolbar's buttons (32 px and a gap each, Back's and Forward's arrow 18).
         // A separator's line takes 9.

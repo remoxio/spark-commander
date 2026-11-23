@@ -5271,6 +5271,18 @@
     "description": "Settings › Terminal: the box's title over the terminal's shell.",
     "message": "Shell"
   },
+  "settings.sidebar.button": {
+    "description": "Settings › Layout › Sidebar (Windows only): the label over the two places of the button that shows or hides the sidebar.",
+    "message": "Its button:"
+  },
+  "settings.sidebar.button_title_bar": {
+    "description": "Settings › Layout › Sidebar (Windows only): a choice; the three-line navigation button in the title bar, before the app's icon, as WinUI's apps have it (the default).",
+    "message": "In the title bar (☰)"
+  },
+  "settings.sidebar.button_toolbar": {
+    "description": "Settings › Layout › Sidebar (Windows only): a choice; the sidebar's button first in the toolbar.",
+    "message": "In the toolbar"
+  },
   "settings.sidebar.horizontal": {
     "description": "Settings › Layout › Sidebar: a choice; the sections as a row of icons at the sidebar's top, as macOS's apps have them (the default on macOS).",
     "message": "Horizontal: their icons in a row at the top"
