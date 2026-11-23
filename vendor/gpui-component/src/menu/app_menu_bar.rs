@@ -359,8 +359,9 @@ impl Render for AppMenu {
                 true => theme.primary_foreground,
                 false => theme.foreground,
             })
-            .hover(theme.accent)
-            .active(if fluent { theme.accent } else { theme.primary });
+            // WinUI's SubtleFillColorSecondary: the menu's own hover colour vanished on the bar.
+            .hover(if fluent { theme.foreground.opacity(0.06) } else { theme.accent })
+            .active(if fluent { theme.foreground.opacity(0.06) } else { theme.primary });
         div()
             .id(self.ix)
             .relative()

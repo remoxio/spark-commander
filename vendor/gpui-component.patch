@@ -1955,7 +1955,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
                  popup_menu.update(cx, |menu, cx| {
                      menu.set_action_context(action_context.clone(), cx);
                  });
-@@ -258,7 +340,27 @@
+@@ -258,7 +340,28 @@
  impl Render for AppMenu {
      fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
          let is_open = self.is_open(cx);
@@ -1978,12 +1978,13 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 +                true => theme.primary_foreground,
 +                false => theme.foreground,
 +            })
-+            .hover(theme.accent)
-+            .active(if fluent { theme.accent } else { theme.primary });
++            // WinUI's SubtleFillColorSecondary: the menu's own hover colour vanished on the bar.
++            .hover(if fluent { theme.foreground.opacity(0.06) } else { theme.accent })
++            .active(if fluent { theme.foreground.opacity(0.06) } else { theme.primary });
          div()
              .id(self.ix)
              .relative()
-@@ -267,8 +369,11 @@
+@@ -267,8 +370,11 @@
                      .small()
                      .py_0p5()
                      .compact()
@@ -1997,7 +1998,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
                      .open(is_open)
                      .on_mouse_down(
                          MouseButton::Left,
-@@ -330,6 +435,7 @@
+@@ -330,6 +436,7 @@
              TestRoot {
                  menu_bar: cx.new(|_| AppMenuBar {
                      menus: Vec::new(),
@@ -2638,6 +2639,15 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          const EDGE_PADDING: Pixels = px(4.);
          const INNER_PADDING: Pixels = px(8.);
  
+@@ -1272,7 +1491,7 @@
+                 .p_0()
+                 .my_0p5()
+                 .mx_neg_1()
+-                .border_b(px(2.))
++                .border_b(px(1.))
+                 .border_color(cx.theme().border)
+                 .disabled(true),
+             PopupMenuItem::Label(label) => this.disabled(true).cursor_default().child(
 @@ -1322,6 +1541,10 @@
                  let show_link_icon = *is_link && self.external_link_icon;
                  let action = action.as_ref().map(|action| action.boxed_clone());
