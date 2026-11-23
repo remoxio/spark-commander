@@ -2636,14 +2636,18 @@ impl Render for Commander {
                 let step = this.panels[this.active].vertical_step();
                 this.mark(|panel| panel.mark_and_move(step), cx)
             }))
-            .on_action(cx.listener(|this, _: &Left, _, cx| {
-                if let Some(step) = this.panels[this.active].sideways_step() {
-                    this.move_cursor(-step, cx)
+            .on_action(cx.listener(|this, _: &Left, _, cx| match this.panels[this.active].sideways_step() {
+                Some(step) => this.move_cursor(-step, cx),
+                None => {
+                    this.panels[this.active].scroll_sideways(-SIDEWAYS);
+                    cx.notify();
                 }
             }))
-            .on_action(cx.listener(|this, _: &Right, _, cx| {
-                if let Some(step) = this.panels[this.active].sideways_step() {
-                    this.move_cursor(step, cx)
+            .on_action(cx.listener(|this, _: &Right, _, cx| match this.panels[this.active].sideways_step() {
+                Some(step) => this.move_cursor(step, cx),
+                None => {
+                    this.panels[this.active].scroll_sideways(SIDEWAYS);
+                    cx.notify();
                 }
             }))
             .on_action(cx.listener(|this, _: &PageUp, _, cx| this.move_cursor(-this.page(), cx)))
@@ -2956,6 +2960,9 @@ impl Render for Commander {
 }
 
 /// The toolbar's right-click menu: Customize Toolbar, Settings on its page.
+/// Full: how far Left and Right scroll the columns sideways.
+const SIDEWAYS: Pixels = px(40.);
+
 /// The toolbar's buttons as last laid out: the room, each one's width (a line's too).
 #[derive(Default)]
 struct ToolbarFit {

@@ -64,6 +64,14 @@ impl Side {
         }
     }
 
+    /// Full: Left and Right scroll columns wider than the panel sideways, as Total Commander's.
+    pub(crate) fn scroll_sideways(&self, by: Pixels) {
+        let scroll = self.scroll.0.borrow().base_handle.clone();
+        let offset = scroll.offset();
+        let x = (offset.x - by).clamp(-scroll.max_offset().x, px(0.));
+        scroll.set_offset(point(x, offset.y));
+    }
+
     /// Page Up and Page Down: what shows at once.
     pub(crate) fn page_step(&self) -> isize {
         let size = self.area.get();
