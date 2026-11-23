@@ -301,7 +301,7 @@ impl Render for DialogWindow {
         #[cfg(not(windows))]
         let header = crate::header::title_bar(self.title.clone(), window, cx);
         #[cfg(windows)]
-        let header = Some(caption(self.title.clone(), window, cx));
+        let header = Some(caption(self.title.clone(), false, window, cx));
         // macOS: a sheet has no title bar; its title heads it, as an alert's.
         let heading = cfg!(target_os = "macos").then(|| div().px_4().pt_4().text_sm().font_weight(FontWeight::BOLD).child(self.title.clone()));
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
@@ -353,18 +353,17 @@ impl Render for DialogWindow {
     }
 }
 
-/// Windows: the caption as Windows 11 draws a dialog's, without maximize (as
-/// KWin's): the app's icon, the title, minimize and close in 46 px cells; Windows
-/// moves the window by it and takes the buttons' clicks (`native_dialog`).
-#[cfg(windows)]
-fn caption(title: SharedString, window: &Window, cx: &App) -> Div {
+/// Windows: the caption as Windows 11 draws it, a dialog's without maximize (as
+/// KWin's): the app's icon, the title, minimize (maximize) and close in 46 px cells;
+/// Windows moves the window by it and takes the buttons' clicks.
+pub(crate) fn caption(title: SharedString, maximize: bool, window: &Window, cx: &App) -> Div {
     use gpui_kit::component::{AlertIcon, NativeControls};
     let theme = cx.theme();
     let frame = cx.try_global::<NativeControls>().and_then(|native| native.dialog_frame);
     let state = usize::from(!window.is_window_active());
     let (height, fill, text) = frame.map_or((px(32.), theme.background, theme.foreground), |frame| (frame.height, frame.fill[state], frame.text[state]));
     let shade = hsla(0., 0., if theme.mode.is_dark() { 1. } else { 0. }, if theme.mode.is_dark() { 0.06 } else { 0.04 });
-    // Segoe MDL2 Assets' ChromeMinimize and ChromeClose, Windows' own.
+    // Segoe MDL2 Assets' ChromeMinimize, ChromeMaximize, ChromeRestore and ChromeClose, Windows' own.
     let glyph = |code: &'static str| div().font_family("Segoe MDL2 Assets").text_size(px(10.)).child(code);
     let cell = |id: &'static str, area: WindowControlArea| div().id(id).w(px(46.)).h_full().flex().items_center().justify_center().window_control_area(area);
     // Siblings, not inside the drag area: Windows takes the first area under the pointer.
@@ -378,6 +377,10 @@ fn caption(title: SharedString, window: &Window, cx: &App) -> Div {
         .text_color(text)
         .child(drag.children(icon).child(div().text_xs().truncate().child(title)))
         .child(cell("caption-minimize", WindowControlArea::Min).hover(move |style| style.bg(shade)).child(glyph("\u{E921}")))
+        .when(maximize, |bar| {
+            let glyph = glyph(if window.is_maximized() { "\u{E923}" } else { "\u{E922}" });
+            bar.child(cell("caption-maximize", WindowControlArea::Max).hover(move |style| style.bg(shade)).child(glyph))
+        })
         .child(close.child(glyph("\u{E8BB}").group_hover("caption-close", |style| style.text_color(white()))))
 }
 

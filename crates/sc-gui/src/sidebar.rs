@@ -266,18 +266,6 @@ impl Commander {
             true => WindowBackgroundAppearance::Blurred,
         });
         window.set_see_through(see_through, cx);
-        // The title bar in the menu bar's colour, one band as WinUI's;
-        // a see-through backdrop had turned it black.
-        #[cfg(windows)]
-        if let Ok(raw_window_handle::RawWindowHandle::Win32(handle)) =
-            raw_window_handle::HasWindowHandle::window_handle(window).map(|handle| handle.as_raw())
-        {
-            let bar = gpui_kit::Rgba::from(self.colors.bar);
-            // Under a dialog's 30% black, as the window.
-            let shade = if self.caption_dimmed { 0.7 } else { 1. };
-            let rgb = [bar.r, bar.g, bar.b].into_iter().fold(0, |rgb, part| rgb << 8 | (part * shade * 255.).round() as u32);
-            sc_core::system::theme::set_caption_color(handle.hwnd.get(), rgb);
-        }
     }
 
     /// The tree opens down to the active panel's folder, once that changed.

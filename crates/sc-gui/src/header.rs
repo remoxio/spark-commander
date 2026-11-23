@@ -34,6 +34,10 @@ impl Commander {
         if cfg!(target_os = "macos") {
             return Some(self.render_mac_header(toolbar, window, cx));
         }
+        // Windows: drawn here, as WinUI's, so a dialog's backdrop dims it with the window.
+        if cfg!(windows) {
+            return Some(crate::dialogs::dialog_window::caption("Spark Commander".into(), true, window, cx).bg(self.colors.bar).into_any_element());
+        }
         // The title kept clear of the toolbar's buttons (32 px and a gap each, Back's and Forward's arrow 18).
         // A separator's line takes 9.
         let shown = &self.settings.toolbar.0;
