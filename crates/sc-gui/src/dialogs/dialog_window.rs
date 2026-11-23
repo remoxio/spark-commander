@@ -1,5 +1,5 @@
 //! A dialog as a window of its own, as Total Commander's: the system draws its
-//! frame (KWin's decoration on KDE, Windows' caption with the app's icon), it is
+//! frame (KWin's decoration on KDE; on Windows the app, as Windows 11's caption), it is
 //! centred over the window it was opened from, which takes no input while it
 //! is open, and minimized with it; on macOS a sheet of that window. As tall as
 //! its content; Enter is its OK, Escape closes it.
@@ -174,6 +174,12 @@ pub(crate) fn open<V: Render>(
         is_minimizable: cfg!(windows),
         ..crate::over_main_window(title.clone(), over, cx)
     };
+    // Windows: its caption drawn here (`caption`), as Windows' own greys out a maximize beside minimize.
+    #[cfg(windows)]
+    let options = WindowOptions {
+        titlebar: Some(TitlebarOptions { title: Some(title.clone().into()), appears_transparent: true, traffic_light_position: None }),
+        ..options
+    };
     let opened = gpui_kit::open_window(options, cx, |window, cx| {
         #[cfg(windows)]
         if let Some(hwnd) = hwnd(window) {
@@ -292,7 +298,10 @@ impl Render for DialogWindow {
         let theme = cx.theme().clone();
         let height = self.height.clone();
         // GNOME's on Wayland: the app draws the frame.
+        #[cfg(not(windows))]
         let header = crate::header::title_bar(self.title.clone(), window, cx);
+        #[cfg(windows)]
+        let header = Some(caption(self.title.clone(), window, cx));
         // macOS: a sheet has no title bar; its title heads it, as an alert's.
         let heading = cfg!(target_os = "macos").then(|| div().px_4().pt_4().text_sm().font_weight(FontWeight::BOLD).child(self.title.clone()));
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
@@ -342,6 +351,34 @@ impl Render for DialogWindow {
             .on_action(|_: &Dismiss, window, _| window.remove_window())
             .child(page)
     }
+}
+
+/// Windows: the caption as Windows 11 draws a dialog's, without maximize (as
+/// KWin's): the app's icon, the title, minimize and close in 46 px cells; Windows
+/// moves the window by it and takes the buttons' clicks (`native_dialog`).
+#[cfg(windows)]
+fn caption(title: SharedString, window: &Window, cx: &App) -> Div {
+    use gpui_kit::component::{AlertIcon, NativeControls};
+    let theme = cx.theme();
+    let frame = cx.try_global::<NativeControls>().and_then(|native| native.dialog_frame);
+    let state = usize::from(!window.is_window_active());
+    let (height, fill, text) = frame.map_or((px(32.), theme.background, theme.foreground), |frame| (frame.height, frame.fill[state], frame.text[state]));
+    let shade = hsla(0., 0., if theme.mode.is_dark() { 1. } else { 0. }, if theme.mode.is_dark() { 0.06 } else { 0.04 });
+    // Segoe MDL2 Assets' ChromeMinimize and ChromeClose, Windows' own.
+    let glyph = |code: &'static str| div().font_family("Segoe MDL2 Assets").text_size(px(10.)).child(code);
+    let cell = |id: &'static str, area: WindowControlArea| div().id(id).w(px(46.)).h_full().flex().items_center().justify_center().window_control_area(area);
+    // Siblings, not inside the drag area: Windows takes the first area under the pointer.
+    let drag = h_flex().id("caption").flex_1().min_w_0().h_full().pl(px(8.)).gap(px(8.)).window_control_area(WindowControlArea::Drag);
+    let icon = cx.try_global::<AlertIcon>().map(|icon| img(icon.0.clone()).size(px(16.)).flex_none());
+    let close = cell("caption-close", WindowControlArea::Close).group("caption-close").hover(|style| style.bg(rgb(0xc42b1c)));
+    h_flex()
+        .h(height)
+        .flex_none()
+        .bg(fill)
+        .text_color(text)
+        .child(drag.children(icon).child(div().text_xs().truncate().child(title)))
+        .child(cell("caption-minimize", WindowControlArea::Min).hover(move |style| style.bg(shade)).child(glyph("\u{E921}")))
+        .child(close.child(glyph("\u{E8BB}").group_hover("caption-close", |style| style.text_color(white()))))
 }
 
 /// A button of `choose`'s: how it looks, what it does on the window asked over.
