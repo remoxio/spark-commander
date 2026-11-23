@@ -398,7 +398,7 @@ pub(crate) fn caption(title: SharedString, maximize: bool, window: &Window, cx: 
         .flex_none()
         .bg(fill)
         .text_color(text)
-        .child(drag.children(icon).child(div().text_xs().truncate().child(title)))
+        .child(drag.children(icon).child(div().text_size(px(12.)).truncate().child(title)))
         .child(cell("caption-minimize", WindowControlArea::Min).hover(move |style| style.bg(shade)).child(glyph("\u{E921}")))
         .when(maximize, |bar| {
             let glyph = glyph(if window.is_maximized() { "\u{E923}" } else { "\u{E922}" });
