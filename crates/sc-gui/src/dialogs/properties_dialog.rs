@@ -153,7 +153,7 @@ fn time(time: Option<SystemTime>) -> Option<String> {
 }
 
 impl Render for PropertiesDialog {
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let p = &self.properties;
         let line = |label: String, value: String| {
             h_flex()
@@ -213,9 +213,7 @@ impl Render for PropertiesDialog {
             .children(permissions.map(|t| line(sc_core::t!("properties.permissions"), t)))
             .children(owner.map(|t| line(sc_core::t!("properties.owner"), t)))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .when(p.mode.is_some(), |el| {
                         el.child(
                             Button::new("properties-attributes")

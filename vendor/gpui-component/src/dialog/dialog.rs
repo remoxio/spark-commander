@@ -823,6 +823,8 @@ impl RenderOnce for Dialog {
         let laid_out = moving.clone();
         let has_title = self.title.is_some();
         let has_footer = self.footer.is_some();
+        // SparkCommander patch: a content dialog's bottom padding inside its body, which the app's button band covers.
+        let body_pads = !has_footer && !self.children.is_empty();
         // SparkCommander patch: AppKit's window, see `MacControls`: 16 px corners,
         // a 32 px title bar of the dialog's colour, the close button on the left.
         let mac = cx
@@ -1081,6 +1083,7 @@ impl RenderOnce for Dialog {
                                                                 .overflow_y_scrollbar()
                                                                 .pl(paddings.left)
                                                                 .pr(paddings.right)
+                                                                .when(command_bar.is_some() && body_pads, |this| this.pb(paddings.bottom))
                                                                 .children(self.children),
                                                         ),
                                                     )
@@ -1101,7 +1104,7 @@ impl RenderOnce for Dialog {
                                                     .child(footer),
                                             )
                                         })
-                                        .when(command_bar.is_some() && has_footer, |this| this.pb_0())
+                                        .when(command_bar.is_some() && (has_footer || body_pads), |this| this.pb_0())
                                         .children((self.props.close_button && !content_dialog).then(|| {
                                             // SparkCommander patch: in the middle of the title's band.
                                             let top = if has_title {

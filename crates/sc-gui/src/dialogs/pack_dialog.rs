@@ -188,9 +188,7 @@ pub(crate) fn buttons<V: 'static>(
     cx: &mut Context<V>,
     finish: fn(&mut V, &mut Window, &mut Context<V>) -> bool,
 ) -> impl IntoElement {
-    h_flex()
-        .gap_2()
-        .justify_end()
+    crate::dialogs::footer(cx)
         .child(
             Button::new((id, 0usize))
                 .primary()

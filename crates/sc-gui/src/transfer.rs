@@ -584,9 +584,7 @@ impl Render for TransferDialog {
                     ),
             )
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("transfer-ok")
                             .primary()
@@ -667,7 +665,7 @@ fn ask(queue: &Queue, job: &JobView, window: &mut Window, cx: &mut App) {
         });
         return crate::dialogs::dialog_window::choose(title, Some(job_title), text, choices.collect(), px(560.), window, cx);
     }
-    window.open_dialog(cx, move |dialog, _, _| {
+    window.open_dialog(cx, move |dialog, _, cx| {
         let buttons = answers.iter().map(|(answer, label)| {
             let (queue, answer) = (queue.clone(), *answer);
             let button = Button::new(label.clone())
@@ -694,7 +692,7 @@ fn ask(queue: &Queue, job: &JobView, window: &mut Window, cx: &mut App) {
                     .text_sm()
                     .child(div().text_xs().child(job_title.clone()))
                     .child(div().whitespace_normal().child(text.clone()))
-                    .child(h_flex().gap_2().flex_wrap().justify_end().children(buttons)),
+                    .child(crate::dialogs::footer(cx).flex_wrap().children(buttons)),
             )
     });
 }

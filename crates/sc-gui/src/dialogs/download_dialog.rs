@@ -7,7 +7,7 @@ use std::rc::Rc;
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::notification::Notification;
-use gpui_kit::component::{ActiveTheme, WindowExt, h_flex, v_flex};
+use gpui_kit::component::{ActiveTheme, WindowExt, v_flex};
 use gpui_kit::*;
 use sc_core::ops::download;
 
@@ -132,9 +132,7 @@ impl Render for DownloadDialog {
             .child(div().whitespace_normal().text_color(theme.muted_foreground).child(sc_core::t!("download.into", folder = self.dir.display())))
             .children(self.problem.clone().map(|problem| div().whitespace_normal().text_color(theme.danger).child(problem)))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(Button::new("download-ok").primary().label(ok).min_w(px(80.)).on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))))
                     .child(Button::new("download-cancel").outline().label(sc_core::t!("download.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
             )

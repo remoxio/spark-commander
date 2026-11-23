@@ -258,9 +258,7 @@ impl Render for EditAssociation {
                     .child(div().flex_1().child(Input::new(input).small()))
             }))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("assoc-ok")
                             .primary()

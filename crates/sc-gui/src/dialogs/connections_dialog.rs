@@ -303,10 +303,7 @@ impl Render for EditConnection {
             .child(field(path_label, path))
             .when(self.scheme == Scheme::S3, |el| el.child(field(t!("connections.field.region"), &self.region)))
             .child(
-                h_flex()
-                    .pt_2()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("connection-ok")
                             .primary()

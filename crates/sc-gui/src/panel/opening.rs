@@ -89,7 +89,7 @@ impl Render for Opening {
                     ),
             )
             .child(
-                h_flex().justify_end().child(
+                crate::dialogs::footer(cx).child(
                     Button::new("opening-cancel")
                         .outline()
                         .label(sc_core::t!("panel.opening.cancel"))

@@ -11,7 +11,7 @@ use std::time::Duration;
 
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::notification::Notification;
-use gpui_kit::component::{WindowExt, h_flex, v_flex};
+use gpui_kit::component::{WindowExt, v_flex};
 use gpui_kit::*;
 use sc_core::addons::{Addon, Manifest, Presence};
 use sc_core::t;
@@ -170,7 +170,7 @@ pub fn offer(
         };
         return crate::dialogs::dialog_window::open(t!("addons.offer.title"), size(px(480.), px(170.)), window, cx, build);
     }
-    window.open_dialog(cx, move |dialog, _, _| {
+    window.open_dialog(cx, move |dialog, _, cx| {
         let (yes, no, never, cancel) = (commander.clone(), go_on.clone(), go_on.clone(), go_on.clone());
         let commander = commander.clone();
         dialog
@@ -187,9 +187,7 @@ pub fn offer(
                     .text_sm()
                     .child(div().whitespace_normal().child(text.clone()))
                     .child(
-                        h_flex()
-                            .gap_2()
-                            .justify_end()
+                        crate::dialogs::footer(cx)
                             .child(Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(move |_, window, cx| {
                                 crate::dialogs::dialog_window::close(window, cx);
                                 let Some(settings) = yes.upgrade().map(|this| this.read(cx).settings.clone()) else { return };
@@ -328,9 +326,7 @@ impl Render for Offer {
             .text_sm()
             .child(div().whitespace_normal().child(self.text.clone()))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(cx.listener(|this, _, window, cx| {
                         let commander = this.commander.clone();
                         this.answer(window, cx, move |window, cx| {

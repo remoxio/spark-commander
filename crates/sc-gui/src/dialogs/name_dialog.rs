@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::input::{Input, InputState};
-use gpui_kit::component::{h_flex, v_flex};
+use gpui_kit::component::v_flex;
 use gpui_kit::*;
 
 type Done = Rc<dyn Fn(String, &mut Window, &mut App)>;
@@ -56,9 +56,7 @@ impl Render for NameDialog {
                     .child(Input::new(&self.input)),
             )
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("name-ok")
                             .primary()

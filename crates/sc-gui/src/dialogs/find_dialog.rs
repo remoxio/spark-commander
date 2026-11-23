@@ -112,9 +112,7 @@ impl Render for FindDialog {
             )
             .child(h_flex().items_start().child(left).child(right))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("find-ok")
                             .primary()

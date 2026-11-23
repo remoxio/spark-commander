@@ -528,11 +528,9 @@ impl TextEditor {
                 let _ = this.update(cx, |this, cx| this.read_again(window, cx));
             });
         }
-        window.open_dialog(cx, move |dialog, _, _| {
+        window.open_dialog(cx, move |dialog, _, cx| {
             let reload = this.clone();
-            let buttons = h_flex()
-                .gap_2()
-                .justify_end()
+            let buttons = crate::dialogs::footer(cx)
                 .child(Button::new("editor-reload").danger().label(t!("editor.reload.button")).on_click(move |_, window, cx| {
                     crate::dialogs::dialog_window::close(window, cx);
                     let _ = reload.update(cx, |this, cx| this.read_again(window, cx));
@@ -576,11 +574,9 @@ impl TextEditor {
                 });
             });
         }
-        window.open_dialog(cx, move |dialog, _, _| {
+        window.open_dialog(cx, move |dialog, _, cx| {
             let save = this.clone();
-            let buttons = h_flex()
-                .gap_2()
-                .justify_end()
+            let buttons = crate::dialogs::footer(cx)
                 .child(Button::new("editor-save-anyway").danger().label(t!("editor.save_anyway.button")).on_click(move |_, window, cx| {
                     crate::dialogs::dialog_window::close(window, cx);
                     let _ = save.update(cx, |this, cx| {
@@ -640,11 +636,9 @@ impl TextEditor {
             crate::dialogs::dialog_window::choose(t!("editor.close.title"), None, what, choices, px(480.), window, cx);
             return false;
         }
-        window.open_dialog(cx, move |dialog, _, _| {
+        window.open_dialog(cx, move |dialog, _, cx| {
             let save = this.clone();
-            let buttons = h_flex()
-                .gap_2()
-                .justify_end()
+            let buttons = crate::dialogs::footer(cx)
                 .child(Button::new("editor-save").primary().label(t!("editor.close.save")).on_click(move |_, window, cx| {
                     // A server's copy: closed once sent.
                     let saved = save.update(cx, |this, cx| {

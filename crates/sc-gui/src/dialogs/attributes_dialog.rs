@@ -269,9 +269,7 @@ impl Render for AttributesDialog {
                 )
             })
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("attr-ok")
                             .primary()

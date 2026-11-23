@@ -48,7 +48,7 @@ impl Render for ActivityLog {
             .text_sm()
             .child(v_flex().h(px(420.)).child(div().id("activity-list").flex_1().min_h_0().overflow_y_scrollbar().pr_3().children(empty).children(rows)))
             .child(
-                h_flex().justify_end().child(
+                crate::dialogs::footer(cx).child(
                     Button::new("activity-clear").outline().label(t!("activity.clear")).on_click(cx.listener(|this, _, window, cx| {
                         if let Err(err) = activity::clear() {
                             window.push_notification(t!("activity.clear_failed", err = err), cx);

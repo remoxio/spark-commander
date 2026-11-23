@@ -178,9 +178,7 @@ impl Render for MasterDialog {
             .children(self.again.as_ref().map(|again| field(t!("passwords.field.again"), again)))
             .children(self.problem.clone().map(|problem| div().whitespace_normal().text_color(theme.danger).child(problem)))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("master-ok")
                             .primary()

@@ -184,7 +184,7 @@ impl Drop for SpaceDialog {
 }
 
 impl Render for SpaceDialog {
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let found = self.found.lock().unwrap();
         let Space {
             files,
@@ -217,7 +217,7 @@ impl Render for SpaceDialog {
                 false => sc_core::t!("panel.space.counting"),
             })
             .child(
-                h_flex().justify_end().child(
+                crate::dialogs::footer(cx).child(
                     Button::new("space-close")
                         .primary()
                         .label(sc_core::t!("panel.space.close"))

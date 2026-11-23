@@ -376,9 +376,7 @@ impl Render for LoginDialog {
                     })),
             )
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("login-ok")
                             .primary()
@@ -478,7 +476,7 @@ fn ask_user(
                 let build = move |_, _: &mut Window, cx: &mut App| cx.new(|_| HostKeyDialog { text, answer });
                 return crate::dialogs::dialog_window::show(t!("remote.unknown_host.title"), size(px(560.), px(200.)), window, cx, build, |_, _, _| false);
             }
-            window.open_dialog(cx, move |dialog, _, _| {
+            window.open_dialog(cx, move |dialog, _, cx| {
                 let button = |id: &'static str, label: String, reply: Reply| {
                     let answer = answer.clone();
                     Button::new(id)
@@ -500,9 +498,7 @@ fn ask_user(
                             .text_sm()
                             .child(div().whitespace_normal().child(text.clone()))
                             .child(
-                                h_flex()
-                                    .gap_2()
-                                    .justify_end()
+                                crate::dialogs::footer(cx)
                                     .child(
                                         button(
                                             "Connect and remember",
@@ -547,7 +543,7 @@ struct HostKeyDialog {
 }
 
 impl Render for HostKeyDialog {
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let button = |id: &'static str, label: String, reply: Reply| {
             let answer = self.answer.clone();
             Button::new(id).label(label).on_click(move |_, window, cx| {
@@ -560,9 +556,7 @@ impl Render for HostKeyDialog {
             .text_sm()
             .child(div().whitespace_normal().child(self.text.clone()))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(button("Connect and remember", t!("remote.unknown_host.remember"), Reply::Trust { remember: true }).primary())
                     .child(button("Connect once", t!("remote.unknown_host.once"), Reply::Trust { remember: false }).outline())
                     .child(button("Cancel", t!("remote.dialog.cancel"), Reply::Cancel).outline()),
@@ -615,9 +609,7 @@ impl Render for SecretDialog {
                 )
             })
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("secret-ok")
                             .primary()

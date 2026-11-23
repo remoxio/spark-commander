@@ -307,10 +307,7 @@ impl Render for DialogWindow {
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
             let button = Button::new("dialog-ok").label(label).min_w(px(80.));
             let button = if ok.danger { button.danger() } else { button.primary() };
-            h_flex()
-                .pt_4()
-                .gap_2()
-                .justify_end()
+            crate::dialogs::footer(cx)
                 .child(button.on_click(cx.listener(|this, _, window, cx| this.confirm(window, cx))))
                 .when(ok.cancel, |el| {
                     el.child(
@@ -412,7 +409,7 @@ struct Choose {
 }
 
 impl Render for Choose {
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let main = self.main;
         let buttons = self.choices.iter().enumerate().map(|(ix, choice)| {
             let run = choice.run.clone();
@@ -432,6 +429,6 @@ impl Render for Choose {
             .text_sm()
             .children(self.note.clone().map(|note| div().text_xs().child(note)))
             .child(div().whitespace_normal().child(self.text.clone()))
-            .child(h_flex().gap_2().flex_wrap().justify_end().children(buttons))
+            .child(crate::dialogs::footer(cx).flex_wrap().children(buttons))
     }
 }
