@@ -1012,10 +1012,11 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          let on_close = self.button_props.close_handler();
          let on_ok = self.button_props.ok_handler();
          let on_cancel = self.button_props.cancel_handler();
-@@ -632,6 +802,56 @@
+@@ -632,7 +802,61 @@
          let base_size = window.text_style().font_size;
          let rem_size = window.rem_size();
  
+-        let mut paddings = Edges::all(px(16.));
 +        // SparkCommander patch: moved, the dialog stays where it was put; else centred
 +        // over `center_over`, else at `margin_top` where given, else in the middle.
 +        let placed = moving.origin.get().is_some() || self.props.center_over.is_some();
@@ -1047,6 +1048,9 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +        let command_bar = cx.try_global::<crate::NativeControls>().and_then(|native| native.command_bar);
 +        // SparkCommander patch: the desktop's window title bar, see `NativeControls::dialog_frame`.
 +        let frame = cx.try_global::<crate::NativeControls>().and_then(|native| native.dialog_frame).filter(|_| mac.is_none());
++        // SparkCommander patch: Windows' as WinUI's ContentDialog: no title bar, the title a heading.
++        let content_dialog = frame.is_some_and(|frame| frame.close == crate::WindowClose::Fluent);
++        let heading = if content_dialog { self.title.take() } else { None };
 +        let icon = frame
 +            .filter(|frame| frame.icon)
 +            .and_then(|_| cx.try_global::<crate::AlertIcon>())
@@ -1062,14 +1066,26 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +        let corner = match (alert, mac) {
 +            (Some(_), _) => px(24.),
 +            (None, Some(_)) => px(16.),
++            (None, None) if content_dialog => px(8.),
 +            (None, None) => cx.theme().radius_lg,
 +        };
 +        let active = window.is_window_active();
 +
-         let mut paddings = Edges::all(px(16.));
++        let mut paddings = Edges::all(if content_dialog { px(24.) } else { px(16.) });
          if let Some(pl) = self.style.padding.left {
              paddings.left = pl.to_pixels(base_size, rem_size);
-@@ -708,29 +928,111 @@
+         }
+@@ -692,7 +916,8 @@
+                                         .size_full()
+                                         .window_control_area(WindowControlArea::Drag)
+                                         .when(self.props.overlay_visible, |overlay| {
+-                                            overlay.bg(overlay_color(true, cx))
++                                            // WinUI's SmokeFillColorDefault.
++                                            overlay.bg(if content_dialog { hsla(0., 0., 0., 0.3) } else { overlay_color(true, cx) })
+                                         }),
+                                 )
+                             })
+@@ -708,48 +933,133 @@
                              })
                              .popup(
                                  gpui_base::Positioner::corner(
@@ -1108,7 +1124,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          .gap(paddings.top.max(px(8.)))
                                          .refine_style(&self.style)
 +                                        // SparkCommander patch: the title's band is at the top.
-+                                        .when(has_title, |this| this.pt_0())
++                                        .when(has_title && !content_dialog, |this| this.pt_0())
                                          .px_0()
                                          .occlude()
                                          .w(width)
@@ -1186,22 +1202,34 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          .child(
                                              v_flex()
                                                  .flex_1()
-@@ -744,14 +1046,6 @@
-                                                             .child(header),
+                                                 .overflow_hidden()
+                                                 .gap_y_2()
+-                                                .when_some(self.header, |this, header| {
++                                                .when_some(heading, |this, heading| {
+                                                     this.child(
+                                                         div()
+                                                             .pl(paddings.left)
+                                                             .pr(paddings.right)
+-                                                            .child(header),
++                                                            .mb_1()
++                                                            .text_xl()
++                                                            .font_semibold()
++                                                            .child(heading),
                                                      )
                                                  })
 -                                                .when_some(self.title, |this, title| {
--                                                    this.child(
++                                                .when_some(self.header, |this, header| {
+                                                     this.child(
 -                                                        DialogTitle::new()
--                                                            .pl(paddings.left)
--                                                            .pr(paddings.right)
++                                                        div()
+                                                             .pl(paddings.left)
+                                                             .pr(paddings.right)
 -                                                            .child(title),
--                                                    )
--                                                })
++                                                            .child(header),
+                                                     )
+                                                 })
                                                  .when_some(self.content_builder, |this, builder| {
-                                                     this.child(builder(
-                                                         DialogContent::new()
-@@ -781,24 +1075,40 @@
+@@ -781,24 +1091,40 @@
                                                  div()
                                                      .pl(paddings.left)
                                                      .pr(paddings.right)
@@ -1215,9 +1243,10 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                      .child(footer),
                                              )
                                          })
-+                                        .when(command_bar.is_some() && has_footer, |this| this.pb_0())
-                                         .children(self.props.close_button.then(|| {
+-                                        .children(self.props.close_button.then(|| {
 -                                            let top = (paddings.top - px(10.)).max(px(8.));
++                                        .when(command_bar.is_some() && has_footer, |this| this.pb_0())
++                                        .children((self.props.close_button && !content_dialog).then(|| {
 +                                            // SparkCommander patch: in the middle of the title's band.
 +                                            let top = if has_title {
 +                                                (band - px(24.)) / 2.
@@ -1249,7 +1278,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          }))
                                          .map(|surface| {
                                              if animated {
-@@ -806,15 +1116,15 @@
+@@ -806,15 +1132,15 @@
                                                      .with_animation(
                                                          "slide-down-shadow",
                                                          animation.clone(),
@@ -1268,7 +1297,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                      .text_selection_scope(selection_scope)
                                                      .into_any_element()
                                              }
-@@ -841,7 +1151,8 @@
+@@ -841,7 +1167,8 @@
                                          }),
                                  )
                                  .map(|positioner| {
@@ -1278,7 +1307,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          positioner
                                              .with_animation(
                                                  "slide-down",
-@@ -876,6 +1187,38 @@
+@@ -876,6 +1203,38 @@
      }
  }
  
