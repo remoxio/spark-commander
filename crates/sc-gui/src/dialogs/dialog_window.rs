@@ -198,7 +198,8 @@ fn open_window<V: Render>(
         is_resizable: false,
         // Windows: it minimizes the app (`native_dialog`).
         is_minimizable: cfg!(windows),
-        ..crate::over_main_window(title.clone(), over, cx)
+        // Linux: the desktop's own title bar untitled too, the view heading itself.
+        ..crate::over_main_window(if heading || !cfg!(target_os = "linux") { title.clone() } else { String::new() }, over, cx)
     };
     // Windows: its caption drawn here (`caption`), as Windows' own greys out a maximize beside minimize.
     #[cfg(windows)]
