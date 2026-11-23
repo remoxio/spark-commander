@@ -266,6 +266,13 @@ impl RenderOnce for Checkbox {
         let instance_style = self.style.clone();
         // SparkCommander patch: see `ToolkitControls`.
         let qt = cx.try_global::<crate::ToolkitControls>().cloned();
+        // SparkCommander patch: the box and the label's first line centred on each other.
+        let mark = match (cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
+            (Some(native), _) => native.check_size,
+            (None, Some(_)) => px(16.),
+            (None, None) => indicator_size.to_pixels(window.rem_size()),
+        };
+        let (mark_top, label_top) = centred(mark, self.size, window);
         base.role(self.role)
             .group(crate::toolkit::CHECKBOX)
             .checked(checked)
@@ -310,7 +317,7 @@ impl RenderOnce for Checkbox {
                     .relative()
                     .size(indicator_size)
                     // Center on the first 1.25em line, including when the label wraps.
-                    .when(has_content, |this| this.mt(indicator_size * 0.125))
+                    .when(has_content && qt.is_none(), |this| this.mt(mark_top))
                     .flex_shrink_0()
                     .border_1()
                     // SparkCommander patch: the Qt style's box, else the desktop style's, see `ToolkitControls`, `NativeControls`;
@@ -382,6 +389,7 @@ impl RenderOnce for Checkbox {
                         .flex_1()
                         .overflow_hidden()
                         .line_height(relative(1.25))
+                        .when(qt.is_none(), |this| this.pt(label_top))
                         .gap_1()
                         .map(|this| {
                             if let Some(label) = self.label {
@@ -554,4 +562,18 @@ mod tests {
         assert!(bounds.size.width > px(0.));
         assert!(bounds.size.height > px(0.));
     }
+}
+
+/// SparkCommander patch: how far down a `mark` px circle or box and a label's
+/// first line (1.25 of the text, `size`'s) go to be centred on each other.
+pub(crate) fn centred(mark: gpui::Pixels, size: Size, window: &Window) -> (gpui::Pixels, gpui::Pixels) {
+    let rem = window.rem_size();
+    let text = match size {
+        Size::XSmall => rems(0.75).to_pixels(rem),
+        Size::Large => rem,
+        Size::Size(_) => window.text_style().font_size.to_pixels(rem),
+        _ => rems(0.875).to_pixels(rem),
+    };
+    let line = text * 1.25;
+    (((line - mark) / 2.).max(px(0.)), ((mark - line) / 2.).max(px(0.)))
 }

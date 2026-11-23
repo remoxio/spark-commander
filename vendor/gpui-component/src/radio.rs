@@ -185,6 +185,13 @@ impl RenderOnce for Radio {
             .clone();
         let is_focused = focus_handle.is_focused(window);
         let disabled = self.disabled;
+        // SparkCommander patch: the circle and the label's first line centred on each other.
+        let mark = match (cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
+            (Some(native), _) => native.check_size,
+            (None, Some(_)) => px(16.),
+            (None, None) => indicator_size.to_pixels(window.rem_size()),
+        };
+        let (mark_top, label_top) = crate::checkbox::centred(mark, self.size, window);
         let accessibility_label = self
             .accessibility_label
             .clone()
@@ -234,7 +241,7 @@ impl RenderOnce for Radio {
                     .relative()
                     .size(indicator_size)
                     // Center on the first 1.25em line, including when the label wraps.
-                    .when(has_content, |this| this.mt(indicator_size * 0.125))
+                    .when(has_content, |this| this.mt(mark_top))
                     .flex_shrink_0()
                     .rounded_full_style(cx)
                     .border_1()
@@ -287,6 +294,7 @@ impl RenderOnce for Radio {
                         .flex_1()
                         .min_w_0()
                         .line_height(relative(1.25))
+                        .pt(label_top)
                         .gap_1()
                         .when_some(self.label, |this, label| {
                             this.child(

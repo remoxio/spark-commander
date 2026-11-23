@@ -298,19 +298,30 @@ diff -ruN a/src/checkbox.rs b/src/checkbox.rs
          })
  }
  
-@@ -253,7 +264,10 @@
+@@ -253,7 +264,17 @@
          let radius = cx.theme().radius.min(px(4.));
          let disabled_text_color = cx.theme().muted_foreground;
          let instance_style = self.style.clone();
 +        // SparkCommander patch: see `ToolkitControls`.
 +        let qt = cx.try_global::<crate::ToolkitControls>().cloned();
++        // SparkCommander patch: the box and the label's first line centred on each other.
++        let mark = match (cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
++            (Some(native), _) => native.check_size,
++            (None, Some(_)) => px(16.),
++            (None, None) => indicator_size.to_pixels(window.rem_size()),
++        };
++        let (mark_top, label_top) = centred(mark, self.size, window);
          base.role(self.role)
 +            .group(crate::toolkit::CHECKBOX)
              .checked(checked)
              .disabled(self.disabled)
              .styles(|styles| {
-@@ -299,32 +313,68 @@
-                     .when(has_content, |this| this.mt(indicator_size * 0.125))
+@@ -296,35 +317,71 @@
+                     .relative()
+                     .size(indicator_size)
+                     // Center on the first 1.25em line, including when the label wraps.
+-                    .when(has_content, |this| this.mt(indicator_size * 0.125))
++                    .when(has_content && qt.is_none(), |this| this.mt(mark_top))
                      .flex_shrink_0()
                      .border_1()
 -                    .rounded(radius)
@@ -402,6 +413,32 @@ diff -ruN a/src/checkbox.rs b/src/checkbox.rs
              )
              .when(self.label.is_some() || !children.is_empty(), |this| {
                  this.child(
+@@ -332,6 +389,7 @@
+                         .flex_1()
+                         .overflow_hidden()
+                         .line_height(relative(1.25))
++                        .when(qt.is_none(), |this| this.pt(label_top))
+                         .gap_1()
+                         .map(|this| {
+                             if let Some(label) = self.label {
+@@ -505,3 +563,17 @@
+         assert!(bounds.size.height > px(0.));
+     }
+ }
++
++/// SparkCommander patch: how far down a `mark` px circle or box and a label's
++/// first line (1.25 of the text, `size`'s) go to be centred on each other.
++pub(crate) fn centred(mark: gpui::Pixels, size: Size, window: &Window) -> (gpui::Pixels, gpui::Pixels) {
++    let rem = window.rem_size();
++    let text = match size {
++        Size::XSmall => rems(0.75).to_pixels(rem),
++        Size::Large => rem,
++        Size::Size(_) => window.text_style().font_size.to_pixels(rem),
++        _ => rems(0.875).to_pixels(rem),
++    };
++    let line = text * 1.25;
++    (((line - mark) / 2.).max(px(0.)), ((mark - line) / 2.).max(px(0.)))
++}
 diff -ruN a/src/command/command.rs b/src/command/command.rs
 --- a/src/command/command.rs	2006-07-24 03:21:28.000000000 +0200
 +++ b/src/command/command.rs	2026-11-17 17:18:36.154722316 +0100
@@ -3317,7 +3354,26 @@ diff -ruN a/src/radio.rs b/src/radio.rs
  };
  use gpui_base::{Radio as BaseRadio, RadioGroup as BaseRadioGroup};
  
-@@ -238,20 +238,54 @@
+@@ -185,6 +185,13 @@
+             .clone();
+         let is_focused = focus_handle.is_focused(window);
+         let disabled = self.disabled;
++        // SparkCommander patch: the circle and the label's first line centred on each other.
++        let mark = match (cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
++            (Some(native), _) => native.check_size,
++            (None, Some(_)) => px(16.),
++            (None, None) => indicator_size.to_pixels(window.rem_size()),
++        };
++        let (mark_top, label_top) = crate::checkbox::centred(mark, self.size, window);
+         let accessibility_label = self
+             .accessibility_label
+             .clone()
+@@ -234,25 +241,60 @@
+                     .relative()
+                     .size(indicator_size)
+                     // Center on the first 1.25em line, including when the label wraps.
+-                    .when(has_content, |this| this.mt(indicator_size * 0.125))
++                    .when(has_content, |this| this.mt(mark_top))
                      .flex_shrink_0()
                      .rounded_full_style(cx)
                      .border_1()
@@ -3380,8 +3436,10 @@ diff -ruN a/src/radio.rs b/src/radio.rs
 +                        .flex_1()
 +                        .min_w_0()
                          .line_height(relative(1.25))
++                        .pt(label_top)
                          .gap_1()
                          .when_some(self.label, |this, label| {
+                             this.child(
 diff -ruN a/src/root.rs b/src/root.rs
 --- a/src/root.rs	2006-07-24 03:21:28.000000000 +0200
 +++ b/src/root.rs	2026-11-21 17:58:34.201111645 +0100
