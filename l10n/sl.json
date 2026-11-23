@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "štetje: {count, plural, one {# datoteka} two {# datoteki} few {# datoteke} other {# datotek}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, one {# datoteka} two {# datoteki} few {# datoteke} other {# datotek}}, {percent} %"
+  },
+  "transfer.strip.queue": {
+    "message": "Čakalna vrsta..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "Čakalna vrsta ({count, plural, one {# čaka} two {# čakata} few {# čakajo} other {# čaka}})..."
+  },
   "transfer.title.copy": {
     "message": "Kopiraj"
   },

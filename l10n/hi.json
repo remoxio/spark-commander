@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "गिनती: {count, plural, one {# फ़ाइल} other {# फ़ाइलें}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, one {# फ़ाइल} other {# फ़ाइलें}}, {percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "कतार..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "कतार ({count, plural, one {# इंतज़ार में} other {# इंतज़ार में}})..."
+  },
   "transfer.title.copy": {
     "message": "कॉपी करें"
   },

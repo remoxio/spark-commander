@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "καταμέτρηση: {count, plural, one {# αρχείο} other {# αρχεία}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, one {# αρχείο} other {# αρχεία}}, {percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "Ουρά..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "Ουρά ({count, plural, one {# σε αναμονή} other {# σε αναμονή}})..."
+  },
   "transfer.title.copy": {
     "message": "Αντιγραφή"
   },

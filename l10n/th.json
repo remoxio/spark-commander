@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "กำลังนับ: {count, plural, other {# ไฟล์}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, other {# ไฟล์}}, {percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "คิว..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "คิว ({count, plural, other {รอ #}})..."
+  },
   "transfer.title.copy": {
     "message": "คัดลอก"
   },

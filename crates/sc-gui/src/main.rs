@@ -2929,6 +2929,7 @@ impl Render for Commander {
                         true => self.sidebar.chrome(self.colors.window),
                         false => background,
                     })
+                    .children(self.render_transfers(cx))
                     .child(self.render_command_line(cx))
                     .child(self.render_button_bar(cx)),
             );

@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "počítanie: {count, plural, one {# súbor} few {# súbory} other {# súborov}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, one {# súbor} few {# súbory} other {# súborov}}, {percent} %"
+  },
+  "transfer.strip.queue": {
+    "message": "Rad..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "Rad ({count, plural, one {# čaká} few {# čakajú} other {# čaká}})..."
+  },
   "transfer.title.copy": {
     "message": "Kopírovať"
   },

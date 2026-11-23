@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "преброяване: {count, plural, one {# файл} other {# файла}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, one {# файл} other {# файла}}, {percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "Опашка..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "Опашка ({count, plural, one {# изчаква} other {# изчакват}})..."
+  },
   "transfer.title.copy": {
     "message": "Копиране"
   },

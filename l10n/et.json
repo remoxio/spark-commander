@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "loendamine: {count, plural, one {# fail} other {# faili}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, one {# fail} other {# faili}}, {percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "Järjekord..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "Järjekord ({count, plural, one {# ootel} other {# ootel}})..."
+  },
   "transfer.title.copy": {
     "message": "Kopeeri"
   },

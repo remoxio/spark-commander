@@ -4607,6 +4607,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "számolás: {count, plural, one {# fájl} other {# fájl}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, one {# fájl} other {# fájl}}, {percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "Sor..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "Sor ({count, plural, one {# várakozik} other {# várakozik}})..."
+  },
   "transfer.title.copy": {
     "message": "Másolás"
   },

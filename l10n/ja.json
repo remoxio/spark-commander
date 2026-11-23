@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "集計中：{count, plural, other {# 個のファイル}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files}/{count, plural, other {# 個のファイル}}、{percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "キュー..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "キュー（{count, plural, other {# 件待機中}}）..."
+  },
   "transfer.title.copy": {
     "message": "コピー"
   },

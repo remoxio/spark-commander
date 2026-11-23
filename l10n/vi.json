@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "đang đếm: {count, plural, other {# tệp}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, other {# tệp}}, {percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "Hàng đợi..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "Hàng đợi ({count, plural, other {# đang chờ}})..."
+  },
   "transfer.title.copy": {
     "message": "Sao chép"
   },

@@ -4598,6 +4598,18 @@
   "transfer.speed": {
     "message": "{size}/s"
   },
+  "transfer.strip.counting": {
+    "message": "計算中：{count, plural, other {# 個檔案}}"
+  },
+  "transfer.strip.progress": {
+    "message": "{files} / {count, plural, other {# 個檔案}}，{percent}%"
+  },
+  "transfer.strip.queue": {
+    "message": "佇列..."
+  },
+  "transfer.strip.queue_waiting": {
+    "message": "佇列（{count, plural, other {# 個等待中}}）..."
+  },
   "transfer.title.copy": {
     "message": "複製"
   },
