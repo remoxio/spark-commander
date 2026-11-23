@@ -542,6 +542,8 @@ struct Commander {
     terminals: Vec<terminal::pane::TerminalTab>,
     terminal_tab: usize,
     terminal_shown: bool,
+    /// Windows: the title bar dimmed with the window under a dialog, as WinUI's.
+    caption_dimmed: bool,
     /// Its share of the window's height, so it grows and shrinks with the window.
     terminal_share: f32,
     /// How much it covers the desktop behind it (none: solid), and whether that is blurred.
@@ -719,6 +721,7 @@ impl Commander {
             terminals: Vec::new(),
             terminal_tab: 0,
             terminal_shown: false,
+            caption_dimmed: false,
             terminal_look,
             terminal_share: match session.terminal_share {
                 0. => 0.3,
@@ -2530,6 +2533,10 @@ impl Commander {
 impl Render for Commander {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         self.sync_quick_view(window, cx);
+        if cfg!(windows) && window.has_active_dialog(cx) != self.caption_dimmed {
+            self.caption_dimmed = !self.caption_dimmed;
+            self.set_backdrop(window, cx);
+        }
         // Go > Back and Forward list the active tab's places, wherever it went; Branch View's tick
         // follows its tab too, however the branch view came (walked in the background) or went.
         let history = menus::set_history(&self.panels[self.active].tabs.current().history);

@@ -273,7 +273,9 @@ impl Commander {
             raw_window_handle::HasWindowHandle::window_handle(window).map(|handle| handle.as_raw())
         {
             let bar = gpui_kit::Rgba::from(self.colors.bar);
-            let rgb = [bar.r, bar.g, bar.b].into_iter().fold(0, |rgb, part| rgb << 8 | (part * 255.).round() as u32);
+            // Under a dialog's 30% black, as the window.
+            let shade = if self.caption_dimmed { 0.7 } else { 1. };
+            let rgb = [bar.r, bar.g, bar.b].into_iter().fold(0, |rgb, part| rgb << 8 | (part * shade * 255.).round() as u32);
             sc_core::system::theme::set_caption_color(handle.hwnd.get(), rgb);
         }
     }
