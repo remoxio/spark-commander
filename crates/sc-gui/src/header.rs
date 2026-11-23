@@ -36,7 +36,8 @@ impl Commander {
         }
         // Windows: drawn here, as WinUI's, so a dialog's backdrop dims it with the window.
         if cfg!(windows) {
-            return Some(crate::dialogs::dialog_window::caption("Spark Commander".into(), true, window, cx).bg(self.colors.bar).into_any_element());
+            let caption = crate::dialogs::dialog_window::caption("Spark Commander".into(), true, window, cx).flex_1();
+            return Some(h_flex().bg(self.colors.bar).child(self.windows_sidebar_toggle(cx)).child(caption).into_any_element());
         }
         // The title kept clear of the toolbar's buttons (32 px and a gap each, Back's and Forward's arrow 18).
         // A separator's line takes 9.
@@ -107,6 +108,31 @@ impl Commander {
     /// The main window's commander, for its title bar's menus.
     fn main_commander(&self, cx: &App) -> Option<WeakEntity<Commander>> {
         cx.try_global::<crate::MainWindow>().map(|main| main.1.clone())
+    }
+
+    /// Windows: WinUI's navigation button before the app's icon; shows or hides the sidebar.
+    fn windows_sidebar_toggle(&self, cx: &App) -> AnyElement {
+        let focus = self.focus.clone();
+        let shade = cx.theme().foreground.opacity(0.06);
+        div()
+            .id("caption-sidebar")
+            .ml(px(4.))
+            .w(px(40.))
+            .h(px(32.))
+            .flex()
+            .flex_none()
+            .items_center()
+            .justify_center()
+            .rounded(px(4.))
+            .hover(move |style| style.bg(shade))
+            // Segoe MDL2 Assets' GlobalNavButton.
+            .child(div().font_family("Segoe MDL2 Assets").text_size(px(14.)).child("\u{E700}"))
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(move |_, window, cx| {
+                window.focus(&focus, cx);
+                window.dispatch_action(Box::new(crate::menus::Run(Command::ToggleSidebar)), cx);
+            })
+            .into_any_element()
     }
 
     /// macOS: shows or hides the sidebar, first in the toolbar.
