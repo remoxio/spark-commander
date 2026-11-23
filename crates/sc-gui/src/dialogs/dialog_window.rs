@@ -144,7 +144,7 @@ pub(crate) fn answer(main: Option<Main>, window: &mut Window, cx: &mut App, f: i
 
 struct DialogWindow {
     title: SharedString,
-    /// macOS: the title over the content, else the content's own.
+    /// The title over the content (macOS) or in the drawn title bar (Linux), else the content's own heading.
     heading: bool,
     content: AnyView,
     ok: Option<Ok>,
@@ -323,9 +323,9 @@ impl Render for DialogWindow {
         }
         let theme = cx.theme().clone();
         let height = self.height.clone();
-        // GNOME's on Wayland: the app draws the frame.
+        // GNOME's on Wayland: the app draws the frame; a view heading itself leaves it untitled, as libadwaita's dialogs.
         #[cfg(not(windows))]
-        let header = crate::header::title_bar(self.title.clone(), window, cx);
+        let header = crate::header::title_bar(if self.heading { self.title.clone() } else { SharedString::default() }, window, cx);
         #[cfg(windows)]
         let header = Some(caption(self.title.clone(), false, window, cx));
         // macOS: a sheet has no title bar; its title heads it, as an alert's.
