@@ -24,7 +24,7 @@ impl Render for About {
             .label(t!("about.close"))
             .min_w(px(80.))
             .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx));
-        v_flex().child(content(cx)).child(crate::dialogs::footer(cx).child(close))
+        v_flex().gap_3().child(content(cx)).child(crate::dialogs::footer(cx).child(close))
     }
 }
 
