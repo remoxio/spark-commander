@@ -450,8 +450,7 @@ impl Render for RenameDialog {
                     ),
             )
             .child(
-                h_flex()
-                    .gap_2()
+                crate::dialogs::footer(cx)
                     .child(div().flex_1().child(self.status.clone()))
                     .child(
                         Button::new("rename-start")

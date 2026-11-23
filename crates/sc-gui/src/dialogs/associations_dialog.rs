@@ -170,9 +170,7 @@ impl Render for AssociationsDialog {
             .children(rows)
             .when(list.is_empty(), |el| el.child(div().text_color(muted).child(sc_core::t!("associations.empty"))))
             .child(
-                h_flex()
-                    .gap_2()
-                    .justify_end()
+                crate::dialogs::footer(cx)
                     .child(
                         Button::new("assoc-add")
                             .outline()

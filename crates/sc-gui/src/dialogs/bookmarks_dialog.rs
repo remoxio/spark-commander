@@ -159,9 +159,9 @@ impl Render for BookmarksDialog {
             }))
         };
         // Wordier languages' buttons go on in a second line.
-        let buttons = h_flex()
+        let buttons = crate::dialogs::footer(cx)
+            .justify_start()
             .flex_wrap()
-            .gap_2()
             .child(Button::new("bookmarks-add").outline().label(t!("bookmarks.add_folders")).on_click(cx.listener(|this, _, window, cx| this.browse(window, cx))))
             .child(on_selected(Button::new("bookmarks-rename").label(t!("bookmarks.rename")), |this, ix, window, cx| {
                 this.run(window, cx, |this, window, cx| this.rename_bookmark(ix, window, cx))

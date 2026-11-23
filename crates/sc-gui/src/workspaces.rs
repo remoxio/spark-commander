@@ -296,8 +296,7 @@ impl Render for WorkspacesDialog {
             }))
         };
         let count = rows_count;
-        let buttons = h_flex()
-            .gap_2()
+        let buttons = crate::dialogs::footer(cx)
             .child(Button::new("workspaces-new").outline().label(sc_core::t!("workspaces.button.new")).on_click(cx.listener(|this, _, window, cx| {
                 let commander = this.commander.clone();
                 crate::dialogs::dialog_window::answer(this.main, window, cx, move |window, cx| {

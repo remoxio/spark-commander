@@ -403,8 +403,7 @@ impl Render for KeysDialog {
             .child(Input::new(&self.search).small())
             .child(self.render_list(cx))
             .child(
-                h_flex()
-                    .gap_2()
+                crate::dialogs::footer(cx)
                     .child(div().flex_1().min_w_0().children(note))
                     .child(
                         Button::new("keys-reset-all")

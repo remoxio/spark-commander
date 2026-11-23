@@ -294,6 +294,6 @@ impl Render for ToolsDialog {
             .child(list)
             .child(buttons)
             .child(editor)
-            .child(h_flex().child(div().flex_1()).child(Button::new("tools-close").primary().label(sc_core::t!("tools.close")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))))
+            .child(crate::dialogs::footer(cx).child(Button::new("tools-close").primary().label(sc_core::t!("tools.close")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))))
     }
 }
