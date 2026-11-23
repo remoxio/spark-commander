@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "必要なときにダウンロードするアドオン"
   },
+  "about.close": {
+    "message": "閉じる"
+  },
   "about.libraries": {
     "message": "使用しているライブラリ"
   },

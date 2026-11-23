@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "추가 기능(원할 때 다운로드)"
   },
+  "about.close": {
+    "message": "닫기"
+  },
   "about.libraries": {
     "message": "기반 라이브러리"
   },

@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "ऐड-ऑन, जो आपके चुनने पर डाउनलोड होते हैं"
   },
+  "about.close": {
+    "message": "बंद करें"
+  },
   "about.libraries": {
     "message": "इन पर आधारित"
   },

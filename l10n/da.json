@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Tilføjelser – hentes, når du vælger det"
   },
+  "about.close": {
+    "message": "Luk"
+  },
   "about.libraries": {
     "message": "Bygget på"
   },

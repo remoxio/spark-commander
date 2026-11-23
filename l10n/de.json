@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Add-ons, auf Wunsch heruntergeladen"
   },
+  "about.close": {
+    "message": "Schließen"
+  },
   "about.libraries": {
     "message": "Basiert auf"
   },

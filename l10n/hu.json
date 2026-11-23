@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Bővítmények, igény szerint letöltve"
   },
+  "about.close": {
+    "message": "Bezárás"
+  },
   "about.libraries": {
     "message": "Erre épül"
   },

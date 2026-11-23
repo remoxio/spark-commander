@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Add-ons, gedownload wanneer je dat kiest"
   },
+  "about.close": {
+    "message": "Sluiten"
+  },
   "about.libraries": {
     "message": "Gebouwd op"
   },

@@ -3,6 +3,10 @@
     "description": "Help › About: heading over the add-ons, downloaded apart from the app.",
     "message": "Add-ons, downloaded when you choose"
   },
+  "about.close": {
+    "description": "Help › About dialog: button closing the dialog. Keep it short.",
+    "message": "Close"
+  },
   "about.libraries": {
     "description": "Help › About: heading over the libraries the app is built on.",
     "message": "Built on"

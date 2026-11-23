@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Добавки, изтегляни по ваш избор"
   },
+  "about.close": {
+    "message": "Затваряне"
+  },
   "about.libraries": {
     "message": "Изградено върху"
   },

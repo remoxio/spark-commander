@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Pengaya, diunduh saat Anda memilihnya"
   },
+  "about.close": {
+    "message": "Tutup"
+  },
   "about.libraries": {
     "message": "Dibangun dengan"
   },

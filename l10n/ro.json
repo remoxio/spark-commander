@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Suplimente, descărcate când alegeți"
   },
+  "about.close": {
+    "message": "Închideți"
+  },
   "about.libraries": {
     "message": "Bazat pe"
   },

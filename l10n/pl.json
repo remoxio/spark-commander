@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Dodatki, pobierane na żądanie"
   },
+  "about.close": {
+    "message": "Zamknij"
+  },
   "about.libraries": {
     "message": "Oparte na"
   },

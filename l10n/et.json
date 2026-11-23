@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Lisamoodulid, mille laadid alla omal valikul"
   },
+  "about.close": {
+    "message": "Sulge"
+  },
   "about.libraries": {
     "message": "Põhineb"
   },

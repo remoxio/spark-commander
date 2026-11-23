@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Tillägg som hämtas när du vill"
   },
+  "about.close": {
+    "message": "Stäng"
+  },
   "about.libraries": {
     "message": "Byggd på"
   },

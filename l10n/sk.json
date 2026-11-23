@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Doplnky sťahované na požiadanie"
   },
+  "about.close": {
+    "message": "Zavrieť"
+  },
   "about.libraries": {
     "message": "Založené na"
   },

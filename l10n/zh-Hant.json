@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "附加元件，由你決定是否下載"
   },
+  "about.close": {
+    "message": "關閉"
+  },
   "about.libraries": {
     "message": "建構基礎"
   },

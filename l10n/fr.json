@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Modules complémentaires, téléchargés à votre demande"
   },
+  "about.close": {
+    "message": "Fermer"
+  },
   "about.libraries": {
     "message": "Basé sur"
   },

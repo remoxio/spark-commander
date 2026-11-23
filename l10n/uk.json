@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Доповнення, що завантажуються на ваш вибір"
   },
+  "about.close": {
+    "message": "Закрити"
+  },
   "about.libraries": {
     "message": "Створено на основі"
   },

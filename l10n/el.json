@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Πρόσθετα, με λήψη όταν το επιλέξετε"
   },
+  "about.close": {
+    "message": "Κλείσιμο"
+  },
   "about.libraries": {
     "message": "Βασίζεται σε"
   },

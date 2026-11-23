@@ -19,7 +19,12 @@ struct About;
 
 impl Render for About {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        content(cx)
+        let close = Button::new("about-close")
+            .primary()
+            .label(t!("about.close"))
+            .min_w(px(80.))
+            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx));
+        v_flex().child(content(cx)).child(crate::dialogs::footer(cx).child(close))
     }
 }
 

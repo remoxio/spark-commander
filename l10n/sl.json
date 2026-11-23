@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "Dodatki, preneseni po vaši izbiri"
   },
+  "about.close": {
+    "message": "Zapri"
+  },
   "about.libraries": {
     "message": "Temelji na"
   },

@@ -2,6 +2,9 @@
   "about.addons": {
     "message": "附加组件（按需下载）"
   },
+  "about.close": {
+    "message": "关闭"
+  },
   "about.libraries": {
     "message": "基于以下项目构建"
   },
