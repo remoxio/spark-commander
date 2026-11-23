@@ -28,9 +28,9 @@ pub(crate) fn bind_keys(cx: &mut App) {
     cx.bind_keys([KeyBinding::new("enter", Confirm, keys), KeyBinding::new("escape", Dismiss, keys)]);
 }
 
-/// Whether dialogs open as windows of their own; else in the window, as before.
+/// Whether dialogs open as windows of their own; Windows' in the window, as WinUI's ContentDialog.
 pub(crate) fn separate() -> bool {
-    true
+    !cfg!(windows)
 }
 
 /// Windows: the window's handle, for what GPUI does not do.

@@ -833,6 +833,9 @@ impl RenderOnce for Dialog {
         let command_bar = cx.try_global::<crate::NativeControls>().and_then(|native| native.command_bar);
         // SparkCommander patch: the desktop's window title bar, see `NativeControls::dialog_frame`.
         let frame = cx.try_global::<crate::NativeControls>().and_then(|native| native.dialog_frame).filter(|_| mac.is_none());
+        // SparkCommander patch: Windows' as WinUI's ContentDialog: no title bar, the title a heading.
+        let content_dialog = frame.is_some_and(|frame| frame.close == crate::WindowClose::Fluent);
+        let heading = if content_dialog { self.title.take() } else { None };
         let icon = frame
             .filter(|frame| frame.icon)
             .and_then(|_| cx.try_global::<crate::AlertIcon>())
@@ -848,11 +851,12 @@ impl RenderOnce for Dialog {
         let corner = match (alert, mac) {
             (Some(_), _) => px(24.),
             (None, Some(_)) => px(16.),
+            (None, None) if content_dialog => px(8.),
             (None, None) => cx.theme().radius_lg,
         };
         let active = window.is_window_active();
 
-        let mut paddings = Edges::all(px(16.));
+        let mut paddings = Edges::all(if content_dialog { px(24.) } else { px(16.) });
         if let Some(pl) = self.style.padding.left {
             paddings.left = pl.to_pixels(base_size, rem_size);
         }
@@ -912,7 +916,8 @@ impl RenderOnce for Dialog {
                                         .size_full()
                                         .window_control_area(WindowControlArea::Drag)
                                         .when(self.props.overlay_visible, |overlay| {
-                                            overlay.bg(overlay_color(true, cx))
+                                            // WinUI's SmokeFillColorDefault.
+                                            overlay.bg(if content_dialog { hsla(0., 0., 0., 0.3) } else { overlay_color(true, cx) })
                                         }),
                                 )
                             })
@@ -958,7 +963,7 @@ impl RenderOnce for Dialog {
                                         .gap(paddings.top.max(px(8.)))
                                         .refine_style(&self.style)
                                         // SparkCommander patch: the title's band is at the top.
-                                        .when(has_title, |this| this.pt_0())
+                                        .when(has_title && !content_dialog, |this| this.pt_0())
                                         .px_0()
                                         .occlude()
                                         .w(width)
@@ -1038,6 +1043,17 @@ impl RenderOnce for Dialog {
                                                 .flex_1()
                                                 .overflow_hidden()
                                                 .gap_y_2()
+                                                .when_some(heading, |this, heading| {
+                                                    this.child(
+                                                        div()
+                                                            .pl(paddings.left)
+                                                            .pr(paddings.right)
+                                                            .mb_1()
+                                                            .text_xl()
+                                                            .font_semibold()
+                                                            .child(heading),
+                                                    )
+                                                })
                                                 .when_some(self.header, |this, header| {
                                                     this.child(
                                                         div()
@@ -1086,7 +1102,7 @@ impl RenderOnce for Dialog {
                                             )
                                         })
                                         .when(command_bar.is_some() && has_footer, |this| this.pb_0())
-                                        .children(self.props.close_button.then(|| {
+                                        .children((self.props.close_button && !content_dialog).then(|| {
                                             // SparkCommander patch: in the middle of the title's band.
                                             let top = if has_title {
                                                 (band - px(24.)) / 2.
