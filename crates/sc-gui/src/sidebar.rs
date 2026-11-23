@@ -471,6 +471,8 @@ impl Commander {
             .w(px(width))
             .bg(background)
             .border_r_1()
+            // Windows: the menu bar has no line under it.
+            .when(cfg!(windows), |el| el.border_t_1())
             .border_color(theme.border)
             .child(sections.h_full());
         // Sliding, its edge narrows or widens; the drawer is clipped, not reflowed.

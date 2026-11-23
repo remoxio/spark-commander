@@ -2959,7 +2959,6 @@ impl Render for Commander {
     }
 }
 
-/// The toolbar's right-click menu: Customize Toolbar, Settings on its page.
 /// Full: how far Left and Right scroll the columns sideways.
 const SIDEWAYS: Pixels = px(40.);
 
@@ -3004,6 +3003,7 @@ impl ToolbarFit {
     }
 }
 
+/// The toolbar's right-click menu: what its buttons show, Customize Toolbar, Settings on its page.
 pub(crate) fn toolbar_menu(commander: WeakEntity<Commander>) -> impl Fn(PopupMenu, &mut Window, &mut Context<PopupMenu>) -> PopupMenu + 'static {
     move |menu, _, cx| {
         // Windows and Linux: what the buttons show, as Settings > Toolbar.
