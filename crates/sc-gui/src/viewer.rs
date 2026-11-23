@@ -1876,7 +1876,7 @@ impl Render for Viewer {
             Mode::Markdown | Mode::Book => Some(self.markdown_minimap.clone()),
             _ => Some(self.minimap.clone()),
         };
-        let header = (!self.quick).then(|| crate::header::title_bar(title(self.shown.path()), window, cx)).flatten();
+        let header = (!self.quick).then(|| crate::header::window_bar(title(self.shown.path()), window, cx)).flatten();
         let theme = cx.theme();
         v_flex()
             .key_context(CONTEXT)

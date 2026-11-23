@@ -961,7 +961,7 @@ impl FindFiles {
 
 impl Render for FindFiles {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let header = crate::header::title_bar(t!("search.title"), window, cx);
+        let header = crate::header::window_bar(t!("search.title"), window, cx);
         let page = match self.page {
             0 => self.render_general(cx).into_any_element(),
             1 => self.render_advanced(cx).into_any_element(),

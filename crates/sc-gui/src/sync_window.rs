@@ -304,7 +304,7 @@ impl SyncDirs {
 
 impl Render for SyncDirs {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let header = crate::header::title_bar(t!("sync.title"), window, cx);
+        let header = crate::header::window_bar(t!("sync.title"), window, cx);
         let theme = cx.theme().clone();
         let comparing = self.comparing.is_some();
         let option = |id: &'static str, label: String, on: bool, set: fn(&mut Options, bool)| {

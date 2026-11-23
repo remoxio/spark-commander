@@ -411,7 +411,7 @@ impl Side {
 
 impl Render for CompareView {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let header = crate::header::title_bar(title(&self.files), window, cx);
+        let header = crate::header::window_bar(title(&self.files), window, cx);
         let theme = cx.theme().clone();
         let none = self.runs.is_empty();
         let path = |side: usize, cx: &mut Context<Self>| {

@@ -791,13 +791,19 @@ impl Render for TextEditor {
         }
         let this = cx.weak_entity();
         // Its close button asks about changes, as the desktop's would.
-        let header = crate::header::title_bar(title(&self.path, self.edited || self.unsent), window, cx).map(|bar| {
-            bar.on_close_window(move |_, window, cx| {
-                if this.update(cx, |this, cx| this.may_close(window, cx)).unwrap_or(true) {
-                    window.remove_window();
-                }
-            })
-        });
+        let title = title(&self.path, self.edited || self.unsent);
+        // Windows: its close asks `on_window_should_close`.
+        let header = match cfg!(windows) {
+            true => crate::header::window_bar(title, window, cx),
+            false => crate::header::title_bar(title, window, cx).map(|bar| {
+                bar.on_close_window(move |_, window, cx| {
+                    if this.update(cx, |this, cx| this.may_close(window, cx)).unwrap_or(true) {
+                        window.remove_window();
+                    }
+                })
+                .into_any_element()
+            }),
+        };
         let find_open = self.find_bar.read(cx).is_open();
         let status = self.status(cx);
         let theme = cx.theme();

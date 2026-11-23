@@ -3084,8 +3084,10 @@ pub(crate) fn over_main_window(title: String, over: Over, cx: &App) -> WindowOpt
             "Wayland" => WindowKind::Floating,
             _ => WindowKind::Normal,
         },
+        // Windows: its caption drawn by the app, as the main window's (`header::window_bar`).
         titlebar: Some(TitlebarOptions {
             title: Some(title.into()),
+            appears_transparent: cfg!(windows),
             ..Default::default()
         }),
         app_id: Some("sparkcommander".into()),

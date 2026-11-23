@@ -173,6 +173,14 @@ pub(crate) fn mac_capsule(buttons: Vec<AnyElement>, cx: &App) -> Div {
     h_flex().flex_none().h(px(30.)).px(px(2.)).rounded_full().bg(fill).border_1().border_color(rim).children(buttons)
 }
 
+/// A window's own title bar: Windows' caption as the main window's, else `title_bar`'s.
+pub(crate) fn window_bar(title: impl Into<SharedString>, window: &Window, cx: &mut App) -> Option<AnyElement> {
+    if cfg!(windows) {
+        return Some(crate::dialogs::dialog_window::caption(title.into(), true, window, cx).into_any_element());
+    }
+    title_bar(title, window, cx).map(IntoElement::into_any_element)
+}
+
 /// The title bar of a window that draws its own frame: any on GNOME on
 /// Wayland, which draws none, and the main one for its ☰ button.
 pub(crate) fn title_bar(title: impl Into<SharedString>, window: &Window, cx: &mut App) -> Option<TitleBar> {
