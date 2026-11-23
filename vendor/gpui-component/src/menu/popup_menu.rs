@@ -1755,6 +1755,14 @@ impl Render for PopupMenu {
             .when(!self.hot.is_empty(), |this| this.on_key_down(cx.listener(Self::on_letter)))
             .on_mouse_down_out(cx.listener(Self::on_mouse_down_out))
             .popover_style(cx)
+            // SparkCommander patch: Windows 11's flyout shadow, as WinUI's (Fluent's shadow16).
+            .when(cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some()), |this| {
+                let ink = if cx.theme().is_dark() { 0.28 } else { 0.14 };
+                this.shadow(vec![
+                    gpui::BoxShadow::new(px(0.), px(0.), crate::popover_ring(cx)).blur_radius(px(0.)).spread_radius(px(1.)),
+                    gpui::BoxShadow::new(px(0.), px(8.), gpui::hsla(0., 0., 0., ink)).blur_radius(px(8.)),
+                ])
+            })
             .text_color(cx.theme().popover_foreground)
             .relative()
             .occlude()

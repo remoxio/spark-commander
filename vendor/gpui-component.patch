@@ -2753,15 +2753,25 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
          let has_left_icon = self
              .menu_items
-@@ -1495,6 +1752,7 @@
+@@ -1495,8 +1752,17 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
 +            .when(!self.hot.is_empty(), |this| this.on_key_down(cx.listener(Self::on_letter)))
              .on_mouse_down_out(cx.listener(Self::on_mouse_down_out))
              .popover_style(cx)
++            // SparkCommander patch: Windows 11's flyout shadow, as WinUI's (Fluent's shadow16).
++            .when(cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some()), |this| {
++                let ink = if cx.theme().is_dark() { 0.28 } else { 0.14 };
++                this.shadow(vec![
++                    gpui::BoxShadow::new(px(0.), px(0.), crate::popover_ring(cx)).blur_radius(px(0.)).spread_radius(px(1.)),
++                    gpui::BoxShadow::new(px(0.), px(8.), gpui::hsla(0., 0., 0., ink)).blur_radius(px(8.)),
++                ])
++            })
              .text_color(cx.theme().popover_foreground)
-@@ -1508,11 +1766,9 @@
+             .relative()
+             .occlude()
+@@ -1508,11 +1774,9 @@
                      .min_w(rems(8.))
                      .when_some(self.min_width, |this, min_width| this.min_w(min_width))
                      .max_w(max_width)
@@ -2776,7 +2786,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1523,9 +1779,6 @@
+@@ -1523,9 +1787,6 @@
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),
              )
