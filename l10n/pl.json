@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Ósemkowo:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Inni"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Zakładki"
+  },
+  "button.change": {
+    "message": "Zmień"
+  },
+  "button.change_password": {
+    "message": "Zmień hasło"
+  },
+  "button.combine": {
+    "message": "Połącz"
+  },
+  "button.connect": {
+    "message": "Połącz"
+  },
+  "button.create": {
+    "message": "Utwórz"
+  },
+  "button.duplicate": {
+    "message": "Duplikuj"
+  },
+  "button.filter": {
+    "message": "Filtruj"
+  },
+  "button.find": {
+    "message": "Znajdź"
+  },
+  "button.go": {
+    "message": "Przejdź"
+  },
+  "button.load": {
+    "message": "Wczytaj"
+  },
+  "button.pack": {
+    "message": "Spakuj"
+  },
+  "button.rename": {
+    "message": "Zmień nazwę"
+  },
+  "button.save": {
+    "message": "Zapisz"
+  },
+  "button.select": {
+    "message": "Zaznacz"
+  },
+  "button.set_password": {
+    "message": "Ustaw hasło"
+  },
+  "button.show": {
+    "message": "Pokaż"
+  },
+  "button.split": {
+    "message": "Podziel"
+  },
+  "button.unlock": {
+    "message": "Odblokuj"
+  },
+  "button.unpack": {
+    "message": "Rozpakuj"
+  },
+  "button.unselect": {
+    "message": "Odznacz"
   },
   "button_bar.copy": {
     "message": "Kopiuj"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Szukaj ciągu szesnastkowego"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Anuluj"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Wyczyść ukończone"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "wymaga hasła"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Wpisz hasło lub wyłącz „Szyfruj hasłem”."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Zapisane hasła są zablokowane na tym komputerze: otworzy je hasło główne."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Hasła nie są takie same."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Anuluj"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: nie udało się rozłączyć: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopiuj} other {Przenieś}} „{name}” do {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Zastąp wszystkie"

@@ -68,12 +68,18 @@ pub fn keep(key: String, password: String, window: &mut Window, cx: &mut App) {
 /// the background; `done` hears once that has worked.
 pub fn ask(what: Ask, window: &mut Window, cx: &mut App, done: impl Fn(&mut Window, &mut App) + 'static) {
     let done: Done = Rc::new(done);
+    let ok_label = match what {
+        Ask::Unlock => t!("button.unlock"),
+        Ask::Set if secrets::has_master() => t!("button.change_password"),
+        Ask::Set | Ask::First => t!("button.set_password"),
+        Ask::Reveal => t!("button.show"),
+    };
     let build = move |main, window: &mut Window, cx: &mut App| {
         let mut masked = |cx: &mut App| cx.new(|cx| InputState::new(window, cx).masked(true));
         let first = masked(cx);
         let again = matches!(what, Ask::Set | Ask::First).then(|| masked(cx));
         crate::dialogs::pack_dialog::focus_all(&first, window, cx);
-        cx.new(|_| MasterDialog { what, first, again, problem: None, working: false, done, main })
+        cx.new(|_| MasterDialog { what, ok: ok_label, first, again, problem: None, working: false, done, main })
     };
     let title = match what {
         Ask::Unlock => t!("passwords.title.unlock"),
@@ -91,6 +97,8 @@ pub fn ask(what: Ask, window: &mut Window, cx: &mut App, done: impl Fn(&mut Wind
 
 struct MasterDialog {
     what: Ask,
+    /// The button's: Unlock, Set Password.
+    ok: String,
     first: Entity<InputState>,
     /// A new one's repeat.
     again: Option<Entity<InputState>>,
@@ -181,7 +189,7 @@ impl Render for MasterDialog {
                 crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
                     Button::new("master-ok")
                         .primary()
-                        .label(if self.working { t!("passwords.working") } else { t!("passwords.ok") })
+                        .label(if self.working { t!("passwords.working") } else { self.ok.clone() })
                         .min_w(px(80.))
                         .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
                     Button::new("master-cancel").outline().label(t!("passwords.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),

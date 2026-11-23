@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "8진수:"
   },
-  "attributes.ok": {
-    "message": "확인"
-  },
   "attributes.others": {
     "message": "기타"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "책갈피"
+  },
+  "button.change": {
+    "message": "변경"
+  },
+  "button.change_password": {
+    "message": "암호 변경"
+  },
+  "button.combine": {
+    "message": "결합"
+  },
+  "button.connect": {
+    "message": "연결"
+  },
+  "button.create": {
+    "message": "만들기"
+  },
+  "button.duplicate": {
+    "message": "복제"
+  },
+  "button.filter": {
+    "message": "필터"
+  },
+  "button.find": {
+    "message": "찾기"
+  },
+  "button.go": {
+    "message": "이동"
+  },
+  "button.load": {
+    "message": "불러오기"
+  },
+  "button.pack": {
+    "message": "압축"
+  },
+  "button.rename": {
+    "message": "이름 변경"
+  },
+  "button.save": {
+    "message": "저장"
+  },
+  "button.select": {
+    "message": "선택"
+  },
+  "button.set_password": {
+    "message": "암호 설정"
+  },
+  "button.show": {
+    "message": "표시"
+  },
+  "button.split": {
+    "message": "분할"
+  },
+  "button.unlock": {
+    "message": "잠금 해제"
+  },
+  "button.unpack": {
+    "message": "압축 풀기"
+  },
+  "button.unselect": {
+    "message": "선택 해제"
   },
   "button_bar.copy": {
     "message": "복사"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "16진수 문자열 검색"
   },
-  "find.ok": {
-    "message": "확인"
-  },
   "find.regex": {
     "message": "정규식"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "취소"
   },
-  "name_dialog.ok": {
-    "message": "확인"
-  },
   "operations.clear": {
     "message": "완료 항목 지우기"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "암호가 필요함"
-  },
-  "pack.ok": {
-    "message": "확인"
   },
   "pack.password_missing": {
     "message": "암호를 입력하거나 ‘암호로 암호화’를 끄세요."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "이 컴퓨터에서는 저장된 암호가 잠겨 있습니다. 마스터 암호로 열 수 있습니다."
   },
-  "passwords.ok": {
-    "message": "확인"
-  },
   "passwords.problem.differ": {
     "message": "두 암호가 일치하지 않습니다."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "취소"
-  },
-  "remote.dialog.ok": {
-    "message": "확인"
   },
   "remote.disconnect_failed": {
     "message": "{share}: 연결을 끊지 못했습니다: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "‘{name}’을(를) {server}의 다음 위치로 {kind, select, copy {복사} other {이동}}:"
-  },
-  "transfer.ok": {
-    "message": "확인"
   },
   "transfer.overwrite.all": {
     "message": "모두 덮어쓰기"

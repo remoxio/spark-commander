@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Bát phân:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Người khác"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Dấu trang"
+  },
+  "button.change": {
+    "message": "Thay đổi"
+  },
+  "button.change_password": {
+    "message": "Đổi mật khẩu"
+  },
+  "button.combine": {
+    "message": "Ghép"
+  },
+  "button.connect": {
+    "message": "Kết nối"
+  },
+  "button.create": {
+    "message": "Tạo"
+  },
+  "button.duplicate": {
+    "message": "Nhân bản"
+  },
+  "button.filter": {
+    "message": "Lọc"
+  },
+  "button.find": {
+    "message": "Tìm"
+  },
+  "button.go": {
+    "message": "Đi tới"
+  },
+  "button.load": {
+    "message": "Tải"
+  },
+  "button.pack": {
+    "message": "Nén"
+  },
+  "button.rename": {
+    "message": "Đổi tên"
+  },
+  "button.save": {
+    "message": "Lưu"
+  },
+  "button.select": {
+    "message": "Chọn"
+  },
+  "button.set_password": {
+    "message": "Đặt mật khẩu"
+  },
+  "button.show": {
+    "message": "Hiện"
+  },
+  "button.split": {
+    "message": "Chia"
+  },
+  "button.unlock": {
+    "message": "Mở khóa"
+  },
+  "button.unpack": {
+    "message": "Giải nén"
+  },
+  "button.unselect": {
+    "message": "Bỏ chọn"
   },
   "button_bar.copy": {
     "message": "Sao chép"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Tìm chuỗi hex"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Hủy"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Xóa mục đã xong"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "cần mật khẩu"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Hãy nhập mật khẩu, hoặc bỏ chọn Mã hóa."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Các mật khẩu đã lưu đang bị khóa trên máy tính này: mật khẩu chính sẽ mở chúng."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Hai mật khẩu không giống nhau."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Hủy"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: không ngắt kết nối được: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Sao chép} other {Di chuyển}} “{name}” tới {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Ghi đè tất cả"

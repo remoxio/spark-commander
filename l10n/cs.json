@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Osmičkově:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Ostatní"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Záložky"
+  },
+  "button.change": {
+    "message": "Změnit"
+  },
+  "button.change_password": {
+    "message": "Změnit heslo"
+  },
+  "button.combine": {
+    "message": "Spojit"
+  },
+  "button.connect": {
+    "message": "Připojit"
+  },
+  "button.create": {
+    "message": "Vytvořit"
+  },
+  "button.duplicate": {
+    "message": "Duplikovat"
+  },
+  "button.filter": {
+    "message": "Filtrovat"
+  },
+  "button.find": {
+    "message": "Najít"
+  },
+  "button.go": {
+    "message": "Přejít"
+  },
+  "button.load": {
+    "message": "Načíst"
+  },
+  "button.pack": {
+    "message": "Zabalit"
+  },
+  "button.rename": {
+    "message": "Přejmenovat"
+  },
+  "button.save": {
+    "message": "Uložit"
+  },
+  "button.select": {
+    "message": "Označit"
+  },
+  "button.set_password": {
+    "message": "Nastavit heslo"
+  },
+  "button.show": {
+    "message": "Zobrazit"
+  },
+  "button.split": {
+    "message": "Rozdělit"
+  },
+  "button.unlock": {
+    "message": "Odemknout"
+  },
+  "button.unpack": {
+    "message": "Rozbalit"
+  },
+  "button.unselect": {
+    "message": "Odznačit"
   },
   "button_bar.copy": {
     "message": "Kopírovat"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Hledat hexadecimální řetězec"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Zrušit"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Vymazat dokončené"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "vyžaduje heslo"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Zadejte heslo, nebo nechte šifrování vypnuté."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Uložená hesla jsou na tomto počítači zamčená: otevře je hlavní heslo."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Hesla se neshodují."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Zrušit"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: nelze odpojit: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopírovat} other {Přesunout}} „{name}“ na {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Přepsat vše"

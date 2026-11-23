@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Осмично:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Други"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Отметки"
+  },
+  "button.change": {
+    "message": "Промяна"
+  },
+  "button.change_password": {
+    "message": "Промяна на паролата"
+  },
+  "button.combine": {
+    "message": "Обединяване"
+  },
+  "button.connect": {
+    "message": "Свързване"
+  },
+  "button.create": {
+    "message": "Създаване"
+  },
+  "button.duplicate": {
+    "message": "Дублиране"
+  },
+  "button.filter": {
+    "message": "Филтриране"
+  },
+  "button.find": {
+    "message": "Търсене"
+  },
+  "button.go": {
+    "message": "Отиване"
+  },
+  "button.load": {
+    "message": "Зареждане"
+  },
+  "button.pack": {
+    "message": "Архивиране"
+  },
+  "button.rename": {
+    "message": "Преименуване"
+  },
+  "button.save": {
+    "message": "Запазване"
+  },
+  "button.select": {
+    "message": "Избиране"
+  },
+  "button.set_password": {
+    "message": "Задаване на парола"
+  },
+  "button.show": {
+    "message": "Показване"
+  },
+  "button.split": {
+    "message": "Разделяне"
+  },
+  "button.unlock": {
+    "message": "Отключване"
+  },
+  "button.unpack": {
+    "message": "Разархивиране"
+  },
+  "button.unselect": {
+    "message": "Премахване на избора"
   },
   "button_bar.copy": {
     "message": "Копиране"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Търсене на шестнадесетичен низ"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Отказ"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Изчистване на завършените"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "изисква парола"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Въведете паролата или изключете шифроването."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Запазените пароли са заключени на този компютър: главната парола ги отключва."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Двете не съвпадат."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Отказ"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: връзката не можа да се прекъсне: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Копиране} other {Преместване}} на „{name}“ в {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Презаписване на всички"

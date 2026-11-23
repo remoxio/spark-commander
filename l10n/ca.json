@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Octal:"
   },
-  "attributes.ok": {
-    "message": "D’acord"
-  },
   "attributes.others": {
     "message": "Altres"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Adreces d’interès"
+  },
+  "button.change": {
+    "message": "Canvia"
+  },
+  "button.change_password": {
+    "message": "Canvia la contrasenya"
+  },
+  "button.combine": {
+    "message": "Combina"
+  },
+  "button.connect": {
+    "message": "Connecta"
+  },
+  "button.create": {
+    "message": "Crea"
+  },
+  "button.duplicate": {
+    "message": "Duplica"
+  },
+  "button.filter": {
+    "message": "Filtra"
+  },
+  "button.find": {
+    "message": "Cerca"
+  },
+  "button.go": {
+    "message": "Vés-hi"
+  },
+  "button.load": {
+    "message": "Carrega"
+  },
+  "button.pack": {
+    "message": "Empaqueta"
+  },
+  "button.rename": {
+    "message": "Canvia el nom"
+  },
+  "button.save": {
+    "message": "Desa"
+  },
+  "button.select": {
+    "message": "Selecciona"
+  },
+  "button.set_password": {
+    "message": "Defineix la contrasenya"
+  },
+  "button.show": {
+    "message": "Mostra"
+  },
+  "button.split": {
+    "message": "Divideix"
+  },
+  "button.unlock": {
+    "message": "Desbloqueja"
+  },
+  "button.unpack": {
+    "message": "Desempaqueta"
+  },
+  "button.unselect": {
+    "message": "Desselecciona"
   },
   "button_bar.copy": {
     "message": "Copia"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Cerca una cadena hexadecimal"
   },
-  "find.ok": {
-    "message": "D’acord"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Cancel·la"
   },
-  "name_dialog.ok": {
-    "message": "D’acord"
-  },
   "operations.clear": {
     "message": "Neteja les acabades"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "necessita una contrasenya"
-  },
-  "pack.ok": {
-    "message": "D’acord"
   },
   "pack.password_missing": {
     "message": "Escriu la contrasenya, o desactiva Xifra."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Les contrasenyes desades estan bloquejades en aquest ordinador: la contrasenya mestra les obre."
   },
-  "passwords.ok": {
-    "message": "D’acord"
-  },
   "passwords.problem.differ": {
     "message": "Les dues no coincideixen."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Cancel·la"
-  },
-  "remote.dialog.ok": {
-    "message": "D’acord"
   },
   "remote.disconnect_failed": {
     "message": "{share}: no s’ha pogut desconnectar: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Copia} other {Mou}} «{name}» a {server}:"
-  },
-  "transfer.ok": {
-    "message": "D’acord"
   },
   "transfer.overwrite.all": {
     "message": "Sobreescriu-ho tot"

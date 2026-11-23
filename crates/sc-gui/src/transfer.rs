@@ -483,7 +483,7 @@ fn open_dialog(
 ) {
     // Linux: a window of its own, framed by the desktop; its answer goes to the main window.
     if crate::dialogs::dialog_window::separate() {
-        return crate::dialogs::dialog_window::open(title, size(px(560.), px(300.)), window, cx, move |main, window, cx| {
+        return crate::dialogs::dialog_window::open(title.clone(), size(px(560.), px(300.)), window, cx, move |main, window, cx| {
             let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
             input.update(cx, |input, cx| {
                 input.focus(window, cx);
@@ -496,7 +496,7 @@ fn open_dialog(
                         this.close(window, cx);
                     }
                 });
-                TransferDialog { label, input, overwrite: Overwrite::Ask, done: Rc::new(done), main: Some(main), _enter: Some(enter) }
+                TransferDialog { label, ok: title, input, overwrite: Overwrite::Ask, done: Rc::new(done), main: Some(main), _enter: Some(enter) }
             });
             (view, None)
         });
@@ -504,6 +504,7 @@ fn open_dialog(
     let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
     let view = cx.new(|_| TransferDialog {
         label,
+        ok: title.clone(),
         input: input.clone(),
         overwrite: Overwrite::Ask,
         done: Rc::new(done),
@@ -530,6 +531,8 @@ fn open_dialog(
 
 struct TransferDialog {
     label: String,
+    /// The button's: Copy, Move.
+    ok: String,
     input: Entity<InputState>,
     overwrite: Overwrite,
     done: Done,
@@ -589,7 +592,7 @@ impl Render for TransferDialog {
                     .children(crate::dialogs::ok_cancel(
                         Button::new("transfer-ok")
                             .primary()
-                            .label(sc_core::t!("transfer.ok"))
+                            .label(self.ok.clone())
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.finish(window, cx);

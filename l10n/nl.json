@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Octaal:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Anderen"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Bladwijzers"
+  },
+  "button.change": {
+    "message": "Wijzigen"
+  },
+  "button.change_password": {
+    "message": "Wachtwoord wijzigen"
+  },
+  "button.combine": {
+    "message": "Samenvoegen"
+  },
+  "button.connect": {
+    "message": "Verbinden"
+  },
+  "button.create": {
+    "message": "Maken"
+  },
+  "button.duplicate": {
+    "message": "Dupliceren"
+  },
+  "button.filter": {
+    "message": "Filteren"
+  },
+  "button.find": {
+    "message": "Zoeken"
+  },
+  "button.go": {
+    "message": "Ga"
+  },
+  "button.load": {
+    "message": "Laden"
+  },
+  "button.pack": {
+    "message": "Inpakken"
+  },
+  "button.rename": {
+    "message": "Naam wijzigen"
+  },
+  "button.save": {
+    "message": "Opslaan"
+  },
+  "button.select": {
+    "message": "Selecteren"
+  },
+  "button.set_password": {
+    "message": "Wachtwoord instellen"
+  },
+  "button.show": {
+    "message": "Tonen"
+  },
+  "button.split": {
+    "message": "Splitsen"
+  },
+  "button.unlock": {
+    "message": "Ontgrendelen"
+  },
+  "button.unpack": {
+    "message": "Uitpakken"
+  },
+  "button.unselect": {
+    "message": "Deselecteren"
   },
   "button_bar.copy": {
     "message": "Kopiëren"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Hexadecimale reeks zoeken"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Annuleren"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Voltooide wissen"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "er is een wachtwoord nodig"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Typ het wachtwoord, of laat Versleutelen uit."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "De opgeslagen wachtwoorden zijn op deze computer vergrendeld: het hoofdwachtwoord ontgrendelt ze."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "De twee zijn niet gelijk."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Annuleren"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: kan de verbinding niet verbreken: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "“{name}” {kind, select, copy {kopiëren} other {verplaatsen}} naar {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Alles overschrijven"

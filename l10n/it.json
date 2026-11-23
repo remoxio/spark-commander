@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Ottale:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Altri"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Segnalibri"
+  },
+  "button.change": {
+    "message": "Cambia"
+  },
+  "button.change_password": {
+    "message": "Cambia password"
+  },
+  "button.combine": {
+    "message": "Unisci"
+  },
+  "button.connect": {
+    "message": "Connetti"
+  },
+  "button.create": {
+    "message": "Crea"
+  },
+  "button.duplicate": {
+    "message": "Duplica"
+  },
+  "button.filter": {
+    "message": "Filtra"
+  },
+  "button.find": {
+    "message": "Trova"
+  },
+  "button.go": {
+    "message": "Vai"
+  },
+  "button.load": {
+    "message": "Carica"
+  },
+  "button.pack": {
+    "message": "Comprimi"
+  },
+  "button.rename": {
+    "message": "Rinomina"
+  },
+  "button.save": {
+    "message": "Salva"
+  },
+  "button.select": {
+    "message": "Seleziona"
+  },
+  "button.set_password": {
+    "message": "Imposta password"
+  },
+  "button.show": {
+    "message": "Mostra"
+  },
+  "button.split": {
+    "message": "Dividi"
+  },
+  "button.unlock": {
+    "message": "Sblocca"
+  },
+  "button.unpack": {
+    "message": "Estrai"
+  },
+  "button.unselect": {
+    "message": "Deseleziona"
   },
   "button_bar.copy": {
     "message": "Copia"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Cerca stringa esadecimale"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Annulla"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Rimuovi completate"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "serve una password"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Digita la password, o lascia disattivato Cifra con la password."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Le password salvate sono bloccate su questo computer: la password principale le apre."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Le due password non coincidono."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Annulla"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: impossibile disconnettere: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Copia} other {Sposta}} «{name}» in {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Sovrascrivi tutti"

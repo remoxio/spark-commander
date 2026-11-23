@@ -365,12 +365,12 @@ impl Commander {
 
     /// A new folder of connections (none), or `old` renamed.
     fn name_server_folder(&mut self, old: Option<String>, window: &mut Window, cx: &mut Context<Self>) {
-        let (title, value) = match &old {
-            Some(old) => (t!("connections.folder.rename_title"), old.clone()),
-            None => (t!("connections.folder.new_title"), String::new()),
+        let (title, ok, value) = match &old {
+            Some(old) => (t!("connections.folder.rename_title"), t!("button.rename"), old.clone()),
+            None => (t!("connections.folder.new_title"), t!("button.create"), String::new()),
         };
         let this = cx.entity().downgrade();
-        crate::dialogs::name_dialog::open(title, t!("connections.folder.name"), value, window, cx, move |name, window, cx| {
+        crate::dialogs::name_dialog::open(title, t!("connections.folder.name"), ok, value, window, cx, move |name, window, cx| {
             let _ = this.update(cx, |this, cx| {
                 let mut named = false;
                 this.change_servers(|all| named = all.name_folder(old.as_deref(), &name), window, cx);
@@ -1308,7 +1308,7 @@ impl Commander {
         };
         let name = self.settings.bookmark_name(&path);
         let commander = cx.entity().downgrade();
-        crate::dialogs::name_dialog::open(t!("bookmarks.rename_title"), t!("bookmarks.rename_label"), name, window, cx, move |name, window, cx| {
+        crate::dialogs::name_dialog::open(t!("bookmarks.rename_title"), t!("bookmarks.rename_label"), t!("button.rename"), name, window, cx, move |name, window, cx| {
             let _ = commander.update(cx, |this, cx| {
                 match name.trim() {
                     "" => this.settings.bookmark_names.remove(&path),

@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Octal:"
   },
-  "attributes.ok": {
-    "message": "Aceptar"
-  },
   "attributes.others": {
     "message": "Otros"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Marcadores"
+  },
+  "button.change": {
+    "message": "Cambiar"
+  },
+  "button.change_password": {
+    "message": "Cambiar contraseña"
+  },
+  "button.combine": {
+    "message": "Combinar"
+  },
+  "button.connect": {
+    "message": "Conectar"
+  },
+  "button.create": {
+    "message": "Crear"
+  },
+  "button.duplicate": {
+    "message": "Duplicar"
+  },
+  "button.filter": {
+    "message": "Filtrar"
+  },
+  "button.find": {
+    "message": "Buscar"
+  },
+  "button.go": {
+    "message": "Ir"
+  },
+  "button.load": {
+    "message": "Cargar"
+  },
+  "button.pack": {
+    "message": "Comprimir"
+  },
+  "button.rename": {
+    "message": "Cambiar nombre"
+  },
+  "button.save": {
+    "message": "Guardar"
+  },
+  "button.select": {
+    "message": "Seleccionar"
+  },
+  "button.set_password": {
+    "message": "Establecer contraseña"
+  },
+  "button.show": {
+    "message": "Mostrar"
+  },
+  "button.split": {
+    "message": "Dividir"
+  },
+  "button.unlock": {
+    "message": "Desbloquear"
+  },
+  "button.unpack": {
+    "message": "Descomprimir"
+  },
+  "button.unselect": {
+    "message": "Deseleccionar"
   },
   "button_bar.copy": {
     "message": "Copiar"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Buscar cadena hexadecimal"
   },
-  "find.ok": {
-    "message": "Aceptar"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Cancelar"
   },
-  "name_dialog.ok": {
-    "message": "Aceptar"
-  },
   "operations.clear": {
     "message": "Quitar terminadas"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "necesita una contraseña"
-  },
-  "pack.ok": {
-    "message": "Aceptar"
   },
   "pack.password_missing": {
     "message": "Escribe la contraseña o desmarca Cifrar con la contraseña."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Las contraseñas guardadas están bloqueadas en este equipo: la contraseña maestra las abre."
   },
-  "passwords.ok": {
-    "message": "Aceptar"
-  },
   "passwords.problem.differ": {
     "message": "Las dos no coinciden."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Cancelar"
-  },
-  "remote.dialog.ok": {
-    "message": "Aceptar"
   },
   "remote.disconnect_failed": {
     "message": "{share}: no se pudo desconectar: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Copiar} other {Mover}} «{name}» a {server}:"
-  },
-  "transfer.ok": {
-    "message": "Aceptar"
   },
   "transfer.overwrite.all": {
     "message": "Sobrescribir todo"

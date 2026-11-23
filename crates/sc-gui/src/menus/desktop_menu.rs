@@ -191,7 +191,7 @@ impl Commander {
         let name = template.as_ref().and_then(|t| t.file_name()).map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
         let commander = cx.entity().downgrade();
         let (title, label) = (sc_core::t!("context_menu.new_file_dialog.title"), sc_core::t!("context_menu.new_file_dialog.label"));
-        name_dialog::open(title, label, name, window, cx, move |name, window, cx| {
+        name_dialog::open(title, label, sc_core::t!("button.create"), name, window, cx, move |name, window, cx| {
             let template = template.clone();
             let _ = commander.update(cx, |this, cx| {
                 let panel = this.panels[side].tabs.current_mut();

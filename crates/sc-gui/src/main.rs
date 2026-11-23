@@ -1059,6 +1059,7 @@ impl Commander {
         dialogs::name_dialog::open(
             sc_core::t!("main.new_folder.title"),
             label,
+            sc_core::t!("button.create"),
             String::new(),
             window,
             cx,
@@ -1749,6 +1750,7 @@ impl Commander {
         dialogs::name_dialog::open(
             sc_core::t!("tabs.rename.title"),
             sc_core::t!("tabs.rename.label"),
+            sc_core::t!("button.rename"),
             name,
             window,
             cx,

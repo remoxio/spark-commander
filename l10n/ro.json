@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Octal:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Alții"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Marcaje"
+  },
+  "button.change": {
+    "message": "Schimbați"
+  },
+  "button.change_password": {
+    "message": "Schimbați parola"
+  },
+  "button.combine": {
+    "message": "Combinați"
+  },
+  "button.connect": {
+    "message": "Conectați"
+  },
+  "button.create": {
+    "message": "Creați"
+  },
+  "button.duplicate": {
+    "message": "Duplicați"
+  },
+  "button.filter": {
+    "message": "Filtrați"
+  },
+  "button.find": {
+    "message": "Căutați"
+  },
+  "button.go": {
+    "message": "Mergeți"
+  },
+  "button.load": {
+    "message": "Încărcați"
+  },
+  "button.pack": {
+    "message": "Arhivați"
+  },
+  "button.rename": {
+    "message": "Redenumiți"
+  },
+  "button.save": {
+    "message": "Salvați"
+  },
+  "button.select": {
+    "message": "Selectați"
+  },
+  "button.set_password": {
+    "message": "Setați parola"
+  },
+  "button.show": {
+    "message": "Afișați"
+  },
+  "button.split": {
+    "message": "Divizați"
+  },
+  "button.unlock": {
+    "message": "Deblocați"
+  },
+  "button.unpack": {
+    "message": "Dezarhivați"
+  },
+  "button.unselect": {
+    "message": "Deselectați"
   },
   "button_bar.copy": {
     "message": "Copiere"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Căutați un șir hexazecimal"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Anulați"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Eliminați finalizatele"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "este necesară o parolă"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Tastați parola sau debifați „Criptați cu parola”."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Parolele salvate sunt blocate pe acest computer: parola principală le deschide."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Cele două nu coincid."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Anulați"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: nu s-a putut deconecta: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Copiați} other {Mutați}} „{name}” pe {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Suprascrieți tot"

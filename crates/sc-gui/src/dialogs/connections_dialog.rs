@@ -307,7 +307,7 @@ impl Render for EditConnection {
                     .children(crate::dialogs::ok_cancel(
                         Button::new("connection-ok")
                             .primary()
-                            .label(t!("remote.dialog.ok"))
+                            .label(t!("button.save"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
                         Button::new("connection-cancel")

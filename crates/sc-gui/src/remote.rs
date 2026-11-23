@@ -380,7 +380,7 @@ impl Render for LoginDialog {
                     .children(crate::dialogs::ok_cancel(
                         Button::new("login-ok")
                             .primary()
-                            .label(t!("remote.dialog.ok"))
+                            .label(t!("button.connect"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
                         Button::new("login-cancel")
@@ -603,7 +603,7 @@ impl Render for SecretDialog {
                     .children(crate::dialogs::ok_cancel(
                         Button::new("secret-ok")
                             .primary()
-                            .label(t!("remote.dialog.ok"))
+                            .label(t!("button.connect"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
                         Button::new("secret-cancel")

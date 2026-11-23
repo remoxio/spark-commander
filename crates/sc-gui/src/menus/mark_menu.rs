@@ -42,12 +42,12 @@ impl Commander {
     }
 
     fn mark_group(&mut self, mark: bool, window: &mut Window, cx: &mut Context<Self>) {
-        let (title, label) = match mark {
-            true => (sc_core::t!("mark.select_group.title"), sc_core::t!("mark.select_group.label")),
-            false => (sc_core::t!("mark.unselect_group.title"), sc_core::t!("mark.unselect_group.label")),
+        let (title, label, ok) = match mark {
+            true => (sc_core::t!("mark.select_group.title"), sc_core::t!("mark.select_group.label"), sc_core::t!("button.select")),
+            false => (sc_core::t!("mark.unselect_group.title"), sc_core::t!("mark.unselect_group.label"), sc_core::t!("button.unselect")),
         };
         let commander = cx.entity().downgrade();
-        name_dialog::open(title, label, "*".into(), window, cx, move |mask, _, cx| {
+        name_dialog::open(title, label, ok, "*".into(), window, cx, move |mask, _, cx| {
             let _ = commander.update(cx, |this, cx| {
                 this.mark(|panel| panel.mark_group(&mask, mark), cx)
             });
@@ -62,12 +62,12 @@ impl Commander {
         }
         let folder = panel.folder().to_owned();
         let file = folder.join("selection.txt").display().to_string();
-        let (title, label) = match save {
-            true => (sc_core::t!("mark.save_selection.title"), sc_core::t!("mark.save_selection.label")),
-            false => (sc_core::t!("mark.load_selection.title"), sc_core::t!("mark.load_selection.label")),
+        let (title, label, ok) = match save {
+            true => (sc_core::t!("mark.save_selection.title"), sc_core::t!("mark.save_selection.label"), sc_core::t!("button.save")),
+            false => (sc_core::t!("mark.load_selection.title"), sc_core::t!("mark.load_selection.label"), sc_core::t!("button.load")),
         };
         let commander = cx.entity().downgrade();
-        name_dialog::open(title, label, file, window, cx, move |text, window, cx| {
+        name_dialog::open(title, label, ok, file, window, cx, move |text, window, cx| {
             let path = command::resolve(text.trim(), &folder);
             let _ = commander.update(cx, |this, cx| {
                 let done = match save {

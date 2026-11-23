@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktalt:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Övriga"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Bokmärken"
+  },
+  "button.change": {
+    "message": "Ändra"
+  },
+  "button.change_password": {
+    "message": "Ändra lösenord"
+  },
+  "button.combine": {
+    "message": "Sammanfoga"
+  },
+  "button.connect": {
+    "message": "Anslut"
+  },
+  "button.create": {
+    "message": "Skapa"
+  },
+  "button.duplicate": {
+    "message": "Duplicera"
+  },
+  "button.filter": {
+    "message": "Filtrera"
+  },
+  "button.find": {
+    "message": "Sök"
+  },
+  "button.go": {
+    "message": "Gå"
+  },
+  "button.load": {
+    "message": "Läs in"
+  },
+  "button.pack": {
+    "message": "Packa"
+  },
+  "button.rename": {
+    "message": "Byt namn"
+  },
+  "button.save": {
+    "message": "Spara"
+  },
+  "button.select": {
+    "message": "Markera"
+  },
+  "button.set_password": {
+    "message": "Ange lösenord"
+  },
+  "button.show": {
+    "message": "Visa"
+  },
+  "button.split": {
+    "message": "Dela upp"
+  },
+  "button.unlock": {
+    "message": "Lås upp"
+  },
+  "button.unpack": {
+    "message": "Packa upp"
+  },
+  "button.unselect": {
+    "message": "Avmarkera"
   },
   "button_bar.copy": {
     "message": "Kopiera"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Sök hexsträng"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Avbryt"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Rensa klara"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "det krävs ett lösenord"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Skriv lösenordet, eller låt Kryptera vara avmarkerat."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "De sparade lösenorden är låsta på den här datorn: huvudlösenordet öppnar dem."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "De två stämmer inte överens."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Avbryt"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: det gick inte att koppla från: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopiera} other {Flytta}} ”{name}” till {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Skriv över alla"

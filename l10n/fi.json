@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktaali:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Muut"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Kirjanmerkit"
+  },
+  "button.change": {
+    "message": "Muuta"
+  },
+  "button.change_password": {
+    "message": "Vaihda salasana"
+  },
+  "button.combine": {
+    "message": "Yhdistä"
+  },
+  "button.connect": {
+    "message": "Yhdistä"
+  },
+  "button.create": {
+    "message": "Luo"
+  },
+  "button.duplicate": {
+    "message": "Monista"
+  },
+  "button.filter": {
+    "message": "Suodata"
+  },
+  "button.find": {
+    "message": "Etsi"
+  },
+  "button.go": {
+    "message": "Siirry"
+  },
+  "button.load": {
+    "message": "Lataa"
+  },
+  "button.pack": {
+    "message": "Pakkaa"
+  },
+  "button.rename": {
+    "message": "Nimeä uudelleen"
+  },
+  "button.save": {
+    "message": "Tallenna"
+  },
+  "button.select": {
+    "message": "Valitse"
+  },
+  "button.set_password": {
+    "message": "Aseta salasana"
+  },
+  "button.show": {
+    "message": "Näytä"
+  },
+  "button.split": {
+    "message": "Jaa"
+  },
+  "button.unlock": {
+    "message": "Avaa"
+  },
+  "button.unpack": {
+    "message": "Pura"
+  },
+  "button.unselect": {
+    "message": "Poista valinta"
   },
   "button_bar.copy": {
     "message": "Kopioi"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Etsi heksamerkkijonoa"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Peruuta"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Tyhjennä valmiit"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "se vaatii salasanan"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Kirjoita salasana tai poista valinta Salaa salasanalla."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Tallennetut salasanat ovat lukittuina tällä tietokoneella: pääsalasana avaa ne."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Salasanat eivät täsmää."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Peruuta"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: yhteyttä ei voitu katkaista: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopioi} other {Siirrä}} ”{name}” palvelimelle {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Korvaa kaikki"

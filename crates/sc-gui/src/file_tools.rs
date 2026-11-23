@@ -162,6 +162,7 @@ impl Commander {
         crate::dialogs::name_dialog::open(
             sc_core::t!("split.combine.dialog_title"),
             sc_core::t!("split.combine.label"),
+            sc_core::t!("button.combine"),
             target.display().to_string(),
             window,
             cx,
@@ -242,7 +243,7 @@ impl Render for LinkDialog {
                         cx.notify();
                     })),
             )
-            .child(buttons("link", cx, LinkDialog::finish))
+            .child(buttons("link", sc_core::t!("button.create"), cx, LinkDialog::finish))
     }
 }
 
@@ -312,7 +313,7 @@ impl Render for ChecksumDialog {
                 cx,
                 |this, on| this.separate = on,
             ))
-            .child(buttons("checksum", cx, ChecksumDialog::finish))
+            .child(buttons("checksum", sc_core::t!("button.create"), cx, ChecksumDialog::finish))
     }
 }
 
@@ -369,6 +370,6 @@ impl Render for SplitDialog {
                             }))
                     })),
             )
-            .child(buttons("split", cx, SplitDialog::finish))
+            .child(buttons("split", sc_core::t!("button.split"), cx, SplitDialog::finish))
     }
 }

@@ -54,7 +54,7 @@ impl Commander {
     pub(crate) fn new_workspace(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let free = (1..).map(|n| sc_core::t!("workspaces.new.name", number = n)).find(|name| self.workspaces.name_error(name, None).is_none());
         let commander = cx.entity().downgrade();
-        name_dialog::open(sc_core::t!("workspaces.new.title"), sc_core::t!("workspaces.name.label"), free.unwrap_or_default(), window, cx, move |name, window, cx| {
+        name_dialog::open(sc_core::t!("workspaces.new.title"), sc_core::t!("workspaces.name.label"), sc_core::t!("button.create"), free.unwrap_or_default(), window, cx, move |name, window, cx| {
             let _ = commander.update(cx, |this, cx| {
                 let at = this.workspaces.list.len();
                 this.add_workspace(at, name, OpenTabs::default(), window, cx)
@@ -69,7 +69,7 @@ impl Commander {
         };
         let name = self.workspaces.free_name(&sc_core::t!("workspaces.duplicate.name", name = workspace.name));
         let commander = cx.entity().downgrade();
-        name_dialog::open(sc_core::t!("workspaces.duplicate.title"), sc_core::t!("workspaces.name.label"), name, window, cx, move |name, window, cx| {
+        name_dialog::open(sc_core::t!("workspaces.duplicate.title"), sc_core::t!("workspaces.name.label"), sc_core::t!("button.duplicate"), name, window, cx, move |name, window, cx| {
             let _ = commander.update(cx, |this, cx| {
                 // The open one as it is now; its shells start again in their folders.
                 let open = match this.workspaces.current == ix {
@@ -152,7 +152,7 @@ impl Commander {
             return;
         };
         let commander = cx.entity().downgrade();
-        name_dialog::open(sc_core::t!("workspaces.rename.title"), sc_core::t!("workspaces.name.label"), name, window, cx, move |name, window, cx| {
+        name_dialog::open(sc_core::t!("workspaces.rename.title"), sc_core::t!("workspaces.name.label"), sc_core::t!("button.rename"), name, window, cx, move |name, window, cx| {
             let _ = commander.update(cx, |this, cx| {
                 if let Some(problem) = this.workspaces.name_error(&name, Some(ix)) {
                     return window.push_notification(Notification::error(problem), cx);

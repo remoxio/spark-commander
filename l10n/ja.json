@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "8 進数："
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "その他"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "ブックマーク"
+  },
+  "button.change": {
+    "message": "変更"
+  },
+  "button.change_password": {
+    "message": "パスワードを変更"
+  },
+  "button.combine": {
+    "message": "結合"
+  },
+  "button.connect": {
+    "message": "接続"
+  },
+  "button.create": {
+    "message": "作成"
+  },
+  "button.duplicate": {
+    "message": "複製"
+  },
+  "button.filter": {
+    "message": "絞り込み"
+  },
+  "button.find": {
+    "message": "検索"
+  },
+  "button.go": {
+    "message": "移動"
+  },
+  "button.load": {
+    "message": "読み込み"
+  },
+  "button.pack": {
+    "message": "圧縮"
+  },
+  "button.rename": {
+    "message": "名前の変更"
+  },
+  "button.save": {
+    "message": "保存"
+  },
+  "button.select": {
+    "message": "選択"
+  },
+  "button.set_password": {
+    "message": "パスワードを設定"
+  },
+  "button.show": {
+    "message": "表示"
+  },
+  "button.split": {
+    "message": "分割"
+  },
+  "button.unlock": {
+    "message": "ロック解除"
+  },
+  "button.unpack": {
+    "message": "展開"
+  },
+  "button.unselect": {
+    "message": "選択解除"
   },
   "button_bar.copy": {
     "message": "コピー"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "16 進数の文字列を検索"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "正規表現"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "キャンセル"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "完了分を消去"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "パスワードが必要です"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "パスワードを入力するか、暗号化をオフにしてください。"
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "このコンピューターでは保存したパスワードがロックされています。マスターパスワードで開けます。"
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "2 つのパスワードが一致しません。"
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "キャンセル"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}：切断できませんでした：{err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "「{name}」の {server} 上の{kind, select, copy {コピー} other {移動}}先："
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "すべて上書き"

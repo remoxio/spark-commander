@@ -116,7 +116,7 @@ impl Render for FindDialog {
                     .children(crate::dialogs::ok_cancel(
                         Button::new("find-ok")
                             .primary()
-                            .label(t!("find.ok"))
+                            .label(t!("button.find"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.finish(window, cx);

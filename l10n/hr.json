@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktalno:"
   },
-  "attributes.ok": {
-    "message": "U redu"
-  },
   "attributes.others": {
     "message": "Ostali"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Oznake"
+  },
+  "button.change": {
+    "message": "Promijeni"
+  },
+  "button.change_password": {
+    "message": "Promijeni lozinku"
+  },
+  "button.combine": {
+    "message": "Spoji"
+  },
+  "button.connect": {
+    "message": "Poveži se"
+  },
+  "button.create": {
+    "message": "Stvori"
+  },
+  "button.duplicate": {
+    "message": "Dupliciraj"
+  },
+  "button.filter": {
+    "message": "Filtriraj"
+  },
+  "button.find": {
+    "message": "Traži"
+  },
+  "button.go": {
+    "message": "Idi"
+  },
+  "button.load": {
+    "message": "Učitaj"
+  },
+  "button.pack": {
+    "message": "Zapakiraj"
+  },
+  "button.rename": {
+    "message": "Preimenuj"
+  },
+  "button.save": {
+    "message": "Spremi"
+  },
+  "button.select": {
+    "message": "Odaberi"
+  },
+  "button.set_password": {
+    "message": "Postavi lozinku"
+  },
+  "button.show": {
+    "message": "Prikaži"
+  },
+  "button.split": {
+    "message": "Podijeli"
+  },
+  "button.unlock": {
+    "message": "Otključaj"
+  },
+  "button.unpack": {
+    "message": "Raspakiraj"
+  },
+  "button.unselect": {
+    "message": "Poništi odabir"
   },
   "button_bar.copy": {
     "message": "Kopiraj"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Traži heksadecimalni niz"
   },
-  "find.ok": {
-    "message": "U redu"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Odustani"
   },
-  "name_dialog.ok": {
-    "message": "U redu"
-  },
   "operations.clear": {
     "message": "Očisti završene"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "potrebna je lozinka"
-  },
-  "pack.ok": {
-    "message": "U redu"
   },
   "pack.password_missing": {
     "message": "Upišite lozinku ili isključite šifriranje."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Spremljene lozinke na ovom su računalu zaključane: otvara ih glavna lozinka."
   },
-  "passwords.ok": {
-    "message": "U redu"
-  },
   "passwords.problem.differ": {
     "message": "Lozinke se ne podudaraju."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Odustani"
-  },
-  "remote.dialog.ok": {
-    "message": "U redu"
   },
   "remote.disconnect_failed": {
     "message": "{share}: nije moguće prekinuti vezu: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopiraj} other {Premjesti}} „{name}“ na {server}:"
-  },
-  "transfer.ok": {
-    "message": "U redu"
   },
   "transfer.overwrite.all": {
     "message": "Prepiši sve"

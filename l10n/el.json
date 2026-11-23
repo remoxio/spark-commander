@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Οκταδικό:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Άλλοι"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Σελιδοδείκτες"
+  },
+  "button.change": {
+    "message": "Αλλαγή"
+  },
+  "button.change_password": {
+    "message": "Αλλαγή κωδικού"
+  },
+  "button.combine": {
+    "message": "Συνένωση"
+  },
+  "button.connect": {
+    "message": "Σύνδεση"
+  },
+  "button.create": {
+    "message": "Δημιουργία"
+  },
+  "button.duplicate": {
+    "message": "Αντίγραφο"
+  },
+  "button.filter": {
+    "message": "Φιλτράρισμα"
+  },
+  "button.find": {
+    "message": "Εύρεση"
+  },
+  "button.go": {
+    "message": "Μετάβαση"
+  },
+  "button.load": {
+    "message": "Φόρτωση"
+  },
+  "button.pack": {
+    "message": "Συμπίεση"
+  },
+  "button.rename": {
+    "message": "Μετονομασία"
+  },
+  "button.save": {
+    "message": "Αποθήκευση"
+  },
+  "button.select": {
+    "message": "Επιλογή"
+  },
+  "button.set_password": {
+    "message": "Ορισμός κωδικού"
+  },
+  "button.show": {
+    "message": "Εμφάνιση"
+  },
+  "button.split": {
+    "message": "Διαίρεση"
+  },
+  "button.unlock": {
+    "message": "Ξεκλείδωμα"
+  },
+  "button.unpack": {
+    "message": "Αποσυμπίεση"
+  },
+  "button.unselect": {
+    "message": "Αποεπιλογή"
   },
   "button_bar.copy": {
     "message": "Αντιγραφή"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Αναζήτηση δεκαεξαδικής συμβολοσειράς"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Ακύρωση"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Εκκαθάριση ολοκληρωμένων"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "απαιτείται κωδικός πρόσβασης"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Πληκτρολογήστε τον κωδικό ή αφήστε την κρυπτογράφηση απενεργοποιημένη."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Οι αποθηκευμένοι κωδικοί πρόσβασης είναι κλειδωμένοι σε αυτόν τον υπολογιστή: ο κύριος κωδικός τους ξεκλειδώνει."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Οι δύο κωδικοί δεν ταιριάζουν."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Ακύρωση"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: δεν ήταν δυνατή η αποσύνδεση: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} του «{name}» στο {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Αντικατάσταση όλων"

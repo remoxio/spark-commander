@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "ऑक्टल:"
   },
-  "attributes.ok": {
-    "message": "ठीक है"
-  },
   "attributes.others": {
     "message": "अन्य"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "बुकमार्क"
+  },
+  "button.change": {
+    "message": "बदलें"
+  },
+  "button.change_password": {
+    "message": "पासवर्ड बदलें"
+  },
+  "button.combine": {
+    "message": "मिलाएं"
+  },
+  "button.connect": {
+    "message": "कनेक्ट करें"
+  },
+  "button.create": {
+    "message": "बनाएं"
+  },
+  "button.duplicate": {
+    "message": "डुप्लिकेट करें"
+  },
+  "button.filter": {
+    "message": "फ़िल्टर करें"
+  },
+  "button.find": {
+    "message": "खोजें"
+  },
+  "button.go": {
+    "message": "जाएं"
+  },
+  "button.load": {
+    "message": "लोड करें"
+  },
+  "button.pack": {
+    "message": "पैक करें"
+  },
+  "button.rename": {
+    "message": "नाम बदलें"
+  },
+  "button.save": {
+    "message": "सेव करें"
+  },
+  "button.select": {
+    "message": "चुनें"
+  },
+  "button.set_password": {
+    "message": "पासवर्ड सेट करें"
+  },
+  "button.show": {
+    "message": "दिखाएं"
+  },
+  "button.split": {
+    "message": "विभाजित करें"
+  },
+  "button.unlock": {
+    "message": "अनलॉक करें"
+  },
+  "button.unpack": {
+    "message": "अनपैक करें"
+  },
+  "button.unselect": {
+    "message": "चयन हटाएं"
   },
   "button_bar.copy": {
     "message": "कॉपी"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "हेक्स स्ट्रिंग खोजें"
   },
-  "find.ok": {
-    "message": "ठीक है"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "रद्द करें"
   },
-  "name_dialog.ok": {
-    "message": "ठीक है"
-  },
   "operations.clear": {
     "message": "पूरे हुए हटाएं"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "इसके लिए पासवर्ड चाहिए"
-  },
-  "pack.ok": {
-    "message": "ठीक है"
   },
   "pack.password_missing": {
     "message": "पासवर्ड टाइप करें, या “पासवर्ड से एन्क्रिप्ट करें” बंद रखें।"
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "इस कंप्यूटर पर सेव किए गए पासवर्ड लॉक हैं: मास्टर पासवर्ड उन्हें खोलता है।"
   },
-  "passwords.ok": {
-    "message": "ठीक है"
-  },
   "passwords.problem.differ": {
     "message": "दोनों एक जैसे नहीं हैं।"
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "रद्द करें"
-  },
-  "remote.dialog.ok": {
-    "message": "ठीक है"
   },
   "remote.disconnect_failed": {
     "message": "{share}: डिस्कनेक्ट नहीं हो सका: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "“{name}” {server} पर {kind, select, copy {कॉपी करें} other {मूव करें}}:"
-  },
-  "transfer.ok": {
-    "message": "ठीक है"
   },
   "transfer.overwrite.all": {
     "message": "सभी ओवरराइट करें"

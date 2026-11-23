@@ -7,20 +7,22 @@ use gpui_kit::*;
 
 type Done = Rc<dyn Fn(String, &mut Window, &mut App)>;
 
-/// Asks for a name; `done` gets it on OK or Enter.
+/// Asks for a name; `done` gets it on `ok`, the button named for what it
+/// does (Create, Rename), or Enter.
 pub fn open(
     title: impl Into<SharedString>,
     label: impl Into<SharedString>,
+    ok: impl Into<SharedString>,
     value: String,
     window: &mut Window,
     cx: &mut App,
     done: impl Fn(String, &mut Window, &mut App) + 'static,
 ) {
-    let (title, label, done): (SharedString, _, Done) = (title.into(), label.into(), Rc::new(done));
+    let (title, label, ok_label, done): (SharedString, _, _, Done) = (title.into(), label.into(), ok.into(), Rc::new(done));
     let build = move |main, window: &mut Window, cx: &mut App| {
         let input = cx.new(|cx| InputState::new(window, cx).default_value(value));
         crate::dialogs::pack_dialog::focus_all(&input, window, cx);
-        cx.new(|_| NameDialog { label, input, done, main })
+        cx.new(|_| NameDialog { label, ok: ok_label, input, done, main })
     };
     let ok = |view: &Entity<NameDialog>, window: &mut Window, cx: &mut App| {
         view.update(cx, |this, cx| this.finish(window, cx));
@@ -31,6 +33,7 @@ pub fn open(
 
 struct NameDialog {
     label: SharedString,
+    ok: SharedString,
     input: Entity<InputState>,
     done: Done,
     main: Option<crate::dialogs::dialog_window::Main>,
@@ -60,7 +63,7 @@ impl Render for NameDialog {
                     .children(crate::dialogs::ok_cancel(
                         Button::new("name-ok")
                             .primary()
-                            .label(sc_core::t!("name_dialog.ok"))
+                            .label(self.ok.clone())
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.finish(window, cx);

@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Октално:"
   },
-  "attributes.ok": {
-    "message": "У реду"
-  },
   "attributes.others": {
     "message": "Остали"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Обележивачи"
+  },
+  "button.change": {
+    "message": "Промени"
+  },
+  "button.change_password": {
+    "message": "Промени лозинку"
+  },
+  "button.combine": {
+    "message": "Споји"
+  },
+  "button.connect": {
+    "message": "Повежи се"
+  },
+  "button.create": {
+    "message": "Направи"
+  },
+  "button.duplicate": {
+    "message": "Дуплирај"
+  },
+  "button.filter": {
+    "message": "Филтрирај"
+  },
+  "button.find": {
+    "message": "Пронађи"
+  },
+  "button.go": {
+    "message": "Иди"
+  },
+  "button.load": {
+    "message": "Учитај"
+  },
+  "button.pack": {
+    "message": "Спакуј"
+  },
+  "button.rename": {
+    "message": "Преименуј"
+  },
+  "button.save": {
+    "message": "Сачувај"
+  },
+  "button.select": {
+    "message": "Изабери"
+  },
+  "button.set_password": {
+    "message": "Подеси лозинку"
+  },
+  "button.show": {
+    "message": "Прикажи"
+  },
+  "button.split": {
+    "message": "Подели"
+  },
+  "button.unlock": {
+    "message": "Откључај"
+  },
+  "button.unpack": {
+    "message": "Распакуј"
+  },
+  "button.unselect": {
+    "message": "Поништи избор"
   },
   "button_bar.copy": {
     "message": "Копирај"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Тражи хексадецимални низ"
   },
-  "find.ok": {
-    "message": "У реду"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Откажи"
   },
-  "name_dialog.ok": {
-    "message": "У реду"
-  },
   "operations.clear": {
     "message": "Очисти завршене"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "потребна је лозинка"
-  },
-  "pack.ok": {
-    "message": "У реду"
   },
   "pack.password_missing": {
     "message": "Унесите лозинку или оставите „Шифруј“ искључено."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Сачуване лозинке су на овом рачунару закључане: главна лозинка их откључава."
   },
-  "passwords.ok": {
-    "message": "У реду"
-  },
   "passwords.problem.differ": {
     "message": "Лозинке се не подударају."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Откажи"
-  },
-  "remote.dialog.ok": {
-    "message": "У реду"
   },
   "remote.disconnect_failed": {
     "message": "{share}: није могуће прекинути везу: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Копирај} other {Премести}} „{name}“ на {server}:"
-  },
-  "transfer.ok": {
-    "message": "У реду"
   },
   "transfer.overwrite.all": {
     "message": "Замени све"

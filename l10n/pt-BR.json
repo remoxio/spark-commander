@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Octal:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Outros"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Favoritos"
+  },
+  "button.change": {
+    "message": "Alterar"
+  },
+  "button.change_password": {
+    "message": "Alterar senha"
+  },
+  "button.combine": {
+    "message": "Combinar"
+  },
+  "button.connect": {
+    "message": "Conectar"
+  },
+  "button.create": {
+    "message": "Criar"
+  },
+  "button.duplicate": {
+    "message": "Duplicar"
+  },
+  "button.filter": {
+    "message": "Filtrar"
+  },
+  "button.find": {
+    "message": "Localizar"
+  },
+  "button.go": {
+    "message": "Ir"
+  },
+  "button.load": {
+    "message": "Carregar"
+  },
+  "button.pack": {
+    "message": "Compactar"
+  },
+  "button.rename": {
+    "message": "Renomear"
+  },
+  "button.save": {
+    "message": "Salvar"
+  },
+  "button.select": {
+    "message": "Selecionar"
+  },
+  "button.set_password": {
+    "message": "Definir senha"
+  },
+  "button.show": {
+    "message": "Mostrar"
+  },
+  "button.split": {
+    "message": "Dividir"
+  },
+  "button.unlock": {
+    "message": "Desbloquear"
+  },
+  "button.unpack": {
+    "message": "Descompactar"
+  },
+  "button.unselect": {
+    "message": "Desmarcar"
   },
   "button_bar.copy": {
     "message": "Copiar"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Pesquisar sequência hexadecimal"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Cancelar"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Limpar concluídas"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "é necessária uma senha"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Digite a senha ou deixe Criptografar desmarcado."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "As senhas salvas estão bloqueadas neste computador: a senha mestra as desbloqueia."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "As duas não são iguais."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Cancelar"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: não foi possível desconectar: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Copiar} other {Mover}} “{name}” para {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Substituir todos"

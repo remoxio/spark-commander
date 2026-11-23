@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Aštuntainis:"
   },
-  "attributes.ok": {
-    "message": "Gerai"
-  },
   "attributes.others": {
     "message": "Kiti"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Žymelės"
+  },
+  "button.change": {
+    "message": "Keisti"
+  },
+  "button.change_password": {
+    "message": "Keisti slaptažodį"
+  },
+  "button.combine": {
+    "message": "Sujungti"
+  },
+  "button.connect": {
+    "message": "Prisijungti"
+  },
+  "button.create": {
+    "message": "Sukurti"
+  },
+  "button.duplicate": {
+    "message": "Dubliuoti"
+  },
+  "button.filter": {
+    "message": "Filtruoti"
+  },
+  "button.find": {
+    "message": "Ieškoti"
+  },
+  "button.go": {
+    "message": "Eiti"
+  },
+  "button.load": {
+    "message": "Įkelti"
+  },
+  "button.pack": {
+    "message": "Supakuoti"
+  },
+  "button.rename": {
+    "message": "Pervardyti"
+  },
+  "button.save": {
+    "message": "Įrašyti"
+  },
+  "button.select": {
+    "message": "Pažymėti"
+  },
+  "button.set_password": {
+    "message": "Nustatyti slaptažodį"
+  },
+  "button.show": {
+    "message": "Rodyti"
+  },
+  "button.split": {
+    "message": "Skaidyti"
+  },
+  "button.unlock": {
+    "message": "Atrakinti"
+  },
+  "button.unpack": {
+    "message": "Išpakuoti"
+  },
+  "button.unselect": {
+    "message": "Atžymėti"
   },
   "button_bar.copy": {
     "message": "Kopijuoti"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Ieškoti šešioliktainės eilutės"
   },
-  "find.ok": {
-    "message": "Gerai"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Atšaukti"
   },
-  "name_dialog.ok": {
-    "message": "Gerai"
-  },
   "operations.clear": {
     "message": "Išvalyti baigtas"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "reikia slaptažodžio"
-  },
-  "pack.ok": {
-    "message": "Gerai"
   },
   "pack.password_missing": {
     "message": "Įveskite slaptažodį arba nežymėkite „Šifruoti slaptažodžiu“."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Įrašyti slaptažodžiai šiame kompiuteryje užrakinti: juos atrakina pagrindinis slaptažodis."
   },
-  "passwords.ok": {
-    "message": "Gerai"
-  },
   "passwords.problem.differ": {
     "message": "Slaptažodžiai nesutampa."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Atšaukti"
-  },
-  "remote.dialog.ok": {
-    "message": "Gerai"
   },
   "remote.disconnect_failed": {
     "message": "{share}: nepavyko atsijungti: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} „{name}“ į {server}:"
-  },
-  "transfer.ok": {
-    "message": "Gerai"
   },
   "transfer.overwrite.all": {
     "message": "Perrašyti visus"

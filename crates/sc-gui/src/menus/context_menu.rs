@@ -37,7 +37,7 @@ impl Commander {
         let shown = Path::new(&name).file_name().unwrap_or(&name).to_string_lossy().into_owned();
         let commander = cx.entity().downgrade();
         let (title, label) = (sc_core::t!("context_menu.rename_dialog.title"), sc_core::t!("context_menu.rename_dialog.label"));
-        name_dialog::open(title, label, shown, window, cx, move |to, window, cx| {
+        name_dialog::open(title, label, sc_core::t!("button.rename"), shown, window, cx, move |to, window, cx| {
             let name = name.clone();
             let _ = commander.update(cx, |this, cx| {
                 let panel = this.panels[side].tabs.current_mut();

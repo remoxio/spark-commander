@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktal:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Lainnya"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Markah"
+  },
+  "button.change": {
+    "message": "Ubah"
+  },
+  "button.change_password": {
+    "message": "Ubah kata sandi"
+  },
+  "button.combine": {
+    "message": "Gabungkan"
+  },
+  "button.connect": {
+    "message": "Hubungkan"
+  },
+  "button.create": {
+    "message": "Buat"
+  },
+  "button.duplicate": {
+    "message": "Duplikat"
+  },
+  "button.filter": {
+    "message": "Saring"
+  },
+  "button.find": {
+    "message": "Cari"
+  },
+  "button.go": {
+    "message": "Lompat"
+  },
+  "button.load": {
+    "message": "Muat"
+  },
+  "button.pack": {
+    "message": "Kemas"
+  },
+  "button.rename": {
+    "message": "Ganti nama"
+  },
+  "button.save": {
+    "message": "Simpan"
+  },
+  "button.select": {
+    "message": "Pilih"
+  },
+  "button.set_password": {
+    "message": "Atur kata sandi"
+  },
+  "button.show": {
+    "message": "Tampilkan"
+  },
+  "button.split": {
+    "message": "Pisahkan"
+  },
+  "button.unlock": {
+    "message": "Buka kunci"
+  },
+  "button.unpack": {
+    "message": "Ekstrak"
+  },
+  "button.unselect": {
+    "message": "Batalkan pilihan"
   },
   "button_bar.copy": {
     "message": "Salin"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Cari string heksa"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Batal"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Bersihkan yang selesai"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "arsip memerlukan kata sandi"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Ketik kata sandi, atau biarkan Enkripsi nonaktif."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Kata sandi yang disimpan terkunci di komputer ini: kata sandi utama membukanya."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Keduanya tidak sama."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Batal"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: tidak dapat memutuskan sambungan: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Salin} other {Pindahkan}} “{name}” ke {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Timpa semua"

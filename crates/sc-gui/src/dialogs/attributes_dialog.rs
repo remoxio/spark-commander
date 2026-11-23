@@ -273,7 +273,7 @@ impl Render for AttributesDialog {
                     .children(crate::dialogs::ok_cancel(
                         Button::new("attr-ok")
                             .primary()
-                            .label(sc_core::t!("attributes.ok"))
+                            .label(sc_core::t!("button.change"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 if this.finish(window, cx) {

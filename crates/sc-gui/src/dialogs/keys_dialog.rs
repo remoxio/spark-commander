@@ -200,7 +200,7 @@ impl KeysDialog {
         };
         let this = cx.entity().downgrade();
         let (title, label) = (sc_core::t!("keys.save_as.title"), sc_core::t!("keys.save_as.label"));
-        name_dialog::open(title, label, name, window, cx, move |name, _, cx| {
+        name_dialog::open(title, label, sc_core::t!("button.save"), name, window, cx, move |name, _, cx| {
             let name = name.trim().to_owned();
             let _ = this.update(cx, |this, cx| {
                 let reserved = name.is_empty() || name == custom() || Preset::ALL.iter().any(|preset| preset.name() == name);

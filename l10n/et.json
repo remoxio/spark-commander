@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktaalne:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Teised"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Järjehoidjad"
+  },
+  "button.change": {
+    "message": "Muuda"
+  },
+  "button.change_password": {
+    "message": "Muuda parooli"
+  },
+  "button.combine": {
+    "message": "Ühenda"
+  },
+  "button.connect": {
+    "message": "Ühenda"
+  },
+  "button.create": {
+    "message": "Loo"
+  },
+  "button.duplicate": {
+    "message": "Dubleeri"
+  },
+  "button.filter": {
+    "message": "Filtreeri"
+  },
+  "button.find": {
+    "message": "Otsi"
+  },
+  "button.go": {
+    "message": "Mine"
+  },
+  "button.load": {
+    "message": "Laadi"
+  },
+  "button.pack": {
+    "message": "Paki"
+  },
+  "button.rename": {
+    "message": "Nimeta ümber"
+  },
+  "button.save": {
+    "message": "Salvesta"
+  },
+  "button.select": {
+    "message": "Vali"
+  },
+  "button.set_password": {
+    "message": "Määra parool"
+  },
+  "button.show": {
+    "message": "Näita"
+  },
+  "button.split": {
+    "message": "Tükelda"
+  },
+  "button.unlock": {
+    "message": "Ava"
+  },
+  "button.unpack": {
+    "message": "Paki lahti"
+  },
+  "button.unselect": {
+    "message": "Tühista valik"
   },
   "button_bar.copy": {
     "message": "Kopeeri"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Otsi kuueteistkümnendbaite"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Tühista"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Eemalda lõpetatud"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "see vajab parooli"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Sisesta parool või lülita krüptimine välja."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Salvestatud paroolid on selles arvutis lukus: ülemparool avab need."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Need kaks ei ühti."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Tühista"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: ühendust ei õnnestunud katkestada: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopeeri} other {Teisalda}} „{name}“ asukohta serveris {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Kirjuta kõik üle"

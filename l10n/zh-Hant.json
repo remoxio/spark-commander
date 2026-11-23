@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "八進位："
   },
-  "attributes.ok": {
-    "message": "確定"
-  },
   "attributes.others": {
     "message": "其他人"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "書籤"
+  },
+  "button.change": {
+    "message": "變更"
+  },
+  "button.change_password": {
+    "message": "變更密碼"
+  },
+  "button.combine": {
+    "message": "合併"
+  },
+  "button.connect": {
+    "message": "連線"
+  },
+  "button.create": {
+    "message": "建立"
+  },
+  "button.duplicate": {
+    "message": "複製"
+  },
+  "button.filter": {
+    "message": "篩選"
+  },
+  "button.find": {
+    "message": "尋找"
+  },
+  "button.go": {
+    "message": "移至"
+  },
+  "button.load": {
+    "message": "載入"
+  },
+  "button.pack": {
+    "message": "壓縮"
+  },
+  "button.rename": {
+    "message": "重新命名"
+  },
+  "button.save": {
+    "message": "儲存"
+  },
+  "button.select": {
+    "message": "選取"
+  },
+  "button.set_password": {
+    "message": "設定密碼"
+  },
+  "button.show": {
+    "message": "顯示"
+  },
+  "button.split": {
+    "message": "分割"
+  },
+  "button.unlock": {
+    "message": "解鎖"
+  },
+  "button.unpack": {
+    "message": "解壓縮"
+  },
+  "button.unselect": {
+    "message": "取消選取"
   },
   "button_bar.copy": {
     "message": "複製"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "搜尋十六進位字串"
   },
-  "find.ok": {
-    "message": "確定"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "取消"
   },
-  "name_dialog.ok": {
-    "message": "確定"
-  },
   "operations.clear": {
     "message": "清除已完成"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "需要密碼"
-  },
-  "pack.ok": {
-    "message": "確定"
   },
   "pack.password_missing": {
     "message": "請輸入密碼，或不要勾選加密。"
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "這台電腦上已儲存的密碼已鎖定：請用主密碼開啟。"
   },
-  "passwords.ok": {
-    "message": "確定"
-  },
   "passwords.problem.differ": {
     "message": "兩次輸入的密碼不一致。"
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "取消"
-  },
-  "remote.dialog.ok": {
-    "message": "確定"
   },
   "remote.disconnect_failed": {
     "message": "{share}：無法中斷連線：{err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {複製} other {移動}}「{name}」到 {server}："
-  },
-  "transfer.ok": {
-    "message": "確定"
   },
   "transfer.overwrite.all": {
     "message": "全部覆寫"

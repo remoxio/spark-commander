@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktal:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Andre"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Bogmærker"
+  },
+  "button.change": {
+    "message": "Skift"
+  },
+  "button.change_password": {
+    "message": "Skift adgangskode"
+  },
+  "button.combine": {
+    "message": "Saml"
+  },
+  "button.connect": {
+    "message": "Opret forbindelse"
+  },
+  "button.create": {
+    "message": "Opret"
+  },
+  "button.duplicate": {
+    "message": "Dupliker"
+  },
+  "button.filter": {
+    "message": "Filtrér"
+  },
+  "button.find": {
+    "message": "Find"
+  },
+  "button.go": {
+    "message": "Gå"
+  },
+  "button.load": {
+    "message": "Indlæs"
+  },
+  "button.pack": {
+    "message": "Pak"
+  },
+  "button.rename": {
+    "message": "Omdøb"
+  },
+  "button.save": {
+    "message": "Gem"
+  },
+  "button.select": {
+    "message": "Markér"
+  },
+  "button.set_password": {
+    "message": "Angiv adgangskode"
+  },
+  "button.show": {
+    "message": "Vis"
+  },
+  "button.split": {
+    "message": "Opdel"
+  },
+  "button.unlock": {
+    "message": "Lås op"
+  },
+  "button.unpack": {
+    "message": "Udpak"
+  },
+  "button.unselect": {
+    "message": "Fjern markering"
   },
   "button_bar.copy": {
     "message": "Kopiér"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Søg efter hex-streng"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Annuller"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Ryd færdige"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "det kræver en adgangskode"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Skriv adgangskoden, eller lad Kryptér være slået fra."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "De gemte adgangskoder er låst på denne computer: hovedadgangskoden åbner dem."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "De to er ikke ens."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Annuller"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: kunne ikke afbryde forbindelsen: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopiér} other {Flyt}} »{name}« til {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Overskriv alle"

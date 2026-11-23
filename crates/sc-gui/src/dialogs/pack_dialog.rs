@@ -183,15 +183,17 @@ pub(crate) fn focus_all(input: &Entity<InputState>, window: &mut Window, cx: &mu
     });
 }
 
+/// `ok` names what it does: Pack, Split.
 pub(crate) fn buttons<V: 'static>(
     id: &'static str,
+    ok: String,
     cx: &mut Context<V>,
     finish: fn(&mut V, &mut Window, &mut Context<V>) -> bool,
 ) -> impl IntoElement {
     crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
         Button::new((id, 0usize))
             .primary()
-            .label(sc_core::t!("pack.ok"))
+            .label(ok)
             .min_w(px(80.))
             .on_click(cx.listener(move |this, _, window, cx| {
                 if finish(this, window, cx) {
@@ -375,7 +377,7 @@ impl Render for PackDialog {
                         .child(div().flex_1().child(Input::new(&self.password).small())),
                 )
             })
-            .child(buttons("pack", cx, PackDialog::finish))
+            .child(buttons("pack", sc_core::t!("button.pack"), cx, PackDialog::finish))
     }
 }
 
@@ -455,6 +457,6 @@ impl Render for UnpackDialog {
                     .child(div().w(px(110.)).child(sc_core::t!("pack.unpack.password")))
                     .child(div().flex_1().child(Input::new(&self.password).small())),
             )
-            .child(buttons("unpack", cx, UnpackDialog::finish))
+            .child(buttons("unpack", sc_core::t!("button.unpack"), cx, UnpackDialog::finish))
     }
 }

@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktalt:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Andre"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Bokmerker"
+  },
+  "button.change": {
+    "message": "Endre"
+  },
+  "button.change_password": {
+    "message": "Endre passord"
+  },
+  "button.combine": {
+    "message": "Slå sammen"
+  },
+  "button.connect": {
+    "message": "Koble til"
+  },
+  "button.create": {
+    "message": "Opprett"
+  },
+  "button.duplicate": {
+    "message": "Dupliser"
+  },
+  "button.filter": {
+    "message": "Filtrer"
+  },
+  "button.find": {
+    "message": "Finn"
+  },
+  "button.go": {
+    "message": "Gå"
+  },
+  "button.load": {
+    "message": "Last inn"
+  },
+  "button.pack": {
+    "message": "Pakk"
+  },
+  "button.rename": {
+    "message": "Gi nytt navn"
+  },
+  "button.save": {
+    "message": "Lagre"
+  },
+  "button.select": {
+    "message": "Merk"
+  },
+  "button.set_password": {
+    "message": "Angi passord"
+  },
+  "button.show": {
+    "message": "Vis"
+  },
+  "button.split": {
+    "message": "Del opp"
+  },
+  "button.unlock": {
+    "message": "Lås opp"
+  },
+  "button.unpack": {
+    "message": "Pakk ut"
+  },
+  "button.unselect": {
+    "message": "Fjern merking"
   },
   "button_bar.copy": {
     "message": "Kopier"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Søk etter heksadesimal streng"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Avbryt"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Fjern fullførte"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "det krever et passord"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Skriv inn passordet, eller slå av «Krypter med passordet»."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "De lagrede passordene er låst på denne datamaskinen: hovedpassordet åpner dem."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "De to passordene er ikke like."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Avbryt"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: kunne ikke koble fra: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopier} other {Flytt}} «{name}» til {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Overskriv alle"

@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktális:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Mások"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Könyvjelzők"
+  },
+  "button.change": {
+    "message": "Módosítás"
+  },
+  "button.change_password": {
+    "message": "Jelszó módosítása"
+  },
+  "button.combine": {
+    "message": "Összefűzés"
+  },
+  "button.connect": {
+    "message": "Csatlakozás"
+  },
+  "button.create": {
+    "message": "Létrehozás"
+  },
+  "button.duplicate": {
+    "message": "Duplikálás"
+  },
+  "button.filter": {
+    "message": "Szűrés"
+  },
+  "button.find": {
+    "message": "Keresés"
+  },
+  "button.go": {
+    "message": "Ugrás"
+  },
+  "button.load": {
+    "message": "Betöltés"
+  },
+  "button.pack": {
+    "message": "Csomagolás"
+  },
+  "button.rename": {
+    "message": "Átnevezés"
+  },
+  "button.save": {
+    "message": "Mentés"
+  },
+  "button.select": {
+    "message": "Kijelölés"
+  },
+  "button.set_password": {
+    "message": "Jelszó beállítása"
+  },
+  "button.show": {
+    "message": "Megjelenítés"
+  },
+  "button.split": {
+    "message": "Darabolás"
+  },
+  "button.unlock": {
+    "message": "Feloldás"
+  },
+  "button.unpack": {
+    "message": "Kicsomagolás"
+  },
+  "button.unselect": {
+    "message": "Kijelölés megszüntetése"
   },
   "button_bar.copy": {
     "message": "Másolás"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Hexadecimális karakterlánc keresése"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Mégse"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Befejezettek törlése"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "jelszó szükséges"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Írd be a jelszót, vagy kapcsold ki a titkosítást."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "A mentett jelszavak zárolva vannak ezen a gépen: a mesterjelszóval feloldhatók."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "A két jelszó nem egyezik."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Mégse"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: nem sikerült bontani a kapcsolatot: {err}"
@@ -4531,9 +4573,6 @@
   },
   "transfer.label.one_server": {
     "message": "„{name}” {kind, select, copy {másolása} other {áthelyezése}} ide ({server}):"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Összes felülírása"

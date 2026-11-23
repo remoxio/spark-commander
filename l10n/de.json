@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktal:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Andere"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Lesezeichen"
+  },
+  "button.change": {
+    "message": "Ändern"
+  },
+  "button.change_password": {
+    "message": "Passwort ändern"
+  },
+  "button.combine": {
+    "message": "Zusammenfügen"
+  },
+  "button.connect": {
+    "message": "Verbinden"
+  },
+  "button.create": {
+    "message": "Erstellen"
+  },
+  "button.duplicate": {
+    "message": "Duplizieren"
+  },
+  "button.filter": {
+    "message": "Filtern"
+  },
+  "button.find": {
+    "message": "Suchen"
+  },
+  "button.go": {
+    "message": "Gehe zu"
+  },
+  "button.load": {
+    "message": "Laden"
+  },
+  "button.pack": {
+    "message": "Packen"
+  },
+  "button.rename": {
+    "message": "Umbenennen"
+  },
+  "button.save": {
+    "message": "Speichern"
+  },
+  "button.select": {
+    "message": "Auswählen"
+  },
+  "button.set_password": {
+    "message": "Passwort festlegen"
+  },
+  "button.show": {
+    "message": "Anzeigen"
+  },
+  "button.split": {
+    "message": "Aufteilen"
+  },
+  "button.unlock": {
+    "message": "Entsperren"
+  },
+  "button.unpack": {
+    "message": "Entpacken"
+  },
+  "button.unselect": {
+    "message": "Abwählen"
   },
   "button_bar.copy": {
     "message": "Kopieren"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Hex-Zeichenfolge suchen"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Abbrechen"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Erledigte entfernen"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "es braucht ein Passwort"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Gib das Passwort ein oder lass die Verschlüsselung aus."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Die gespeicherten Passwörter sind auf diesem Computer gesperrt: Das Master-Passwort entsperrt sie."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Die beiden stimmen nicht überein."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Abbrechen"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: Trennen fehlgeschlagen: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "„{name}“ {kind, select, copy {kopieren} other {verschieben}} nach {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Alle überschreiben"

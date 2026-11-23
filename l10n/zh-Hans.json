@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "八进制："
   },
-  "attributes.ok": {
-    "message": "确定"
-  },
   "attributes.others": {
     "message": "其他人"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "书签"
+  },
+  "button.change": {
+    "message": "更改"
+  },
+  "button.change_password": {
+    "message": "更改密码"
+  },
+  "button.combine": {
+    "message": "合并"
+  },
+  "button.connect": {
+    "message": "连接"
+  },
+  "button.create": {
+    "message": "创建"
+  },
+  "button.duplicate": {
+    "message": "创建副本"
+  },
+  "button.filter": {
+    "message": "筛选"
+  },
+  "button.find": {
+    "message": "查找"
+  },
+  "button.go": {
+    "message": "转到"
+  },
+  "button.load": {
+    "message": "加载"
+  },
+  "button.pack": {
+    "message": "压缩"
+  },
+  "button.rename": {
+    "message": "重命名"
+  },
+  "button.save": {
+    "message": "保存"
+  },
+  "button.select": {
+    "message": "选择"
+  },
+  "button.set_password": {
+    "message": "设置密码"
+  },
+  "button.show": {
+    "message": "显示"
+  },
+  "button.split": {
+    "message": "分割"
+  },
+  "button.unlock": {
+    "message": "解锁"
+  },
+  "button.unpack": {
+    "message": "解压"
+  },
+  "button.unselect": {
+    "message": "取消选择"
   },
   "button_bar.copy": {
     "message": "复制"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "搜索十六进制字符串"
   },
-  "find.ok": {
-    "message": "确定"
-  },
   "find.regex": {
     "message": "正则表达式"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "取消"
   },
-  "name_dialog.ok": {
-    "message": "确定"
-  },
   "operations.clear": {
     "message": "清除已完成"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "需要密码"
-  },
-  "pack.ok": {
-    "message": "确定"
   },
   "pack.password_missing": {
     "message": "请输入密码，或不勾选“使用密码加密”。"
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "已保存的密码在本机上处于锁定状态：请用主密码解锁。"
   },
-  "passwords.ok": {
-    "message": "确定"
-  },
   "passwords.problem.differ": {
     "message": "两次输入的密码不一致。"
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "取消"
-  },
-  "remote.dialog.ok": {
-    "message": "确定"
   },
   "remote.disconnect_failed": {
     "message": "{share}：无法断开连接：{err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "将“{name}”{kind, select, copy {复制} other {移动}}到 {server}："
-  },
-  "transfer.ok": {
-    "message": "确定"
   },
   "transfer.overwrite.all": {
     "message": "全部覆盖"

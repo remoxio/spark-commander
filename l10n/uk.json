@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Вісімкове:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Інші"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Закладки"
+  },
+  "button.change": {
+    "message": "Змінити"
+  },
+  "button.change_password": {
+    "message": "Змінити пароль"
+  },
+  "button.combine": {
+    "message": "Об’єднати"
+  },
+  "button.connect": {
+    "message": "Підключитися"
+  },
+  "button.create": {
+    "message": "Створити"
+  },
+  "button.duplicate": {
+    "message": "Дублювати"
+  },
+  "button.filter": {
+    "message": "Фільтрувати"
+  },
+  "button.find": {
+    "message": "Знайти"
+  },
+  "button.go": {
+    "message": "Перейти"
+  },
+  "button.load": {
+    "message": "Завантажити"
+  },
+  "button.pack": {
+    "message": "Запакувати"
+  },
+  "button.rename": {
+    "message": "Перейменувати"
+  },
+  "button.save": {
+    "message": "Зберегти"
+  },
+  "button.select": {
+    "message": "Виділити"
+  },
+  "button.set_password": {
+    "message": "Встановити пароль"
+  },
+  "button.show": {
+    "message": "Показати"
+  },
+  "button.split": {
+    "message": "Розділити"
+  },
+  "button.unlock": {
+    "message": "Розблокувати"
+  },
+  "button.unpack": {
+    "message": "Розпакувати"
+  },
+  "button.unselect": {
+    "message": "Зняти виділення"
   },
   "button_bar.copy": {
     "message": "Копіювати"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Шукати шістнадцятковий рядок"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Скасувати"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Очистити завершені"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "потрібен пароль"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Введіть пароль або зніміть позначку «Зашифрувати паролем»."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Збережені паролі на цьому комп’ютері заблоковано: їх відкриває головний пароль."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Паролі не збігаються."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Скасувати"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: не вдалося від’єднатися: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Копіювати} other {Перемістити}} «{name}» до {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Замінити всі"

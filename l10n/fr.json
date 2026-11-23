@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Octal :"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Autres"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Signets"
+  },
+  "button.change": {
+    "message": "Changer"
+  },
+  "button.change_password": {
+    "message": "Changer le mot de passe"
+  },
+  "button.combine": {
+    "message": "Combiner"
+  },
+  "button.connect": {
+    "message": "Se connecter"
+  },
+  "button.create": {
+    "message": "Créer"
+  },
+  "button.duplicate": {
+    "message": "Dupliquer"
+  },
+  "button.filter": {
+    "message": "Filtrer"
+  },
+  "button.find": {
+    "message": "Rechercher"
+  },
+  "button.go": {
+    "message": "Aller"
+  },
+  "button.load": {
+    "message": "Charger"
+  },
+  "button.pack": {
+    "message": "Compresser"
+  },
+  "button.rename": {
+    "message": "Renommer"
+  },
+  "button.save": {
+    "message": "Enregistrer"
+  },
+  "button.select": {
+    "message": "Sélectionner"
+  },
+  "button.set_password": {
+    "message": "Définir le mot de passe"
+  },
+  "button.show": {
+    "message": "Afficher"
+  },
+  "button.split": {
+    "message": "Découper"
+  },
+  "button.unlock": {
+    "message": "Déverrouiller"
+  },
+  "button.unpack": {
+    "message": "Décompresser"
+  },
+  "button.unselect": {
+    "message": "Désélectionner"
   },
   "button_bar.copy": {
     "message": "Copier"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Rechercher une chaîne hexadécimale"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Annuler"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Effacer les terminées"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "un mot de passe est nécessaire"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Saisissez le mot de passe, ou décochez Chiffrer."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Les mots de passe enregistrés sont verrouillés sur cet ordinateur : le mot de passe principal les ouvre."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Les deux ne sont pas identiques."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Annuler"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share} : impossible de se déconnecter : {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Copier} other {Déplacer}} « {name} » vers {server} :"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Tout écraser"

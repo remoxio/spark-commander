@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Oktāli:"
   },
-  "attributes.ok": {
-    "message": "Labi"
-  },
   "attributes.others": {
     "message": "Citi"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Grāmatzīmes"
+  },
+  "button.change": {
+    "message": "Mainīt"
+  },
+  "button.change_password": {
+    "message": "Mainīt paroli"
+  },
+  "button.combine": {
+    "message": "Apvienot"
+  },
+  "button.connect": {
+    "message": "Savienoties"
+  },
+  "button.create": {
+    "message": "Izveidot"
+  },
+  "button.duplicate": {
+    "message": "Dublēt"
+  },
+  "button.filter": {
+    "message": "Filtrēt"
+  },
+  "button.find": {
+    "message": "Atrast"
+  },
+  "button.go": {
+    "message": "Pāriet"
+  },
+  "button.load": {
+    "message": "Ielādēt"
+  },
+  "button.pack": {
+    "message": "Iepakot"
+  },
+  "button.rename": {
+    "message": "Pārdēvēt"
+  },
+  "button.save": {
+    "message": "Saglabāt"
+  },
+  "button.select": {
+    "message": "Atlasīt"
+  },
+  "button.set_password": {
+    "message": "Iestatīt paroli"
+  },
+  "button.show": {
+    "message": "Rādīt"
+  },
+  "button.split": {
+    "message": "Sadalīt"
+  },
+  "button.unlock": {
+    "message": "Atbloķēt"
+  },
+  "button.unpack": {
+    "message": "Izpakot"
+  },
+  "button.unselect": {
+    "message": "Noņemt atlasi"
   },
   "button_bar.copy": {
     "message": "Kopēt"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Meklēt heksadecimālu virkni"
   },
-  "find.ok": {
-    "message": "Labi"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Atcelt"
   },
-  "name_dialog.ok": {
-    "message": "Labi"
-  },
   "operations.clear": {
     "message": "Notīrīt pabeigtās"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "nepieciešama parole"
-  },
-  "pack.ok": {
-    "message": "Labi"
   },
   "pack.password_missing": {
     "message": "Ievadiet paroli vai izslēdziet šifrēšanu."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Saglabātās paroles šajā datorā ir bloķētas: tās atver galvenā parole."
   },
-  "passwords.ok": {
-    "message": "Labi"
-  },
   "passwords.problem.differ": {
     "message": "Abas paroles nesakrīt."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Atcelt"
-  },
-  "remote.dialog.ok": {
-    "message": "Labi"
   },
   "remote.disconnect_failed": {
     "message": "{share}: neizdevās atvienoties: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopēt} other {Pārvietot}} „{name}” uz {server}:"
-  },
-  "transfer.ok": {
-    "message": "Labi"
   },
   "transfer.overwrite.all": {
     "message": "Pārrakstīt visus"

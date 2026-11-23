@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "ฐานแปด:"
   },
-  "attributes.ok": {
-    "message": "ตกลง"
-  },
   "attributes.others": {
     "message": "ผู้อื่น"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "ที่คั่นหน้า"
+  },
+  "button.change": {
+    "message": "เปลี่ยน"
+  },
+  "button.change_password": {
+    "message": "เปลี่ยนรหัสผ่าน"
+  },
+  "button.combine": {
+    "message": "รวม"
+  },
+  "button.connect": {
+    "message": "เชื่อมต่อ"
+  },
+  "button.create": {
+    "message": "สร้าง"
+  },
+  "button.duplicate": {
+    "message": "ทำสำเนา"
+  },
+  "button.filter": {
+    "message": "กรอง"
+  },
+  "button.find": {
+    "message": "ค้นหา"
+  },
+  "button.go": {
+    "message": "ไป"
+  },
+  "button.load": {
+    "message": "โหลด"
+  },
+  "button.pack": {
+    "message": "บีบอัด"
+  },
+  "button.rename": {
+    "message": "เปลี่ยนชื่อ"
+  },
+  "button.save": {
+    "message": "บันทึก"
+  },
+  "button.select": {
+    "message": "เลือก"
+  },
+  "button.set_password": {
+    "message": "ตั้งรหัสผ่าน"
+  },
+  "button.show": {
+    "message": "แสดง"
+  },
+  "button.split": {
+    "message": "แยก"
+  },
+  "button.unlock": {
+    "message": "ปลดล็อก"
+  },
+  "button.unpack": {
+    "message": "แตกไฟล์"
+  },
+  "button.unselect": {
+    "message": "ยกเลิกการเลือก"
   },
   "button_bar.copy": {
     "message": "คัดลอก"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "ค้นหาสตริงฐานสิบหก"
   },
-  "find.ok": {
-    "message": "ตกลง"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "ยกเลิก"
   },
-  "name_dialog.ok": {
-    "message": "ตกลง"
-  },
   "operations.clear": {
     "message": "ล้างงานที่เสร็จแล้ว"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "ต้องใช้รหัสผ่าน"
-  },
-  "pack.ok": {
-    "message": "ตกลง"
   },
   "pack.password_missing": {
     "message": "พิมพ์รหัสผ่าน หรือไม่ต้องเลือก “เข้ารหัสด้วยรหัสผ่าน”"
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "รหัสผ่านที่บันทึกไว้ถูกล็อกบนคอมพิวเตอร์เครื่องนี้: รหัสผ่านหลักจะเปิดรหัสผ่านเหล่านั้น"
   },
-  "passwords.ok": {
-    "message": "ตกลง"
-  },
   "passwords.problem.differ": {
     "message": "รหัสผ่านทั้งสองไม่ตรงกัน"
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "ยกเลิก"
-  },
-  "remote.dialog.ok": {
-    "message": "ตกลง"
   },
   "remote.disconnect_failed": {
     "message": "{share}: ตัดการเชื่อมต่อไม่ได้: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {คัดลอก} other {ย้าย}} “{name}” ไปยัง {server}:"
-  },
-  "transfer.ok": {
-    "message": "ตกลง"
   },
   "transfer.overwrite.all": {
     "message": "เขียนทับทั้งหมด"

@@ -379,10 +379,6 @@
     "description": "Change Attributes dialog: the label before the permissions as an octal number (755). Keep it short.",
     "message": "Octal:"
   },
-  "attributes.ok": {
-    "description": "Change Attributes dialog's OK button.",
-    "message": "OK"
-  },
   "attributes.others": {
     "description": "Change Attributes dialog: the row of everyone else's permissions. Keep it short.",
     "message": "Others"
@@ -514,6 +510,86 @@
   "bookmarks.title": {
     "description": "Title of the dialog managing the bookmarks (Go › Manage Bookmarks).",
     "message": "Bookmarks"
+  },
+  "button.change": {
+    "description": "Button of Files › Change Attributes: changes the files' attributes as chosen. Keep it short.",
+    "message": "Change"
+  },
+  "button.change_password": {
+    "description": "Button of the Master Password dialog when one is set: changes it to the one typed.",
+    "message": "Change Password"
+  },
+  "button.combine": {
+    "description": "Button of Files › Combine Files: combines the parts into the file. Keep it short.",
+    "message": "Combine"
+  },
+  "button.connect": {
+    "description": "Button of the dialogs asking for a server's login or password: connects with them. Keep it short.",
+    "message": "Connect"
+  },
+  "button.create": {
+    "description": "Button of the dialogs that create something by the name typed (New Folder, New File, a new workspace or connection folder) and of Create Link and Create Checksum Files. Keep it short.",
+    "message": "Create"
+  },
+  "button.duplicate": {
+    "description": "Button of Workspaces › Duplicate: makes the copy under the name typed. Keep it short.",
+    "message": "Duplicate"
+  },
+  "button.filter": {
+    "description": "Button of Show › Custom Filter: shows the files the masks typed match. Keep it short.",
+    "message": "Filter"
+  },
+  "button.find": {
+    "description": "Button of the viewer's Find dialog (F7): starts the search. Keep it short.",
+    "message": "Find"
+  },
+  "button.go": {
+    "description": "Button of the editor's Go to Line: goes to the line typed. Keep it short.",
+    "message": "Go"
+  },
+  "button.load": {
+    "description": "Button of Mark › Load Selection: selects the files the file typed lists. Keep it short.",
+    "message": "Load"
+  },
+  "button.pack": {
+    "description": "Button of the Pack dialog: packs the files into the archive. Keep it short.",
+    "message": "Pack"
+  },
+  "button.rename": {
+    "description": "Button of the dialogs that rename something by the name typed (a file, a folder tab, a bookmark, a workspace, a connection folder). Keep it short.",
+    "message": "Rename"
+  },
+  "button.save": {
+    "description": "Button that saves under the name typed (Mark › Save Selection, a shortcut set's Save As) and of the Connection dialog, saving the connection. Keep it short.",
+    "message": "Save"
+  },
+  "button.select": {
+    "description": "Button of Mark › Select Group: selects the files the masks typed match. Keep it short.",
+    "message": "Select"
+  },
+  "button.set_password": {
+    "description": "Button of the Master Password dialog when none is set yet: sets the master password typed.",
+    "message": "Set Password"
+  },
+  "button.show": {
+    "description": "Button of the Show Password dialog: shows the saved password once the master password is typed. Keep it short.",
+    "message": "Show"
+  },
+  "button.split": {
+    "description": "Button of Files › Split File: splits the file into parts. Keep it short.",
+    "message": "Split"
+  },
+  "button.unlock": {
+    "description": "Button of the Unlock Saved Passwords dialog: unlocks them with the master password typed. Keep it short.",
+    "message": "Unlock"
+  },
+  "button.unpack": {
+    "description": "Button of the Unpack dialog: unpacks the archive. Keep it short.",
+    "message": "Unpack"
+  },
+  "button.unselect": {
+    "description": "Button of Mark › Unselect Group: unselects the files the masks typed match. Keep it short.",
+    "message": "Unselect"
   },
   "button_bar.copy": {
     "description": "Function key button under the panels (as Total Commander's F3 View, F5 Copy): keep it short.",
@@ -2335,10 +2411,6 @@
     "description": "Viewer's Find dialog (F7 in the viewer): checkbox: the text is hexadecimal bytes, e.g. 48 65 6c.",
     "message": "Search hex string"
   },
-  "find.ok": {
-    "description": "Viewer's Find dialog (F7 in the viewer): button that starts the search. Keep it short.",
-    "message": "OK"
-  },
   "find.regex": {
     "description": "Viewer's Find dialog (F7 in the viewer): checkbox: the text is a regular expression. Usually kept as RegEx. Keep it short.",
     "message": "RegEx"
@@ -2999,10 +3071,6 @@
     "description": "Cancel button of the small dialogs that ask for one name or text (New folder, Rename, Combine files…).",
     "message": "Cancel"
   },
-  "name_dialog.ok": {
-    "description": "OK button of the small dialogs that ask for one name or text (New folder, Rename, Combine files…).",
-    "message": "OK"
-  },
   "operations.clear": {
     "description": "Button under the sidebar's Operations list that removes the finished jobs. Keep it short.",
     "message": "Clear finished"
@@ -3270,10 +3338,6 @@
   "pack.needs_password": {
     "description": "Error of packing, unpacking or testing an encrypted archive without its password.",
     "message": "it needs a password"
-  },
-  "pack.ok": {
-    "description": "OK button of the Pack, Unpack, Create Checksum Files, Split File and Create Link dialogs.",
-    "message": "OK"
   },
   "pack.password_missing": {
     "description": "Error in the Pack dialog when Encrypt is on without a password. Encrypt is the checkbox \"Encrypt with the password\".",
@@ -3679,10 +3743,6 @@
     "description": "Notification soon after the start when the settings came from another computer.",
     "message": "The saved passwords are locked on this computer: the master password opens them."
   },
-  "passwords.ok": {
-    "description": "Master password dialogs: the button that confirms; keep it short.",
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "description": "Master Password dialog: shown when the password and its repeat differ.",
     "message": "The two are not the same."
@@ -3910,10 +3970,6 @@
   "remote.dialog.cancel": {
     "description": "Button of the dialogs connecting to a server (password, login, unknown server) and of the Connection dialog.",
     "message": "Cancel"
-  },
-  "remote.dialog.ok": {
-    "description": "Button of the dialogs connecting to a server (password, login, unknown server) and of the Connection dialog.",
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "description": "Error letting go of a network share. {share} is its address or folder, as \"smb://nas/media\"; {err} the system's own error text.",
@@ -6042,10 +6098,6 @@
   "transfer.label.one_server": {
     "description": "F5/F6 dialog, to a server: the label above the target path. {kind} is copy or move (keep the select's choices, translate the words in braces); {name} the file or folder name (\"notes.txt\"); {server} the server's address (\"sftp://me@host\").",
     "message": "{kind, select, copy {Copy} other {Move}} \"{name}\" to {server}:"
-  },
-  "transfer.ok": {
-    "description": "F5/F6 dialog's OK button.",
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "description": "F5/F6 dialog: a choice for files already in the target, overwrite them all. Keep it short.",

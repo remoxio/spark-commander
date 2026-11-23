@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Osmičkovo:"
   },
-  "attributes.ok": {
-    "message": "OK"
-  },
   "attributes.others": {
     "message": "Ostatní"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Záložky"
+  },
+  "button.change": {
+    "message": "Zmeniť"
+  },
+  "button.change_password": {
+    "message": "Zmeniť heslo"
+  },
+  "button.combine": {
+    "message": "Spojiť"
+  },
+  "button.connect": {
+    "message": "Pripojiť"
+  },
+  "button.create": {
+    "message": "Vytvoriť"
+  },
+  "button.duplicate": {
+    "message": "Duplikovať"
+  },
+  "button.filter": {
+    "message": "Filtrovať"
+  },
+  "button.find": {
+    "message": "Hľadať"
+  },
+  "button.go": {
+    "message": "Prejsť"
+  },
+  "button.load": {
+    "message": "Načítať"
+  },
+  "button.pack": {
+    "message": "Zbaliť"
+  },
+  "button.rename": {
+    "message": "Premenovať"
+  },
+  "button.save": {
+    "message": "Uložiť"
+  },
+  "button.select": {
+    "message": "Vybrať"
+  },
+  "button.set_password": {
+    "message": "Nastaviť heslo"
+  },
+  "button.show": {
+    "message": "Zobraziť"
+  },
+  "button.split": {
+    "message": "Rozdeliť"
+  },
+  "button.unlock": {
+    "message": "Odomknúť"
+  },
+  "button.unpack": {
+    "message": "Rozbaliť"
+  },
+  "button.unselect": {
+    "message": "Zrušiť výber"
   },
   "button_bar.copy": {
     "message": "Kopírovať"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Hľadať hexadecimálny reťazec"
   },
-  "find.ok": {
-    "message": "OK"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Zrušiť"
   },
-  "name_dialog.ok": {
-    "message": "OK"
-  },
   "operations.clear": {
     "message": "Vymazať dokončené"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "vyžaduje heslo"
-  },
-  "pack.ok": {
-    "message": "OK"
   },
   "pack.password_missing": {
     "message": "Zadajte heslo alebo vypnite šifrovanie."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Uložené heslá sú na tomto počítači zamknuté: odomkne ich hlavné heslo."
   },
-  "passwords.ok": {
-    "message": "OK"
-  },
   "passwords.problem.differ": {
     "message": "Heslá sa nezhodujú."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Zrušiť"
-  },
-  "remote.dialog.ok": {
-    "message": "OK"
   },
   "remote.disconnect_failed": {
     "message": "{share}: nepodarilo sa odpojiť: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopírovať} other {Presunúť}} „{name}“ na {server}:"
-  },
-  "transfer.ok": {
-    "message": "OK"
   },
   "transfer.overwrite.all": {
     "message": "Prepísať všetko"

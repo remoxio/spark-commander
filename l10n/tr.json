@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Sekizlik:"
   },
-  "attributes.ok": {
-    "message": "Tamam"
-  },
   "attributes.others": {
     "message": "Diğerleri"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Yer imleri"
+  },
+  "button.change": {
+    "message": "Değiştir"
+  },
+  "button.change_password": {
+    "message": "Parolayı değiştir"
+  },
+  "button.combine": {
+    "message": "Birleştir"
+  },
+  "button.connect": {
+    "message": "Bağlan"
+  },
+  "button.create": {
+    "message": "Oluştur"
+  },
+  "button.duplicate": {
+    "message": "Çoğalt"
+  },
+  "button.filter": {
+    "message": "Filtrele"
+  },
+  "button.find": {
+    "message": "Bul"
+  },
+  "button.go": {
+    "message": "Git"
+  },
+  "button.load": {
+    "message": "Yükle"
+  },
+  "button.pack": {
+    "message": "Paketle"
+  },
+  "button.rename": {
+    "message": "Yeniden adlandır"
+  },
+  "button.save": {
+    "message": "Kaydet"
+  },
+  "button.select": {
+    "message": "Seç"
+  },
+  "button.set_password": {
+    "message": "Parola belirle"
+  },
+  "button.show": {
+    "message": "Göster"
+  },
+  "button.split": {
+    "message": "Böl"
+  },
+  "button.unlock": {
+    "message": "Kilidi aç"
+  },
+  "button.unpack": {
+    "message": "Paketten çıkar"
+  },
+  "button.unselect": {
+    "message": "Seçimi kaldır"
   },
   "button_bar.copy": {
     "message": "Kopyala"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Onaltılık dizi ara"
   },
-  "find.ok": {
-    "message": "Tamam"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "İptal"
   },
-  "name_dialog.ok": {
-    "message": "Tamam"
-  },
   "operations.clear": {
     "message": "Bitenleri temizle"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "parola gerekiyor"
-  },
-  "pack.ok": {
-    "message": "Tamam"
   },
   "pack.password_missing": {
     "message": "Parolayı yazın ya da Şifrele seçeneğini kapalı bırakın."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Kayıtlı parolalar bu bilgisayarda kilitli: ana parola kilidi açar."
   },
-  "passwords.ok": {
-    "message": "Tamam"
-  },
   "passwords.problem.differ": {
     "message": "İki parola aynı değil."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "İptal"
-  },
-  "remote.dialog.ok": {
-    "message": "Tamam"
   },
   "remote.disconnect_failed": {
     "message": "{share}: bağlantı kesilemedi: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "“{name}” öğesini {server} üzerinde şuraya {kind, select, copy {kopyala} other {taşı}}:"
-  },
-  "transfer.ok": {
-    "message": "Tamam"
   },
   "transfer.overwrite.all": {
     "message": "Tümünün üzerine yaz"

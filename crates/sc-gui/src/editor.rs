@@ -712,7 +712,7 @@ impl TextEditor {
         let line = self.editor.read(cx).cursor_position().line + 1;
         let editor = self.editor.clone();
         let (title, label) = (t!("editor.go_to_line.title"), t!("editor.go_to_line.label"));
-        crate::dialogs::name_dialog::open(title, label, line.to_string(), window, cx, move |typed, window, cx| {
+        crate::dialogs::name_dialog::open(title, label, t!("button.go"), line.to_string(), window, cx, move |typed, window, cx| {
             let mut parts = typed.trim().splitn(2, ':').map(|part| part.trim().parse::<u32>().ok());
             let Some(Some(line)) = parts.next() else {
                 return;

@@ -284,9 +284,6 @@
   "attributes.octal": {
     "message": "Osmiško:"
   },
-  "attributes.ok": {
-    "message": "V redu"
-  },
   "attributes.others": {
     "message": "Drugi"
   },
@@ -385,6 +382,66 @@
   },
   "bookmarks.title": {
     "message": "Zaznamki"
+  },
+  "button.change": {
+    "message": "Spremeni"
+  },
+  "button.change_password": {
+    "message": "Spremeni geslo"
+  },
+  "button.combine": {
+    "message": "Združi"
+  },
+  "button.connect": {
+    "message": "Poveži"
+  },
+  "button.create": {
+    "message": "Ustvari"
+  },
+  "button.duplicate": {
+    "message": "Podvoji"
+  },
+  "button.filter": {
+    "message": "Filtriraj"
+  },
+  "button.find": {
+    "message": "Najdi"
+  },
+  "button.go": {
+    "message": "Pojdi"
+  },
+  "button.load": {
+    "message": "Naloži"
+  },
+  "button.pack": {
+    "message": "Zapakiraj"
+  },
+  "button.rename": {
+    "message": "Preimenuj"
+  },
+  "button.save": {
+    "message": "Shrani"
+  },
+  "button.select": {
+    "message": "Izberi"
+  },
+  "button.set_password": {
+    "message": "Nastavi geslo"
+  },
+  "button.show": {
+    "message": "Prikaži"
+  },
+  "button.split": {
+    "message": "Razdeli"
+  },
+  "button.unlock": {
+    "message": "Odkleni"
+  },
+  "button.unpack": {
+    "message": "Razpakiraj"
+  },
+  "button.unselect": {
+    "message": "Odstrani iz izbora"
   },
   "button_bar.copy": {
     "message": "Kopiraj"
@@ -1751,9 +1808,6 @@
   "find.hex": {
     "message": "Išči šestnajstiški niz"
   },
-  "find.ok": {
-    "message": "V redu"
-  },
   "find.regex": {
     "message": "RegEx"
   },
@@ -2249,9 +2303,6 @@
   "name_dialog.cancel": {
     "message": "Prekliči"
   },
-  "name_dialog.ok": {
-    "message": "V redu"
-  },
   "operations.clear": {
     "message": "Počisti končana"
   },
@@ -2452,9 +2503,6 @@
   },
   "pack.needs_password": {
     "message": "potrebno je geslo"
-  },
-  "pack.ok": {
-    "message": "V redu"
   },
   "pack.password_missing": {
     "message": "Vnesite geslo ali pustite možnost Šifriraj z geslom izklopljeno."
@@ -2759,9 +2807,6 @@
   "passwords.locked_note": {
     "message": "Shranjena gesla so v tem računalniku zaklenjena: odpre jih glavno geslo."
   },
-  "passwords.ok": {
-    "message": "V redu"
-  },
   "passwords.problem.differ": {
     "message": "Gesli se ne ujemata."
   },
@@ -2932,9 +2977,6 @@
   },
   "remote.dialog.cancel": {
     "message": "Prekliči"
-  },
-  "remote.dialog.ok": {
-    "message": "V redu"
   },
   "remote.disconnect_failed": {
     "message": "{share}: povezave ni bilo mogoče prekiniti: {err}"
@@ -4516,9 +4558,6 @@
   },
   "transfer.label.one_server": {
     "message": "{kind, select, copy {Kopiraj} other {Premakni}} „{name}“ na {server}:"
-  },
-  "transfer.ok": {
-    "message": "V redu"
   },
   "transfer.overwrite.all": {
     "message": "Prepiši vse"
