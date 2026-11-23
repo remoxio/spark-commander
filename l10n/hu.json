@@ -4532,8 +4532,23 @@
   "transfer.archive.local_only": {
     "message": "Archívumba csak ennek a gépnek a fájljai kerülhetnek: előbb másold ide őket."
   },
+  "transfer.browse": {
+    "message": "Mappa kiválasztása"
+  },
   "transfer.cancel": {
     "message": "Mégse"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# fájl} other {# fájl}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# mappa} other {# mappa}}"
+  },
+  "transfer.destination": {
+    "message": "Cél"
+  },
+  "transfer.destination_server": {
+    "message": "Cél itt: {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Rendszergazdaként: ezt és minden más elutasított elemet a többi befejezése után, egyetlen jelszókéréssel."
@@ -4553,6 +4568,12 @@
   "transfer.extract_failed": {
     "message": "Nem sikerült kibontani őket: {err}"
   },
+  "transfer.heading": {
+    "message": "{count, plural, one {# elem} other {# elem}} {kind, select, copy {másolása} other {áthelyezése}}"
+  },
+  "transfer.if_exists": {
+    "message": "Ha a fájl már létezik"
+  },
   "transfer.into_archive.question_many": {
     "message": "{count, plural, one {# elem} other {# elem}} {kind, select, copy {másolása} other {áthelyezése}} ide: {into}? Az ott lévő azonos nevű elemek lecserélődnek."
   },
@@ -4565,26 +4586,11 @@
   "transfer.into_archive.title_one": {
     "message": "„{name}” {kind, select, copy {másolása} other {áthelyezése}} ide: {archive}"
   },
-  "transfer.label.many": {
-    "message": "{count, plural, one {# elem} other {# elem}} {kind, select, copy {másolása} other {áthelyezése}} ide:"
-  },
-  "transfer.label.many_server": {
-    "message": "{count, plural, one {# elem} other {# elem}} {kind, select, copy {másolása} other {áthelyezése}} ide ({server}):"
-  },
-  "transfer.label.one": {
-    "message": "„{name}” {kind, select, copy {másolása} other {áthelyezése}} ide:"
-  },
-  "transfer.label.one_server": {
-    "message": "„{name}” {kind, select, copy {másolása} other {áthelyezése}} ide ({server}):"
-  },
   "transfer.overwrite.all": {
     "message": "Összes felülírása"
   },
   "transfer.overwrite.ask": {
     "message": "Kérdezzen"
-  },
-  "transfer.overwrite.label": {
-    "message": "Ha a célhelyen már van azonos nevű fájl:"
   },
   "transfer.overwrite.older": {
     "message": "Régebbiek felülírása"

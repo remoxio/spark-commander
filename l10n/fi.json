@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Arkistoon voi viedä vain tämän tietokoneen tiedostoja: kopioi ne ensin tänne."
   },
+  "transfer.browse": {
+    "message": "Valitse kansio"
+  },
   "transfer.cancel": {
     "message": "Peruuta"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# tiedosto} other {# tiedostoa}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# kansio} other {# kansiota}}"
+  },
+  "transfer.destination": {
+    "message": "Kohde"
+  },
+  "transfer.destination_server": {
+    "message": "Kohde palvelimella {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Järjestelmänvalvojana: tämä ja muut evätyt tehdään, kun loput on valmiina; salasana kysytään kerran."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Niitä ei voitu purkaa: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopioi} other {Siirrä}} {count, plural, one {# kohde} other {# kohdetta}}"
+  },
+  "transfer.if_exists": {
+    "message": "Jos tiedosto on jo olemassa"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Kopioidaanko} other {Siirretäänkö}} {count, plural, one {# kohde} other {# kohdetta}} kohteeseen {into}? Siellä olevat samannimiset korvataan."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopioi} other {Siirrä}} ”{name}” arkistoon {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopioi} other {Siirrä}} {count, plural, one {# kohde} other {# kohdetta}} kohteeseen:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopioi} other {Siirrä}} {count, plural, one {# kohde} other {# kohdetta}} palvelimelle {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopioi} other {Siirrä}} ”{name}” kohteeseen:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopioi} other {Siirrä}} ”{name}” palvelimelle {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Korvaa kaikki"
   },
   "transfer.overwrite.ask": {
     "message": "Kysy"
-  },
-  "transfer.overwrite.label": {
-    "message": "Kun kohteessa on samanniminen tiedosto:"
   },
   "transfer.overwrite.older": {
     "message": "Korvaa vanhemmat"

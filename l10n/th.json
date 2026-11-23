@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "ใส่ลงในไฟล์บีบอัดได้เฉพาะไฟล์ของคอมพิวเตอร์เครื่องนี้: ให้คัดลอกมาที่นี่ก่อน"
   },
+  "transfer.browse": {
+    "message": "เลือกโฟลเดอร์"
+  },
   "transfer.cancel": {
     "message": "ยกเลิก"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, other {# ไฟล์}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, other {# โฟลเดอร์}}"
+  },
+  "transfer.destination": {
+    "message": "ปลายทาง"
+  },
+  "transfer.destination_server": {
+    "message": "ปลายทางบน {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "ในฐานะผู้ดูแลระบบ: ทำรายการนี้และรายการอื่นที่ถูกปฏิเสธหลังจากทำส่วนที่เหลือเสร็จ โดยขอรหัสผ่านครั้งเดียว"
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "นำไฟล์ออกมาไม่ได้: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {คัดลอก} other {ย้าย}} {count, plural, other {# รายการ}}"
+  },
+  "transfer.if_exists": {
+    "message": "หากมีไฟล์อยู่แล้ว"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {คัดลอก} other {ย้าย}} {count, plural, other {# รายการ}} ลงใน {into} หรือไม่ รายการที่มีชื่อเดียวกันในนั้นจะถูกแทนที่"
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {คัดลอก} other {ย้าย}} “{name}” ลงใน {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {คัดลอก} other {ย้าย}} {count, plural, other {# รายการ}} ไปยัง:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {คัดลอก} other {ย้าย}} {count, plural, other {# รายการ}} ไปยัง {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {คัดลอก} other {ย้าย}} “{name}” ไปยัง:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {คัดลอก} other {ย้าย}} “{name}” ไปยัง {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "เขียนทับทั้งหมด"
   },
   "transfer.overwrite.ask": {
     "message": "ถาม"
-  },
-  "transfer.overwrite.label": {
-    "message": "เมื่อปลายทางมีไฟล์ชื่อเดียวกัน:"
   },
   "transfer.overwrite.older": {
     "message": "เขียนทับไฟล์ที่เก่ากว่า"

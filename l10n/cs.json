@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Do archivu lze dát jen soubory tohoto počítače: nejdřív je sem zkopírujte."
   },
+  "transfer.browse": {
+    "message": "Vybrat složku"
+  },
   "transfer.cancel": {
     "message": "Zrušit"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# soubor} few {# soubory} other {# souborů}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# složka} few {# složky} other {# složek}}"
+  },
+  "transfer.destination": {
+    "message": "Cíl"
+  },
+  "transfer.destination_server": {
+    "message": "Cíl na {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Jako správce: tento soubor a vše další, co bude odmítnuto, až bude zbytek hotov, s jediným dotazem na heslo."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Soubory nelze vybalit: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopírovat} other {Přesunout}} {count, plural, one {# položku} few {# položky} other {# položek}}"
+  },
+  "transfer.if_exists": {
+    "message": "Pokud soubor již existuje"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Kopírovat} other {Přesunout}} {count, plural, one {# položku} few {# položky} other {# položek}} do {into}? Co tam má stejné názvy, bude nahrazeno."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopírovat} other {Přesunout}} „{name}“ do {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopírovat} other {Přesunout}} {count, plural, one {# položku} few {# položky} other {# položek}} do:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopírovat} other {Přesunout}} {count, plural, one {# položku} few {# položky} other {# položek}} na {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopírovat} other {Přesunout}} „{name}“ do:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopírovat} other {Přesunout}} „{name}“ na {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Přepsat vše"
   },
   "transfer.overwrite.ask": {
     "message": "Zeptat se"
-  },
-  "transfer.overwrite.label": {
-    "message": "Pokud cíl obsahuje soubor se stejným názvem:"
   },
   "transfer.overwrite.older": {
     "message": "Přepsat starší"

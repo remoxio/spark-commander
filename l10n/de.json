@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Nur Dateien dieses Computers kommen in ein Archiv: Kopiere sie zuerst hierher."
   },
+  "transfer.browse": {
+    "message": "Ordner auswählen"
+  },
   "transfer.cancel": {
     "message": "Abbrechen"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# Datei} other {# Dateien}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# Ordner} other {# Ordner}}"
+  },
+  "transfer.destination": {
+    "message": "Ziel"
+  },
+  "transfer.destination_server": {
+    "message": "Ziel auf {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Als Administrator: dies und alles Weitere, was verweigert wird, sobald der Rest erledigt ist, mit nur einer Passwortabfrage."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Konnten nicht entpackt werden: {err}"
   },
+  "transfer.heading": {
+    "message": "{count, plural, one {# Element} other {# Elemente}} {kind, select, copy {kopieren} other {verschieben}}"
+  },
+  "transfer.if_exists": {
+    "message": "Wenn eine Datei schon existiert"
+  },
   "transfer.into_archive.question_many": {
     "message": "{count, plural, one {# Element} other {# Elemente}} nach {into} {kind, select, copy {kopieren} other {verschieben}}? Was dort gleich heißt, wird ersetzt."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "„{name}“ in {archive} {kind, select, copy {kopieren} other {verschieben}}"
   },
-  "transfer.label.many": {
-    "message": "{count, plural, one {# Element} other {# Elemente}} {kind, select, copy {kopieren} other {verschieben}} nach:"
-  },
-  "transfer.label.many_server": {
-    "message": "{count, plural, one {# Element} other {# Elemente}} {kind, select, copy {kopieren} other {verschieben}} nach {server}:"
-  },
-  "transfer.label.one": {
-    "message": "„{name}“ {kind, select, copy {kopieren} other {verschieben}} nach:"
-  },
-  "transfer.label.one_server": {
-    "message": "„{name}“ {kind, select, copy {kopieren} other {verschieben}} nach {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Alle überschreiben"
   },
   "transfer.overwrite.ask": {
     "message": "Fragen"
-  },
-  "transfer.overwrite.label": {
-    "message": "Wenn das Ziel eine Datei gleichen Namens hat:"
   },
   "transfer.overwrite.older": {
     "message": "Ältere überschreiben"

@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "アーカイブに入れられるのは、このコンピューターのファイルだけです。先にここへコピーしてください。"
   },
+  "transfer.browse": {
+    "message": "フォルダーを選択"
+  },
   "transfer.cancel": {
     "message": "キャンセル"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, other {# 個のファイル}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, other {# 個のフォルダー}}"
+  },
+  "transfer.destination": {
+    "message": "宛先"
+  },
+  "transfer.destination_server": {
+    "message": "{server} の宛先"
   },
   "transfer.error.elevate_hint": {
     "message": "管理者として実行：このファイルと、ほかに拒否されたものを、残りの処理が終わった後にまとめて実行します。パスワードの入力は 1 回だけです。"
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "アーカイブから取り出せませんでした：{err}"
   },
+  "transfer.heading": {
+    "message": "{count, plural, other {# 個の項目}}を{kind, select, copy {コピー} other {移動}}"
+  },
+  "transfer.if_exists": {
+    "message": "同じ名前のファイルがある場合"
+  },
   "transfer.into_archive.question_many": {
     "message": "{count, plural, other {# 個の項目}}を {into} に{kind, select, copy {コピー} other {移動}}しますか？同じ名前のものは置き換えられます。"
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "「{name}」を {archive} に{kind, select, copy {コピー} other {移動}}"
   },
-  "transfer.label.many": {
-    "message": "{count, plural, other {# 個の項目}}の{kind, select, copy {コピー} other {移動}}先："
-  },
-  "transfer.label.many_server": {
-    "message": "{count, plural, other {# 個の項目}}の {server} 上の{kind, select, copy {コピー} other {移動}}先："
-  },
-  "transfer.label.one": {
-    "message": "「{name}」の{kind, select, copy {コピー} other {移動}}先："
-  },
-  "transfer.label.one_server": {
-    "message": "「{name}」の {server} 上の{kind, select, copy {コピー} other {移動}}先："
-  },
   "transfer.overwrite.all": {
     "message": "すべて上書き"
   },
   "transfer.overwrite.ask": {
     "message": "確認する"
-  },
-  "transfer.overwrite.label": {
-    "message": "転送先に同じ名前のファイルがある場合："
   },
   "transfer.overwrite.older": {
     "message": "古いものだけ上書き"

@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Arşive yalnızca bu bilgisayarın dosyaları eklenebilir: önce onları buraya kopyalayın."
   },
+  "transfer.browse": {
+    "message": "Klasör seç"
+  },
   "transfer.cancel": {
     "message": "İptal"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# dosya} other {# dosya}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# klasör} other {# klasör}}"
+  },
+  "transfer.destination": {
+    "message": "Hedef"
+  },
+  "transfer.destination_server": {
+    "message": "{server} üzerindeki hedef"
   },
   "transfer.error.elevate_hint": {
     "message": "Yönetici olarak: bu ve reddedilen diğerleri, geri kalanı bittikten sonra parola bir kez sorularak yapılır."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Arşivden çıkarılamadı: {err}"
   },
+  "transfer.heading": {
+    "message": "{count, plural, one {# öğeyi} other {# öğeyi}} {kind, select, copy {kopyala} other {taşı}}"
+  },
+  "transfer.if_exists": {
+    "message": "Dosya zaten varsa"
+  },
   "transfer.into_archive.question_many": {
     "message": "{count, plural, one {# öğe} other {# öğe}} {into} içine {kind, select, copy {kopyalansın} other {taşınsın}} mı? Orada aynı adı taşıyanlar değiştirilir."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "“{name}” öğesini {archive} arşivine {kind, select, copy {kopyala} other {taşı}}"
   },
-  "transfer.label.many": {
-    "message": "{count, plural, one {# öğeyi} other {# öğeyi}} şuraya {kind, select, copy {kopyala} other {taşı}}:"
-  },
-  "transfer.label.many_server": {
-    "message": "{count, plural, one {# öğeyi} other {# öğeyi}} {server} üzerinde şuraya {kind, select, copy {kopyala} other {taşı}}:"
-  },
-  "transfer.label.one": {
-    "message": "“{name}” öğesini şuraya {kind, select, copy {kopyala} other {taşı}}:"
-  },
-  "transfer.label.one_server": {
-    "message": "“{name}” öğesini {server} üzerinde şuraya {kind, select, copy {kopyala} other {taşı}}:"
-  },
   "transfer.overwrite.all": {
     "message": "Tümünün üzerine yaz"
   },
   "transfer.overwrite.ask": {
     "message": "Sor"
-  },
-  "transfer.overwrite.label": {
-    "message": "Hedefte aynı adlı bir dosya varsa:"
   },
   "transfer.overwrite.older": {
     "message": "Eskilerin üzerine yaz"

@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "У архиву могу да иду само датотеке овог рачунара: прво их копирајте овде."
   },
+  "transfer.browse": {
+    "message": "Изабери фасциклу"
+  },
   "transfer.cancel": {
     "message": "Откажи"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# датотека} few {# датотеке} other {# датотека}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# фасцикла} few {# фасцикле} other {# фасцикли}}"
+  },
+  "transfer.destination": {
+    "message": "Одредиште"
+  },
+  "transfer.destination_server": {
+    "message": "Одредиште на {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Као администратор: ово и све остало што је одбијено, када се заврши остатак, уз само једно тражење лозинке."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Није могуће издвојити их: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Копирај} other {Премести}} {count, plural, one {# ставку} few {# ставке} other {# ставки}}"
+  },
+  "transfer.if_exists": {
+    "message": "Ако датотека већ постоји"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Копирати} other {Преместити}} {count, plural, one {# ставку} few {# ставке} other {# ставки}} у {into}? Оно што тамо има исте називе биће замењено."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Копирање} other {Премештање}} „{name}“ у {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Копирај} other {Премести}} {count, plural, one {# ставку} few {# ставке} other {# ставки}} у:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Копирај} other {Премести}} {count, plural, one {# ставку} few {# ставке} other {# ставки}} на {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Копирај} other {Премести}} „{name}“ у:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Копирај} other {Премести}} „{name}“ на {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Замени све"
   },
   "transfer.overwrite.ask": {
     "message": "Питај"
-  },
-  "transfer.overwrite.label": {
-    "message": "Када одредиште већ садржи датотеку истог назива:"
   },
   "transfer.overwrite.older": {
     "message": "Замени старије"

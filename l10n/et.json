@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Arhiivi saab panna ainult selle arvuti faile: kopeeri need esmalt siia."
   },
+  "transfer.browse": {
+    "message": "Vali kaust"
+  },
   "transfer.cancel": {
     "message": "Tühista"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# fail} other {# faili}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# kaust} other {# kausta}}"
+  },
+  "transfer.destination": {
+    "message": "Sihtkoht"
+  },
+  "transfer.destination_server": {
+    "message": "Sihtkoht serveris {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Administraatorina: see ja kõik muu keelatu, kui ülejäänu on tehtud, küsides parooli ainult korra."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Neid ei õnnestunud välja võtta: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopeeri} other {Teisalda}} {count, plural, one {# üksus} other {# üksust}}"
+  },
+  "transfer.if_exists": {
+    "message": "Kui fail on juba olemas"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Kas kopeerida} other {Kas teisaldada}} {count, plural, one {# üksus} other {# üksust}} asukohta {into}? Seal olevad samanimelised asendatakse."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopeeri} other {Teisalda}} „{name}“ arhiivi {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopeeri} other {Teisalda}} {count, plural, one {# üksus} other {# üksust}} asukohta:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopeeri} other {Teisalda}} {count, plural, one {# üksus} other {# üksust}} asukohta serveris {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopeeri} other {Teisalda}} „{name}“ asukohta:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopeeri} other {Teisalda}} „{name}“ asukohta serveris {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Kirjuta kõik üle"
   },
   "transfer.overwrite.ask": {
     "message": "Küsi"
-  },
-  "transfer.overwrite.label": {
-    "message": "Kui sihtkohas on samanimeline fail:"
   },
   "transfer.overwrite.older": {
     "message": "Kirjuta vanemad üle"

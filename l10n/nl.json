@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Alleen bestanden van deze computer gaan in een archief: kopieer ze eerst hierheen."
   },
+  "transfer.browse": {
+    "message": "Kies een map"
+  },
   "transfer.cancel": {
     "message": "Annuleren"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# bestand} other {# bestanden}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# map} other {# mappen}}"
+  },
+  "transfer.destination": {
+    "message": "Bestemming"
+  },
+  "transfer.destination_server": {
+    "message": "Bestemming op {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Als administrator: dit en wat verder wordt geweigerd, nadat de rest klaar is, met één keer om het wachtwoord vragen."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Kan ze er niet uithalen: {err}"
   },
+  "transfer.heading": {
+    "message": "{count, plural, one {# item} other {# items}} {kind, select, copy {kopiëren} other {verplaatsen}}"
+  },
+  "transfer.if_exists": {
+    "message": "Als een bestand al bestaat"
+  },
   "transfer.into_archive.question_many": {
     "message": "{count, plural, one {# item} other {# items}} {kind, select, copy {kopiëren} other {verplaatsen}} naar {into}? Wat daar dezelfde naam heeft, wordt vervangen."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "“{name}” {kind, select, copy {kopiëren} other {verplaatsen}} naar {archive}"
   },
-  "transfer.label.many": {
-    "message": "{count, plural, one {# item} other {# items}} {kind, select, copy {kopiëren} other {verplaatsen}} naar:"
-  },
-  "transfer.label.many_server": {
-    "message": "{count, plural, one {# item} other {# items}} {kind, select, copy {kopiëren} other {verplaatsen}} naar {server}:"
-  },
-  "transfer.label.one": {
-    "message": "“{name}” {kind, select, copy {kopiëren} other {verplaatsen}} naar:"
-  },
-  "transfer.label.one_server": {
-    "message": "“{name}” {kind, select, copy {kopiëren} other {verplaatsen}} naar {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Alles overschrijven"
   },
   "transfer.overwrite.ask": {
     "message": "Vragen"
-  },
-  "transfer.overwrite.label": {
-    "message": "Als het doel een bestand met dezelfde naam heeft:"
   },
   "transfer.overwrite.older": {
     "message": "Oudere overschrijven"

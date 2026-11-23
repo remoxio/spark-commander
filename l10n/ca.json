@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Només els fitxers d’aquest ordinador poden anar a un arxiu: primer copia’ls aquí."
   },
+  "transfer.browse": {
+    "message": "Tria una carpeta"
+  },
   "transfer.cancel": {
     "message": "Cancel·la"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# fitxer} other {# fitxers}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# carpeta} other {# carpetes}}"
+  },
+  "transfer.destination": {
+    "message": "Destinació"
+  },
+  "transfer.destination_server": {
+    "message": "Destinació a {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Com a administrador: aquest i tot el que es denegui, quan s’hagi fet la resta, demanant la contrasenya un sol cop."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "No s’han pogut extreure: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Copia} other {Mou}} {count, plural, one {# element} other {# elements}}"
+  },
+  "transfer.if_exists": {
+    "message": "Si un fitxer ja existeix"
+  },
   "transfer.into_archive.question_many": {
     "message": "Vols {kind, select, copy {copiar} other {moure}} {count, plural, one {# element} other {# elements}} a {into}? Se substituirà el que tingui el mateix nom."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Copia} other {Mou}} «{name}» a {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Copia} other {Mou}} {count, plural, one {# element} other {# elements}} a:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Copia} other {Mou}} {count, plural, one {# element} other {# elements}} a {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Copia} other {Mou}} «{name}» a:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Copia} other {Mou}} «{name}» a {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Sobreescriu-ho tot"
   },
   "transfer.overwrite.ask": {
     "message": "Pregunta"
-  },
-  "transfer.overwrite.label": {
-    "message": "Quan a la destinació hi ha un fitxer amb el mateix nom:"
   },
   "transfer.overwrite.older": {
     "message": "Sobreescriu els més antics"

@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "सिर्फ़ इस कंप्यूटर की फ़ाइलें आर्काइव में जा सकती हैं: पहले उन्हें यहां कॉपी करें।"
   },
+  "transfer.browse": {
+    "message": "फ़ोल्डर चुनें"
+  },
   "transfer.cancel": {
     "message": "रद्द करें"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# फ़ाइल} other {# फ़ाइलें}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# फ़ोल्डर} other {# फ़ोल्डर}}"
+  },
+  "transfer.destination": {
+    "message": "गंतव्य"
+  },
+  "transfer.destination_server": {
+    "message": "{server} पर गंतव्य"
   },
   "transfer.error.elevate_hint": {
     "message": "एडमिनिस्ट्रेटर के रूप में: बाकी काम पूरा होने के बाद यह और बाकी अस्वीकार की गई चीज़ें, सिर्फ़ एक बार पासवर्ड पूछकर।"
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "उन्हें बाहर नहीं निकाला जा सका: {err}"
   },
+  "transfer.heading": {
+    "message": "{count, plural, one {# आइटम} other {# आइटम}} {kind, select, copy {कॉपी करें} other {मूव करें}}"
+  },
+  "transfer.if_exists": {
+    "message": "यदि फ़ाइल पहले से मौजूद है"
+  },
   "transfer.into_archive.question_many": {
     "message": "{count, plural, one {# आइटम} other {# आइटम}} को {into} में {kind, select, copy {कॉपी करें} other {मूव करें}}? वहां इन्हीं नामों वाली चीज़ें बदल दी जाएंगी।"
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "“{name}” को {archive} में {kind, select, copy {कॉपी करें} other {मूव करें}}"
   },
-  "transfer.label.many": {
-    "message": "{count, plural, one {# आइटम} other {# आइटम}} यहां {kind, select, copy {कॉपी करें} other {मूव करें}}:"
-  },
-  "transfer.label.many_server": {
-    "message": "{count, plural, one {# आइटम} other {# आइटम}} {server} पर {kind, select, copy {कॉपी करें} other {मूव करें}}:"
-  },
-  "transfer.label.one": {
-    "message": "“{name}” यहां {kind, select, copy {कॉपी करें} other {मूव करें}}:"
-  },
-  "transfer.label.one_server": {
-    "message": "“{name}” {server} पर {kind, select, copy {कॉपी करें} other {मूव करें}}:"
-  },
   "transfer.overwrite.all": {
     "message": "सभी ओवरराइट करें"
   },
   "transfer.overwrite.ask": {
     "message": "पूछें"
-  },
-  "transfer.overwrite.label": {
-    "message": "जहां लक्ष्य में इसी नाम की फ़ाइल हो:"
   },
   "transfer.overwrite.older": {
     "message": "पुरानी को ओवरराइट करें"

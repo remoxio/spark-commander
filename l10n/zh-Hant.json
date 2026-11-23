@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "只有這台電腦上的檔案可以放入壓縮檔：請先將它們複製到這裡。"
   },
+  "transfer.browse": {
+    "message": "選擇資料夾"
+  },
   "transfer.cancel": {
     "message": "取消"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, other {# 個檔案}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, other {# 個資料夾}}"
+  },
+  "transfer.destination": {
+    "message": "目的地"
+  },
+  "transfer.destination_server": {
+    "message": "{server} 上的目的地"
   },
   "transfer.error.elevate_hint": {
     "message": "以系統管理員身分：在其餘項目完成後，處理此項目及其他遭拒的項目，只需輸入一次密碼。"
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "無法取出：{err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {複製} other {移動}} {count, plural, other {# 個項目}}"
+  },
+  "transfer.if_exists": {
+    "message": "如果檔案已存在"
+  },
   "transfer.into_archive.question_many": {
     "message": "要{kind, select, copy {複製} other {移動}} {count, plural, other {# 個項目}}到 {into} 嗎？其中的同名項目將被取代。"
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {複製} other {移動}}「{name}」到 {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {複製} other {移動}} {count, plural, other {# 個項目}}到："
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {複製} other {移動}} {count, plural, other {# 個項目}}到 {server}："
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {複製} other {移動}}「{name}」到："
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {複製} other {移動}}「{name}」到 {server}："
-  },
   "transfer.overwrite.all": {
     "message": "全部覆寫"
   },
   "transfer.overwrite.ask": {
     "message": "詢問"
-  },
-  "transfer.overwrite.label": {
-    "message": "目標中有同名檔案時："
   },
   "transfer.overwrite.older": {
     "message": "覆寫較舊的"

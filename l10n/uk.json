@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "В архів можна додати лише файли цього комп’ютера: спершу скопіюйте їх сюди."
   },
+  "transfer.browse": {
+    "message": "Вибрати теку"
+  },
   "transfer.cancel": {
     "message": "Скасувати"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# файл} few {# файли} many {# файлів} other {# файлу}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# тека} few {# теки} many {# тек} other {# теки}}"
+  },
+  "transfer.destination": {
+    "message": "Місце призначення"
+  },
+  "transfer.destination_server": {
+    "message": "Місце призначення на {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "«Як адміністратор»: це та все інше, у чому буде відмовлено, виконається після решти, з одним запитом пароля."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Не вдалося видобути їх: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Копіювати} other {Перемістити}} {count, plural, one {# елемент} few {# елементи} many {# елементів} other {# елемента}}"
+  },
+  "transfer.if_exists": {
+    "message": "Якщо файл уже існує"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Копіювати} other {Перемістити}} {count, plural, one {# елемент} few {# елементи} many {# елементів} other {# елемента}} в {into}? Елементи з такими самими іменами там буде замінено."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Копіювання} other {Переміщення}} «{name}» в {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Копіювати} other {Перемістити}} {count, plural, one {# елемент} few {# елементи} many {# елементів} other {# елемента}} до:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Копіювати} other {Перемістити}} {count, plural, one {# елемент} few {# елементи} many {# елементів} other {# елемента}} до {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Копіювати} other {Перемістити}} «{name}» до:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Копіювати} other {Перемістити}} «{name}» до {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Замінити всі"
   },
   "transfer.overwrite.ask": {
     "message": "Запитувати"
-  },
-  "transfer.overwrite.label": {
-    "message": "Якщо в цілі є файл із таким самим ім’ям:"
   },
   "transfer.overwrite.older": {
     "message": "Замінити старіші"

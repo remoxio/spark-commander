@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Bare filer på denne datamaskinen kan legges i et arkiv: kopier dem hit først."
   },
+  "transfer.browse": {
+    "message": "Velg en mappe"
+  },
   "transfer.cancel": {
     "message": "Avbryt"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# fil} other {# filer}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# mappe} other {# mapper}}"
+  },
+  "transfer.destination": {
+    "message": "Mål"
+  },
+  "transfer.destination_server": {
+    "message": "Mål på {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Som administrator: dette og alt annet som nektes, når resten er gjort, med én forespørsel om passordet."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Kunne ikke hente dem ut: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopier} other {Flytt}} {count, plural, one {# element} other {# elementer}}"
+  },
+  "transfer.if_exists": {
+    "message": "Hvis en fil allerede finnes"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Vil du kopiere} other {Vil du flytte}} {count, plural, one {# element} other {# elementer}} til {into}? Det som har samme navn der, erstattes."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopier} other {Flytt}} «{name}» til {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopier} other {Flytt}} {count, plural, one {# element} other {# elementer}} til:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopier} other {Flytt}} {count, plural, one {# element} other {# elementer}} til {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopier} other {Flytt}} «{name}» til:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopier} other {Flytt}} «{name}» til {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Overskriv alle"
   },
   "transfer.overwrite.ask": {
     "message": "Spør"
-  },
-  "transfer.overwrite.label": {
-    "message": "Der målet har en fil med samme navn:"
   },
   "transfer.overwrite.older": {
     "message": "Overskriv eldre"

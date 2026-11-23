@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Solo los archivos de este equipo se pueden añadir a un archivo comprimido: cópialos aquí primero."
   },
+  "transfer.browse": {
+    "message": "Elegir una carpeta"
+  },
   "transfer.cancel": {
     "message": "Cancelar"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# archivo} other {# archivos}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# carpeta} other {# carpetas}}"
+  },
+  "transfer.destination": {
+    "message": "Destino"
+  },
+  "transfer.destination_server": {
+    "message": "Destino en {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Como administrador: este y todo lo demás que se rechace, una vez terminado el resto, pidiendo la contraseña una sola vez."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "No se pudieron extraer: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Copiar} other {Mover}} {count, plural, one {# elemento} other {# elementos}}"
+  },
+  "transfer.if_exists": {
+    "message": "Si un archivo ya existe"
+  },
   "transfer.into_archive.question_many": {
     "message": "¿{kind, select, copy {Copiar} other {Mover}} {count, plural, one {# elemento} other {# elementos}} a {into}? Se reemplazará lo que tenga sus nombres allí."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Copiar} other {Mover}} «{name}» a {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Copiar} other {Mover}} {count, plural, one {# elemento} other {# elementos}} a:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Copiar} other {Mover}} {count, plural, one {# elemento} other {# elementos}} a {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Copiar} other {Mover}} «{name}» a:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Copiar} other {Mover}} «{name}» a {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Sobrescribir todo"
   },
   "transfer.overwrite.ask": {
     "message": "Preguntar"
-  },
-  "transfer.overwrite.label": {
-    "message": "Si en el destino hay un archivo con el mismo nombre:"
   },
   "transfer.overwrite.older": {
     "message": "Sobrescribir los más antiguos"

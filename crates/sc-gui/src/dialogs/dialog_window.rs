@@ -144,6 +144,8 @@ pub(crate) fn answer(main: Option<Main>, window: &mut Window, cx: &mut App, f: i
 
 struct DialogWindow {
     title: SharedString,
+    /// macOS: the title over the content, else the content's own.
+    heading: bool,
     content: AnyView,
     ok: Option<Ok>,
     /// The page's height last laid out, which the window takes, up to `most`.
@@ -160,6 +162,28 @@ struct DialogWindow {
 pub(crate) fn open<V: Render>(
     title: String,
     size: Size<Pixels>,
+    parent: &mut Window,
+    cx: &mut App,
+    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
+) {
+    open_window(title, size, true, parent, cx, build)
+}
+
+/// As `open`, the view heading itself: macOS's sheet puts no title over it.
+pub(crate) fn open_headed<V: Render>(
+    title: String,
+    size: Size<Pixels>,
+    parent: &mut Window,
+    cx: &mut App,
+    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
+) {
+    open_window(title, size, false, parent, cx, build)
+}
+
+fn open_window<V: Render>(
+    title: String,
+    size: Size<Pixels>,
+    heading: bool,
     parent: &mut Window,
     cx: &mut App,
     build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
@@ -195,7 +219,7 @@ pub(crate) fn open<V: Render>(
         if window.focused(cx).is_none() {
             window.focus(&focus, cx);
         }
-        cx.new(|_| DialogWindow { title: title.into(), content: content.into(), ok, height: Rc::default(), most, width: size.width, focus })
+        cx.new(|_| DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: size.width, focus })
     });
     match opened {
         Ok((handle, _)) => {
@@ -305,7 +329,7 @@ impl Render for DialogWindow {
         #[cfg(windows)]
         let header = Some(caption(self.title.clone(), false, window, cx));
         // macOS: a sheet has no title bar; its title heads it, as an alert's.
-        let heading = cfg!(target_os = "macos").then(|| div().px_4().pt_4().text_sm().font_weight(FontWeight::BOLD).child(self.title.clone()));
+        let heading = (cfg!(target_os = "macos") && self.heading).then(|| div().px_4().pt_4().text_sm().font_weight(FontWeight::BOLD).child(self.title.clone()));
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
             let button = Button::new("dialog-ok").label(label).min_w(px(80.));
             let button = if ok.danger { button.danger() } else { button.primary() };

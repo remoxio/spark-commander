@@ -6043,9 +6043,29 @@
     "description": "Warning when files from a server are copied or moved into an archive.",
     "message": "Only this computer's files go into an archive: copy them here first."
   },
+  "transfer.browse": {
+    "description": "F5/F6 dialog: tooltip of the folder button beside the target field, which opens a folder picker.",
+    "message": "Choose a folder"
+  },
   "transfer.cancel": {
     "description": "F5/F6 dialog's Cancel button.",
     "message": "Cancel"
+  },
+  "transfer.count.files": {
+    "description": "F5/F6 dialog, several items: how many files go (\"2 files, 1 folder\").",
+    "message": "{count, plural, one {# file} other {# files}}"
+  },
+  "transfer.count.folders": {
+    "description": "F5/F6 dialog, several items: how many folders go (\"2 files, 1 folder\").",
+    "message": "{count, plural, one {# folder} other {# folders}}"
+  },
+  "transfer.destination": {
+    "description": "F5/F6 dialog: the label over the target path field.",
+    "message": "Destination"
+  },
+  "transfer.destination_server": {
+    "description": "F5/F6 dialog: the label over the target path field when the target is on a server; server = its address (sftp://host).",
+    "message": "Destination on {server}"
   },
   "transfer.error.elevate_hint": {
     "description": "The error question when permission was denied: explains the As administrator button. Shown under the path and the error.",
@@ -6071,6 +6091,14 @@
     "description": "Error when the files copied or moved out of an archive could not be unpacked first. {err} is the error (\"7-Zip failed (exit status: 2)\").",
     "message": "Could not take them out: {err}"
   },
+  "transfer.heading": {
+    "description": "F5/F6 dialog: its heading beside the Copy or Move icon. kind = copy or move; count = how many items go.",
+    "message": "{kind, select, copy {Copy} other {Move}} {count, plural, one {# item} other {# items}}"
+  },
+  "transfer.if_exists": {
+    "description": "F5/F6 dialog: the label over the list of what to do with files of the same name in the target (Ask, Overwrite all…).",
+    "message": "If a file already exists"
+  },
   "transfer.into_archive.question_many": {
     "description": "The question before copying or moving several entries into an archive. {kind} is copy or move (keep the select's choices, translate the words in braces); {count} how many (3); {into} the archive and the folder in it (\"backup.zip/docs\").",
     "message": "{kind, select, copy {Copy} other {Move}} {count, plural, one {# item} other {# items}} into {into}? What has their names there is replaced."
@@ -6087,22 +6115,6 @@
     "description": "Title of the queue job copying or moving a file into an archive. {kind} is copy or move (keep the select's choices, translate the words in braces); {name} the file or folder name (\"notes.txt\"); {archive} the archive's name (\"backup.zip\").",
     "message": "{kind, select, copy {Copy} other {Move}} \"{name}\" into {archive}"
   },
-  "transfer.label.many": {
-    "description": "F5/F6 dialog: the label above the target folder. {kind} is copy or move (keep the select's choices, translate the words in braces); {count} how many are chosen (3).",
-    "message": "{kind, select, copy {Copy} other {Move}} {count, plural, one {# item} other {# items}} to:"
-  },
-  "transfer.label.many_server": {
-    "description": "F5/F6 dialog, to a server: the label above the target folder. {kind} is copy or move (keep the select's choices, translate the words in braces); {count} how many are chosen (3); {server} the server's address (\"sftp://me@host\").",
-    "message": "{kind, select, copy {Copy} other {Move}} {count, plural, one {# item} other {# items}} to {server}:"
-  },
-  "transfer.label.one": {
-    "description": "F5/F6 dialog: the label above the target path. {kind} is copy or move (keep the select's choices, translate the words in braces); {name} the file or folder name (\"notes.txt\").",
-    "message": "{kind, select, copy {Copy} other {Move}} \"{name}\" to:"
-  },
-  "transfer.label.one_server": {
-    "description": "F5/F6 dialog, to a server: the label above the target path. {kind} is copy or move (keep the select's choices, translate the words in braces); {name} the file or folder name (\"notes.txt\"); {server} the server's address (\"sftp://me@host\").",
-    "message": "{kind, select, copy {Copy} other {Move}} \"{name}\" to {server}:"
-  },
   "transfer.overwrite.all": {
     "description": "F5/F6 dialog: a choice for files already in the target, overwrite them all. Keep it short.",
     "message": "Overwrite all"
@@ -6110,10 +6122,6 @@
   "transfer.overwrite.ask": {
     "description": "F5/F6 dialog: a choice for files already in the target, ask each time. Keep it short.",
     "message": "Ask"
-  },
-  "transfer.overwrite.label": {
-    "description": "F5/F6 dialog: the heading of the choices what to do with files already in the target.",
-    "message": "Where the target has a file of the same name:"
   },
   "transfer.overwrite.older": {
     "description": "F5/F6 dialog: a choice for files already in the target, overwrite only those older than the copied one. Keep it short.",

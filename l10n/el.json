@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Μόνο αρχεία αυτού του υπολογιστή μπαίνουν σε αρχειοθήκη: αντιγράψτε τα πρώτα εδώ."
   },
+  "transfer.browse": {
+    "message": "Επιλογή φακέλου"
+  },
   "transfer.cancel": {
     "message": "Ακύρωση"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# αρχείο} other {# αρχεία}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# φάκελος} other {# φάκελοι}}"
+  },
+  "transfer.destination": {
+    "message": "Προορισμός"
+  },
+  "transfer.destination_server": {
+    "message": "Προορισμός στο {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Ως διαχειριστής: αυτό και ό,τι άλλο απορριφθεί, μόλις ολοκληρωθούν τα υπόλοιπα, με μία μόνο ερώτηση για τον κωδικό πρόσβασης."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Δεν ήταν δυνατή η εξαγωγή τους: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} {count, plural, one {# στοιχείου} other {# στοιχείων}}"
+  },
+  "transfer.if_exists": {
+    "message": "Αν ένα αρχείο υπάρχει ήδη"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} {count, plural, one {# στοιχείου} other {# στοιχείων}} στο {into}; Ό,τι έχει τα ίδια ονόματα εκεί θα αντικατασταθεί."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} του «{name}» στο {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} {count, plural, one {# στοιχείου} other {# στοιχείων}} στο:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} {count, plural, one {# στοιχείου} other {# στοιχείων}} στο {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} του «{name}» στο:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Αντιγραφή} other {Μετακίνηση}} του «{name}» στο {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Αντικατάσταση όλων"
   },
   "transfer.overwrite.ask": {
     "message": "Ερώτηση"
-  },
-  "transfer.overwrite.label": {
-    "message": "Όταν ο προορισμός έχει αρχείο με το ίδιο όνομα:"
   },
   "transfer.overwrite.older": {
     "message": "Αντικατάσταση παλαιότερων"

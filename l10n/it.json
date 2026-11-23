@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Solo i file di questo computer vanno in un archivio: copiali prima qui."
   },
+  "transfer.browse": {
+    "message": "Scegli una cartella"
+  },
   "transfer.cancel": {
     "message": "Annulla"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# file} other {# file}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# cartella} other {# cartelle}}"
+  },
+  "transfer.destination": {
+    "message": "Destinazione"
+  },
+  "transfer.destination_server": {
+    "message": "Destinazione su {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Come amministratore: questo e quanto altro viene rifiutato, una volta finito il resto, chiedendo la password una sola volta."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Impossibile estrarli: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Copia} other {Sposta}} {count, plural, one {# elemento} other {# elementi}}"
+  },
+  "transfer.if_exists": {
+    "message": "Se un file esiste già"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Copiare} other {Spostare}} {count, plural, one {# elemento} other {# elementi}} in {into}? Ciò che lì ha gli stessi nomi viene sostituito."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Copia} other {Sposta}} «{name}» in {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Copia} other {Sposta}} {count, plural, one {# elemento} other {# elementi}} in:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Copia} other {Sposta}} {count, plural, one {# elemento} other {# elementi}} in {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Copia} other {Sposta}} «{name}» in:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Copia} other {Sposta}} «{name}» in {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Sovrascrivi tutti"
   },
   "transfer.overwrite.ask": {
     "message": "Chiedi"
-  },
-  "transfer.overwrite.label": {
-    "message": "Se la destinazione ha un file con lo stesso nome:"
   },
   "transfer.overwrite.older": {
     "message": "Sovrascrivi i più vecchi"

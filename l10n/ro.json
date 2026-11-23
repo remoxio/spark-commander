@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Doar fișierele acestui computer pot intra într-o arhivă: copiați-le mai întâi aici."
   },
+  "transfer.browse": {
+    "message": "Alegeți un folder"
+  },
   "transfer.cancel": {
     "message": "Anulați"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# fișier} few {# fișiere} other {# de fișiere}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# folder} few {# foldere} other {# de foldere}}"
+  },
+  "transfer.destination": {
+    "message": "Destinație"
+  },
+  "transfer.destination_server": {
+    "message": "Destinație pe {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Ca administrator: acesta și tot ce mai este refuzat, după ce se termină restul, cu parola cerută o singură dată."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Nu au putut fi extrase: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Copiați} other {Mutați}} {count, plural, one {# element} few {# elemente} other {# de elemente}}"
+  },
+  "transfer.if_exists": {
+    "message": "Dacă un fișier există deja"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Copiați} other {Mutați}} {count, plural, one {# element} few {# elemente} other {# de elemente}} în {into}? Ce are aceleași nume acolo va fi înlocuit."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Copiere} other {Mutare}} „{name}” în {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Copiați} other {Mutați}} {count, plural, one {# element} few {# elemente} other {# de elemente}} în:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Copiați} other {Mutați}} {count, plural, one {# element} few {# elemente} other {# de elemente}} pe {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Copiați} other {Mutați}} „{name}” în:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Copiați} other {Mutați}} „{name}” pe {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Suprascrieți tot"
   },
   "transfer.overwrite.ask": {
     "message": "Întrebați"
-  },
-  "transfer.overwrite.label": {
-    "message": "Când destinația are un fișier cu același nume:"
   },
   "transfer.overwrite.older": {
     "message": "Suprascrieți cele mai vechi"

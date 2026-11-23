@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Chỉ tệp trên máy tính này mới đưa vào tệp nén được: trước tiên hãy sao chép chúng về đây."
   },
+  "transfer.browse": {
+    "message": "Chọn thư mục"
+  },
   "transfer.cancel": {
     "message": "Hủy"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, other {# tệp}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, other {# thư mục}}"
+  },
+  "transfer.destination": {
+    "message": "Đích"
+  },
+  "transfer.destination_server": {
+    "message": "Đích trên {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Với quyền quản trị: mục này và các mục khác bị từ chối sẽ được xử lý sau khi phần còn lại xong, chỉ hỏi mật khẩu một lần."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Không lấy được ra khỏi tệp nén: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Sao chép} other {Di chuyển}} {count, plural, other {# mục}}"
+  },
+  "transfer.if_exists": {
+    "message": "Nếu tệp đã tồn tại"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Sao chép} other {Di chuyển}} {count, plural, other {# mục}} vào {into}? Những mục trùng tên ở đó sẽ bị thay thế."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Sao chép} other {Di chuyển}} “{name}” vào {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Sao chép} other {Di chuyển}} {count, plural, other {# mục}} tới:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Sao chép} other {Di chuyển}} {count, plural, other {# mục}} tới {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Sao chép} other {Di chuyển}} “{name}” tới:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Sao chép} other {Di chuyển}} “{name}” tới {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Ghi đè tất cả"
   },
   "transfer.overwrite.ask": {
     "message": "Hỏi"
-  },
-  "transfer.overwrite.label": {
-    "message": "Khi ở đích đã có tệp cùng tên:"
   },
   "transfer.overwrite.older": {
     "message": "Ghi đè tệp cũ hơn"

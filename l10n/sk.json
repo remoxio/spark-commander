@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Do archívu možno vložiť iba súbory tohto počítača: najprv ich sem skopírujte."
   },
+  "transfer.browse": {
+    "message": "Vybrať priečinok"
+  },
   "transfer.cancel": {
     "message": "Zrušiť"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# súbor} few {# súbory} other {# súborov}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# priečinok} few {# priečinky} other {# priečinkov}}"
+  },
+  "transfer.destination": {
+    "message": "Cieľ"
+  },
+  "transfer.destination_server": {
+    "message": "Cieľ na {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Ako správca: toto aj všetko ďalšie odmietnuté sa vykoná po dokončení zvyšku a heslo sa vyžiada iba raz."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Nepodarilo sa ich vybrať z archívu: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopírovať} other {Presunúť}} {count, plural, one {# položku} few {# položky} other {# položiek}}"
+  },
+  "transfer.if_exists": {
+    "message": "Ak súbor už existuje"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Kopírovať} other {Presunúť}} {count, plural, one {# položku} few {# položky} other {# položiek}} do {into}? Položky s rovnakými názvami sa tam nahradia."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopírovať} other {Presunúť}} „{name}“ do {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopírovať} other {Presunúť}} {count, plural, one {# položku} few {# položky} other {# položiek}} do:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopírovať} other {Presunúť}} {count, plural, one {# položku} few {# položky} other {# položiek}} na {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopírovať} other {Presunúť}} „{name}“ do:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopírovať} other {Presunúť}} „{name}“ na {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Prepísať všetko"
   },
   "transfer.overwrite.ask": {
     "message": "Opýtať sa"
-  },
-  "transfer.overwrite.label": {
-    "message": "Ak cieľ obsahuje súbor s rovnakým názvom:"
   },
   "transfer.overwrite.older": {
     "message": "Prepísať staršie"

@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Arhīvā var ievietot tikai šī datora failus: vispirms nokopējiet tos šeit."
   },
+  "transfer.browse": {
+    "message": "Izvēlēties mapi"
+  },
   "transfer.cancel": {
     "message": "Atcelt"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, zero {# failu} one {# fails} other {# faili}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, zero {# mapju} one {# mape} other {# mapes}}"
+  },
+  "transfer.destination": {
+    "message": "Galamērķis"
+  },
+  "transfer.destination_server": {
+    "message": "Galamērķis serverī {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Kā administrators: šo un visu pārējo, kas tiks atteikts, kad viss cits būs paveikts, vienreiz prasot paroli."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Neizdevās tos izņemt: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopēt} other {Pārvietot}} {count, plural, zero {# vienumu} one {# vienumu} other {# vienumus}}"
+  },
+  "transfer.if_exists": {
+    "message": "Ja fails jau pastāv"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Vai kopēt} other {Vai pārvietot}} {count, plural, zero {# vienumu} one {# vienumu} other {# vienumus}} uz {into}? Tur esošie vienumi ar tādiem pašiem nosaukumiem tiks aizstāti."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopēt} other {Pārvietot}} „{name}” arhīvā {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopēt} other {Pārvietot}} {count, plural, zero {# vienumu} one {# vienumu} other {# vienumus}} uz:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopēt} other {Pārvietot}} {count, plural, zero {# vienumu} one {# vienumu} other {# vienumus}} uz {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopēt} other {Pārvietot}} „{name}” uz:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopēt} other {Pārvietot}} „{name}” uz {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Pārrakstīt visus"
   },
   "transfer.overwrite.ask": {
     "message": "Jautāt"
-  },
-  "transfer.overwrite.label": {
-    "message": "Ja mērķī ir fails ar tādu pašu nosaukumu:"
   },
   "transfer.overwrite.older": {
     "message": "Pārrakstīt vecākos"

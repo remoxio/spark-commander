@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Į archyvą galima dėti tik šio kompiuterio failus: pirmiausia nukopijuokite juos čia."
   },
+  "transfer.browse": {
+    "message": "Pasirinkti aplanką"
+  },
   "transfer.cancel": {
     "message": "Atšaukti"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# failas} few {# failai} other {# failų}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# aplankas} few {# aplankai} other {# aplankų}}"
+  },
+  "transfer.destination": {
+    "message": "Paskirties vieta"
+  },
+  "transfer.destination_server": {
+    "message": "Paskirties vieta serveryje {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Administratoriaus teisėmis: šis ir kiti atmesti veiksmai bus atlikti, kai baigsis visa kita, slaptažodžio paprašant tik kartą."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Nepavyko jų išimti: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} {count, plural, one {# elementą} few {# elementus} other {# elementų}}"
+  },
+  "transfer.if_exists": {
+    "message": "Jei failas jau yra"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} {count, plural, one {# elementą} few {# elementus} other {# elementų}} į {into}? Ten esantys tokių pačių pavadinimų elementai bus pakeisti."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} „{name}“ į {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} {count, plural, one {# elementą} few {# elementus} other {# elementų}} į:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} {count, plural, one {# elementą} few {# elementus} other {# elementų}} į {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} „{name}“ į:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopijuoti} other {Perkelti}} „{name}“ į {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Perrašyti visus"
   },
   "transfer.overwrite.ask": {
     "message": "Klausti"
-  },
-  "transfer.overwrite.label": {
-    "message": "Kai paskirties vietoje yra tokio paties pavadinimo failas:"
   },
   "transfer.overwrite.older": {
     "message": "Perrašyti senesnius"

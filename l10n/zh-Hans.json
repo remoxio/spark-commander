@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "只有本机的文件才能放入压缩包：请先将它们复制到本机。"
   },
+  "transfer.browse": {
+    "message": "选择文件夹"
+  },
   "transfer.cancel": {
     "message": "取消"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, other {# 个文件}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, other {# 个文件夹}}"
+  },
+  "transfer.destination": {
+    "message": "目标位置"
+  },
+  "transfer.destination_server": {
+    "message": "{server} 上的目标位置"
   },
   "transfer.error.elevate_hint": {
     "message": "以管理员身份：在其余项目完成后，处理此项及其他被拒绝的项目，只需输入一次密码。"
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "无法提取：{err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {复制} other {移动}} {count, plural, other {# 个项目}}"
+  },
+  "transfer.if_exists": {
+    "message": "如果文件已存在"
+  },
   "transfer.into_archive.question_many": {
     "message": "要将 {count, plural, other {# 个项目}}{kind, select, copy {复制} other {移动}}到 {into} 吗？其中的同名项目将被替换。"
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "将“{name}”{kind, select, copy {复制} other {移动}}到 {archive}"
   },
-  "transfer.label.many": {
-    "message": "将 {count, plural, other {# 个项目}}{kind, select, copy {复制} other {移动}}到："
-  },
-  "transfer.label.many_server": {
-    "message": "将 {count, plural, other {# 个项目}}{kind, select, copy {复制} other {移动}}到 {server}："
-  },
-  "transfer.label.one": {
-    "message": "将“{name}”{kind, select, copy {复制} other {移动}}到："
-  },
-  "transfer.label.one_server": {
-    "message": "将“{name}”{kind, select, copy {复制} other {移动}}到 {server}："
-  },
   "transfer.overwrite.all": {
     "message": "全部覆盖"
   },
   "transfer.overwrite.ask": {
     "message": "询问"
-  },
-  "transfer.overwrite.label": {
-    "message": "目标位置已有同名文件时："
   },
   "transfer.overwrite.older": {
     "message": "覆盖较旧的文件"

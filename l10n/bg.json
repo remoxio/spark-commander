@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "В архив могат да влизат само файлове от този компютър: първо ги копирайте тук."
   },
+  "transfer.browse": {
+    "message": "Избор на папка"
+  },
   "transfer.cancel": {
     "message": "Отказ"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# файл} other {# файла}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# папка} other {# папки}}"
+  },
+  "transfer.destination": {
+    "message": "Местоназначение"
+  },
+  "transfer.destination_server": {
+    "message": "Местоназначение на {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Като администратор: това и всичко друго отказано, след като останалото приключи, с еднократно питане за паролата."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Не можаха да се извлекат: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Копиране} other {Преместване}} на {count, plural, one {# елемент} other {# елемента}}"
+  },
+  "transfer.if_exists": {
+    "message": "Ако файлът вече съществува"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {{count, plural, one {Да се копира ли # елемент} other {Да се копират ли # елемента}}} other {{count, plural, one {Да се премести ли # елемент} other {Да се преместят ли # елемента}}}} в {into}? Каквото има там със същите имена, ще бъде заменено."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Копиране} other {Преместване}} на „{name}“ в {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Копиране} other {Преместване}} на {count, plural, one {# елемент} other {# елемента}} в:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Копиране} other {Преместване}} на {count, plural, one {# елемент} other {# елемента}} в {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Копиране} other {Преместване}} на „{name}“ в:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Копиране} other {Преместване}} на „{name}“ в {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Презаписване на всички"
   },
   "transfer.overwrite.ask": {
     "message": "Питане"
-  },
-  "transfer.overwrite.label": {
-    "message": "Когато в целта има файл със същото име:"
   },
   "transfer.overwrite.older": {
     "message": "Презаписване на по-старите"

@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "V arhiv gredo le datoteke tega računalnika: najprej jih kopirajte sem."
   },
+  "transfer.browse": {
+    "message": "Izberi mapo"
+  },
   "transfer.cancel": {
     "message": "Prekliči"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, one {# datoteka} two {# datoteki} few {# datoteke} other {# datotek}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, one {# mapa} two {# mapi} few {# mape} other {# map}}"
+  },
+  "transfer.destination": {
+    "message": "Cilj"
+  },
+  "transfer.destination_server": {
+    "message": "Cilj na {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Kot skrbnik: to in vse drugo, kar je zavrnjeno, ko je ostalo končano, z enkratnim vnosom gesla."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Ni jih bilo mogoče vzeti iz arhiva: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Kopiraj} other {Premakni}} {count, plural, one {# element} two {# elementa} few {# elemente} other {# elementov}}"
+  },
+  "transfer.if_exists": {
+    "message": "Če datoteka že obstaja"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Želite kopirati} other {Želite premakniti}} {count, plural, one {# element} two {# elementa} few {# elemente} other {# elementov}} v {into}? Kar ima tam enaka imena, bo zamenjano."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Kopiraj} other {Premakni}} „{name}“ v {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Kopiraj} other {Premakni}} {count, plural, one {# element} two {# elementa} few {# elemente} other {# elementov}} v:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Kopiraj} other {Premakni}} {count, plural, one {# element} two {# elementa} few {# elemente} other {# elementov}} na {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Kopiraj} other {Premakni}} „{name}“ v:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Kopiraj} other {Premakni}} „{name}“ na {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Prepiši vse"
   },
   "transfer.overwrite.ask": {
     "message": "Vprašaj"
-  },
-  "transfer.overwrite.label": {
-    "message": "Kjer ima cilj datoteko z enakim imenom:"
   },
   "transfer.overwrite.older": {
     "message": "Prepiši starejše"

@@ -5,17 +5,18 @@ use std::ffi::OsString;
 use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::{Duration, Instant, SystemTime};
 
 use gpui_kit::component::button::{Button, ButtonVariant, ButtonVariants};
 use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::notification::Notification;
 use gpui_kit::component::progress::Progress as Bar;
-use gpui_kit::component::radio::RadioGroup;
-use gpui_kit::component::{ActiveTheme, Icon, IconName, Sizable, WindowExt, h_flex, v_flex};
+use gpui_kit::component::select::{Select, SelectEvent, SelectState};
+use gpui_kit::component::{ActiveTheme, Disableable, Icon, IconName, IndexPath, Sizable, StyledExt, WindowExt, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
 use sc_core::Panel;
+use sc_core::menu::Command;
 use sc_core::ops::{Answer, JobView, Kind, Operation, Overwrite, Question, Queue, Status, Target, Task as Job};
 use sc_core::vfs::{Fs, Local, Meta};
 
@@ -104,6 +105,34 @@ pub(crate) struct Batch {
     pub archived: Option<(Panel, Vec<OsString>)>,
     /// The side whose marks are dropped once queued.
     pub unmark: Option<usize>,
+    pub summary: Summary,
+}
+
+/// What goes, as the dialog shows it: how many files and folders, the files'
+/// size, the one's time.
+#[derive(Clone, Default)]
+pub(crate) struct Summary {
+    pub files: usize,
+    pub folders: usize,
+    pub bytes: u64,
+    pub modified: Option<SystemTime>,
+}
+
+impl Summary {
+    fn of<'a>(entries: impl IntoIterator<Item = (bool, u64, Option<SystemTime>)>) -> Self {
+        let mut summary = Summary::default();
+        for (is_dir, size, modified) in entries {
+            match is_dir {
+                true => summary.folders += 1,
+                false => {
+                    summary.files += 1;
+                    summary.bytes += size;
+                }
+            }
+            summary.modified = modified;
+        }
+        summary
+    }
 }
 
 impl Batch {
@@ -120,6 +149,7 @@ impl Batch {
             _ => None,
         };
         let names: Vec<OsString> = entries.iter().map(|e| e.name.clone()).collect();
+        let summary = Summary::of(entries.iter().map(|e| (e.is_dir, e.size, e.modified)));
         Some(Batch {
             from: match panel.in_archive() {
                 true => Arc::new(Local),
@@ -130,6 +160,7 @@ impl Batch {
             unmark: Some(side),
             folder,
             one,
+            summary,
         })
     }
 
@@ -143,6 +174,10 @@ impl Batch {
             }
             _ => None,
         };
+        let summary = Summary::of(paths.iter().map(|path| {
+            let meta = std::fs::metadata(path).ok();
+            (path.is_dir(), meta.as_ref().map_or(0, |meta| meta.len()), meta.and_then(|meta| meta.modified().ok()))
+        }));
         Some(Batch {
             from: Arc::new(Local),
             folder,
@@ -150,6 +185,7 @@ impl Batch {
             one,
             archived: None,
             unmark: None,
+            summary,
         })
     }
 }
@@ -189,18 +225,16 @@ impl Commander {
             Some((name, _, false)) => to.folder.join(name).display().to_string(),
             _ => folder_text(&to.folder),
         };
-        let (id, count) = (kind_id(kind), batch.sources.len());
-        let label = match (&batch.one, &to.server) {
-            (Some((_, shown, _)), Some(url)) => sc_core::t!("transfer.label.one_server", kind = id, name = shown, server = url),
-            (Some((_, shown, _)), None) => sc_core::t!("transfer.label.one", kind = id, name = shown),
-            (None, Some(url)) => sc_core::t!("transfer.label.many_server", kind = id, count = count, server = url),
-            (None, None) => sc_core::t!("transfer.label.many", kind = id, count = count),
+        let command = match kind {
+            Kind::Copy => Command::Copy,
+            Kind::Move => Command::Move,
         };
+        let [key, _] = self.settings.keys.keys_of(command);
+        let shown = Shown::new(kind, &batch, to.server.as_deref(), &key);
         let commander = cx.entity().downgrade();
         let Place { fs: to, server, folder, .. } = to;
         open_dialog(
-            verb(kind),
-            label,
+            shown,
             target,
             window,
             cx,
@@ -472,56 +506,87 @@ fn folder_text(folder: &std::path::Path) -> String {
 
 type Done = Rc<dyn Fn(String, Overwrite, &mut Window, &mut App)>;
 
-/// "Copy 3 items to:", the target, and what to do with files there already.
-fn open_dialog(
-    title: String,
-    label: String,
-    target: String,
-    window: &mut Window,
-    cx: &mut App,
-    done: impl Fn(String, Overwrite, &mut Window, &mut App) + 'static,
-) {
-    // Linux: a window of its own, framed by the desktop; its answer goes to the main window.
+/// The F5 or F6 dialog's words and what it shows of what goes.
+struct Shown {
+    kind: Kind,
+    /// "Copy 3 items".
+    heading: String,
+    /// The one's name and whether a folder; none for several.
+    one: Option<(String, bool)>,
+    /// The one's name, or the first few names.
+    name: String,
+    /// Its size and time, or how many files and folders.
+    detail: String,
+    destination: String,
+    /// The target is this computer's: its folder may be browsed for.
+    local: bool,
+    /// The one file's name the target ends in, kept in a folder browsed for.
+    file_name: Option<OsString>,
+    /// The command's key, which pressed again here does it: the keystroke, as shown.
+    key: Option<(Keystroke, String)>,
+}
+
+impl Shown {
+    fn new(kind: Kind, batch: &Batch, server: Option<&str>, key: &str) -> Self {
+        let (summary, count) = (&batch.summary, batch.sources.len());
+        let when = summary.modified.map(sc_core::dates::date_time);
+        let detail = match &batch.one {
+            Some((_, _, true)) => [Some(sc_core::t!("properties.kind.folder")), when].into_iter().flatten().collect::<Vec<_>>().join(" · "),
+            Some(_) => [Some(sc_core::human_size(summary.bytes)), when].into_iter().flatten().collect::<Vec<_>>().join(" · "),
+            None => {
+                let files = (summary.files > 0).then(|| sc_core::t!("transfer.count.files", count = summary.files));
+                let folders = (summary.folders > 0).then(|| sc_core::t!("transfer.count.folders", count = summary.folders));
+                let counts = [files, folders].into_iter().flatten().collect::<Vec<_>>().join(", ");
+                // The files' size alone would leave the folders' out.
+                match summary.folders {
+                    0 => format!("{counts} · {}", sc_core::human_size(summary.bytes)),
+                    _ => counts,
+                }
+            }
+        };
+        let names: Vec<String> = batch.sources.iter().filter_map(|path| path.file_name()).map(|name| name.display().to_string()).collect();
+        let name = match &batch.one {
+            Some((_, shown, _)) => shown.clone(),
+            None if names.len() > 3 => format!("{}, …", names[..3].join(", ")),
+            None => names.join(", "),
+        };
+        // One stroke: a chord's second key would come to the dialog alone.
+        let stroke = key.split_whitespace().count().eq(&1).then(|| Keystroke::parse(key).ok()).flatten();
+        Shown {
+            kind,
+            heading: sc_core::t!("transfer.heading", kind = kind_id(kind), count = count),
+            one: batch.one.as_ref().map(|(_, shown, folder)| (shown.clone(), *folder)),
+            name,
+            detail,
+            destination: match server {
+                Some(url) => sc_core::t!("transfer.destination_server", server = url),
+                None => sc_core::t!("transfer.destination"),
+            },
+            local: server.is_none(),
+            file_name: batch.one.as_ref().filter(|(_, _, folder)| !folder).map(|(name, _, _)| name.clone()),
+            key: stroke.map(|stroke| (stroke, crate::dialogs::keys_dialog::shown(key))),
+        }
+    }
+}
+
+/// What goes, where to, and what to do with files there already.
+fn open_dialog(shown: Shown, target: String, window: &mut Window, cx: &mut App, done: impl Fn(String, Overwrite, &mut Window, &mut App) + 'static) {
+    let title = verb(shown.kind);
+    // Linux and macOS: a window of its own (macOS's sheet); its answer goes to the main window.
     if crate::dialogs::dialog_window::separate() {
-        return crate::dialogs::dialog_window::open(title.clone(), size(px(560.), px(300.)), window, cx, move |main, window, cx| {
-            let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
-            input.update(cx, |input, cx| {
-                input.focus(window, cx);
-                input.select_all(window, cx);
-            });
-            let view = cx.new(|cx| {
-                let enter = cx.subscribe_in(&input, window, |this: &mut TransferDialog, _, event: &InputEvent, window, cx| {
-                    if let InputEvent::PressEnter { .. } = event {
-                        this.finish(window, cx);
-                        this.close(window, cx);
-                    }
-                });
-                TransferDialog { label, ok: title, input, overwrite: Overwrite::Ask, done: Rc::new(done), main: Some(main), _enter: Some(enter) }
-            });
-            (view, None)
+        return crate::dialogs::dialog_window::open_headed(title, size(px(560.), px(360.)), window, cx, move |main, window, cx| {
+            (cx.new(|cx| TransferDialog::new(shown, target, Rc::new(done), Some(main), window, cx)), None)
         });
     }
-    let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
-    let view = cx.new(|_| TransferDialog {
-        label,
-        ok: title.clone(),
-        input: input.clone(),
-        overwrite: Overwrite::Ask,
-        done: Rc::new(done),
-        main: None,
-        _enter: None,
-    });
+    let view = cx.new(|cx| TransferDialog::new(shown, target, Rc::new(done), None, window, cx));
+    let input = view.read(cx).input.clone();
     window.open_dialog(cx, move |dialog, _, _| {
         let ok = view.clone();
-        dialog
-            .title(title.clone())
-            .width(px(560.))
-            .overlay_closable(false)
-            .child(view.clone())
-            .on_ok(move |_, window, cx| {
-                ok.update(cx, |this, cx| this.finish(window, cx));
-                true
-            })
+        // Headed by the view.
+        dialog.width(px(560.)).overlay_closable(false).child(view.clone()).on_ok(move |_, window, cx| {
+            ok.update(cx, |this, cx| this.finish(window, cx));
+            true
+        })
     });
     input.update(cx, |input, cx| {
         input.focus(window, cx);
@@ -530,18 +595,44 @@ fn open_dialog(
 }
 
 struct TransferDialog {
-    label: String,
-    /// The button's: Copy, Move.
-    ok: String,
+    shown: Shown,
     input: Entity<InputState>,
     overwrite: Overwrite,
+    choices: Entity<SelectState<Vec<String>>>,
     done: Done,
     /// In a window of its own: the main window, which takes the answer.
     main: Option<crate::dialogs::dialog_window::Main>,
-    _enter: Option<Subscription>,
+    _subscriptions: Vec<Subscription>,
 }
 
 impl TransferDialog {
+    fn new(shown: Shown, target: String, done: Done, main: Option<crate::dialogs::dialog_window::Main>, window: &mut Window, cx: &mut Context<Self>) -> Self {
+        let input = cx.new(|cx| InputState::new(window, cx).default_value(target));
+        let labels: Vec<String> = OVERWRITE.map(overwrite_label).to_vec();
+        let choices = cx.new(|cx| SelectState::new(labels.clone(), Some(IndexPath::new(0)), window, cx));
+        let mut subscriptions = vec![cx.subscribe_in(&choices, window, move |this: &mut Self, _, event: &SelectEvent<Vec<String>>, _, cx| {
+            let SelectEvent::Confirm(Some(label)) = event else { return };
+            if let Some(at) = labels.iter().position(|shown| shown == label) {
+                this.overwrite = OVERWRITE[at];
+                cx.notify();
+            }
+        })];
+        // A window of its own: Enter in the field is its OK.
+        if main.is_some() {
+            input.update(cx, |input, cx| {
+                input.focus(window, cx);
+                input.select_all(window, cx);
+            });
+            subscriptions.push(cx.subscribe_in(&input, window, |this: &mut Self, _, event: &InputEvent, window, cx| {
+                if let InputEvent::PressEnter { .. } = event {
+                    this.finish(window, cx);
+                    this.close(window, cx);
+                }
+            }));
+        }
+        TransferDialog { shown, input, overwrite: Overwrite::Ask, choices, done, main, _subscriptions: subscriptions }
+    }
+
     fn finish(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let target = self.input.read(cx).value().to_string();
         match self.main {
@@ -556,43 +647,97 @@ impl TransferDialog {
     fn close(&self, window: &mut Window, cx: &mut App) {
         crate::dialogs::dialog_window::close(window, cx);
     }
+
+    /// Another folder for the target, the one file's name kept.
+    fn browse(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let paths = cx.prompt_for_paths(PathPromptOptions { files: false, directories: true, multiple: false, prompt: None });
+        let (input, name) = (self.input.clone(), self.shown.file_name.clone());
+        cx.spawn_in(window, async move |_, cx| {
+            let Ok(Ok(Some(paths))) = paths.await else { return };
+            let Some(folder) = paths.into_iter().next() else { return };
+            let text = match name {
+                Some(name) => folder.join(name).display().to_string(),
+                None => folder_text(&folder),
+            };
+            let _ = cx.update(|window, cx| input.update(cx, |input, cx| input.set_value(text, window, cx)));
+        })
+        .detach();
+    }
 }
 
 impl Render for TransferDialog {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let selected = OVERWRITE
-            .iter()
-            .position(|mode| *mode == self.overwrite);
+        let theme = cx.theme();
+        let (muted, border, tile) = (theme.muted_foreground, theme.border, theme.muted);
+        let shown = &self.shown;
+        let command = match shown.kind {
+            Kind::Copy => sc_core::menu::Command::Copy,
+            Kind::Move => sc_core::menu::Command::Move,
+        };
+        let heading = h_flex()
+            .gap_2()
+            .children(crate::menus::toolbar_icon(command).map(|icon| Icon::new(icon).size_5().text_color(muted)))
+            .child(div().text_lg().font_semibold().child(shown.heading.clone()));
+        // The one's icon as the panel shows it; several, a stack.
+        let icon = match &shown.one {
+            Some((name, folder)) => {
+                let icon = sc_core::icons::material().icon(name, *folder, !theme.mode.is_dark());
+                img(format!("material/{icon}")).size(px(28.)).into_any_element()
+            }
+            None => Icon::new(gpui_kit::assets::IconName::Files).size(px(24.)).text_color(muted).into_any_element(),
+        };
+        let card = h_flex()
+            .gap_3()
+            .child(div().flex_none().size(px(48.)).rounded(px(10.)).bg(tile).flex().items_center().justify_center().child(icon))
+            .child(
+                v_flex()
+                    .min_w_0()
+                    .gap_0p5()
+                    .child(div().text_base().font_medium().truncate().child(shown.name.clone()))
+                    .child(div().text_color(muted).truncate().child(shown.detail.clone())),
+            );
+        let label = |text: String| div().text_color(muted).child(text);
+        let browse = Button::new("transfer-browse")
+            .outline()
+            .icon(Icon::new(gpui_kit::assets::IconName::FolderOpen))
+            .tooltip(sc_core::t!("transfer.browse"))
+            .disabled(!shown.local)
+            .on_click(cx.listener(|this, _, window, cx| this.browse(window, cx)));
+        let destination = v_flex()
+            .gap_1p5()
+            .child(label(shown.destination.clone()))
+            .child(h_flex().gap_2().child(div().flex_1().min_w_0().child(Input::new(&self.input))).child(browse));
+        let exists = v_flex().gap_1p5().child(label(sc_core::t!("transfer.if_exists"))).child(Select::new(&self.choices));
+        // The command's key, pressed again, does it.
+        let hint = shown.key.as_ref().map(|(_, key)| {
+            let chip = div().px_1p5().rounded(px(4.)).border_1().border_color(border).text_xs().child(key.clone());
+            h_flex().gap_1p5().text_color(muted).child(chip).child(verb(shown.kind))
+        });
         v_flex()
             .w_full()
-            .gap_3()
+            .gap_4()
             .text_sm()
-            .child(
-                v_flex()
-                    .gap_1()
-                    .child(self.label.clone())
-                    .child(Input::new(&self.input)),
-            )
-            .child(
-                v_flex()
-                    .gap_2()
-                    .child(sc_core::t!("transfer.overwrite.label"))
-                    .child(
-                        RadioGroup::vertical("transfer-overwrite")
-                            .children(OVERWRITE.map(overwrite_label))
-                            .selected_index(selected)
-                            .on_click(cx.listener(|this, ix: &usize, _, cx| {
-                                this.overwrite = OVERWRITE[*ix];
-                                cx.notify();
-                            })),
-                    ),
-            )
+            .on_key_down(cx.listener(|this, event: &KeyDownEvent, window, cx| {
+                let Some((key, _)) = &this.shown.key else { return };
+                // Held from opening it, it repeats: not an answer.
+                if !event.is_held && event.keystroke.key == key.key && event.keystroke.modifiers == key.modifiers {
+                    cx.stop_propagation();
+                    this.finish(window, cx);
+                    this.close(window, cx);
+                }
+            }))
+            .child(heading)
+            .child(card)
+            .child(div().h(px(1.)).bg(border))
+            .child(destination)
+            .child(exists)
             .child(
                 crate::dialogs::footer(cx)
+                    .child(div().flex_1().min_w_0().children(hint))
                     .children(crate::dialogs::ok_cancel(
                         Button::new("transfer-ok")
                             .primary()
-                            .label(self.ok.clone())
+                            .label(verb(shown.kind))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.finish(window, cx);

@@ -4523,8 +4523,23 @@
   "transfer.archive.local_only": {
     "message": "Hanya berkas komputer ini yang dapat dimasukkan ke arsip: salin berkas ke sini terlebih dahulu."
   },
+  "transfer.browse": {
+    "message": "Pilih folder"
+  },
   "transfer.cancel": {
     "message": "Batal"
+  },
+  "transfer.count.files": {
+    "message": "{count, plural, other {# berkas}}"
+  },
+  "transfer.count.folders": {
+    "message": "{count, plural, other {# folder}}"
+  },
+  "transfer.destination": {
+    "message": "Tujuan"
+  },
+  "transfer.destination_server": {
+    "message": "Tujuan di {server}"
   },
   "transfer.error.elevate_hint": {
     "message": "Sebagai administrator: berkas ini dan yang lain yang ditolak, setelah sisanya selesai, dengan meminta kata sandi sekali saja."
@@ -4544,6 +4559,12 @@
   "transfer.extract_failed": {
     "message": "Tidak dapat mengeluarkannya: {err}"
   },
+  "transfer.heading": {
+    "message": "{kind, select, copy {Salin} other {Pindahkan}} {count, plural, other {# item}}"
+  },
+  "transfer.if_exists": {
+    "message": "Jika berkas sudah ada"
+  },
   "transfer.into_archive.question_many": {
     "message": "{kind, select, copy {Salin} other {Pindahkan}} {count, plural, other {# item}} ke {into}? Yang bernama sama di sana akan diganti."
   },
@@ -4556,26 +4577,11 @@
   "transfer.into_archive.title_one": {
     "message": "{kind, select, copy {Salin} other {Pindahkan}} “{name}” ke {archive}"
   },
-  "transfer.label.many": {
-    "message": "{kind, select, copy {Salin} other {Pindahkan}} {count, plural, other {# item}} ke:"
-  },
-  "transfer.label.many_server": {
-    "message": "{kind, select, copy {Salin} other {Pindahkan}} {count, plural, other {# item}} ke {server}:"
-  },
-  "transfer.label.one": {
-    "message": "{kind, select, copy {Salin} other {Pindahkan}} “{name}” ke:"
-  },
-  "transfer.label.one_server": {
-    "message": "{kind, select, copy {Salin} other {Pindahkan}} “{name}” ke {server}:"
-  },
   "transfer.overwrite.all": {
     "message": "Timpa semua"
   },
   "transfer.overwrite.ask": {
     "message": "Tanya"
-  },
-  "transfer.overwrite.label": {
-    "message": "Jika di target ada berkas dengan nama yang sama:"
   },
   "transfer.overwrite.older": {
     "message": "Timpa yang lebih lama"
