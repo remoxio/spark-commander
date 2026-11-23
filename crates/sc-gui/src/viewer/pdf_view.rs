@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
 
-use gpui_kit::component::scroll::Scrollbar;
+use gpui_kit::component::scroll::{Scrollbar, ScrollbarHandle};
 use gpui_kit::component::{ActiveTheme, h_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
@@ -130,6 +130,10 @@ impl PdfView {
     /// A page's height in the list, its gap below included.
     fn main_height(&self, page: usize) -> f32 {
         f32::from(self.width.get()) * self.zoom * self.ratio(page) + f32::from(GAP)
+    }
+
+    fn heights(&self) -> Rc<[f32]> {
+        (0..self.sizes.len()).map(|page| self.main_height(page)).collect()
     }
 
     fn thumb_height(&self, page: usize) -> f32 {
@@ -267,6 +271,46 @@ impl PdfView {
     }
 }
 
+/// The list's scrollbar by every page's height: the list's own knows only the pages
+/// drawn so far, so its thumb stood halfway down a long document's second page.
+#[derive(Clone)]
+struct PageScroll(ListState, Rc<[f32]>);
+
+impl ScrollbarHandle for PageScroll {
+    fn viewport_bounds(&self) -> Bounds<Pixels> {
+        self.0.viewport_bounds()
+    }
+
+    fn offset(&self) -> Point<Pixels> {
+        let top = self.0.logical_scroll_top();
+        let above: f32 = self.1.iter().take(top.item_ix).sum();
+        point(px(0.), -(px(above) + top.offset_in_item))
+    }
+
+    fn set_offset(&self, offset: Point<Pixels>) {
+        let mut y = f32::from(-offset.y).max(0.);
+        let mut item_ix = 0;
+        while item_ix + 1 < self.1.len() && y >= self.1[item_ix] {
+            y -= self.1[item_ix];
+            item_ix += 1;
+        }
+        self.0.scroll_to(ListOffset { item_ix, offset_in_item: px(y) });
+    }
+
+    fn content_size(&self) -> Size<Pixels> {
+        let viewport = self.0.viewport_bounds().size;
+        size(viewport.width, px(self.1.iter().sum::<f32>()).max(viewport.height))
+    }
+
+    fn start_drag(&self) {
+        self.0.scrollbar_drag_started();
+    }
+
+    fn end_drag(&self) {
+        self.0.scrollbar_drag_ended();
+    }
+}
+
 #[derive(Clone, Copy)]
 enum Kind {
     Page,
@@ -388,7 +432,7 @@ impl Render for PdfView {
                     .track_scroll(&self.pan)
                     .child(div().h_full().w(wide).pt(GAP).child(list)),
             )
-            .child(div().absolute().inset_0().child(Scrollbar::vertical(&self.list)))
+            .child(div().absolute().inset_0().child(Scrollbar::vertical(&PageScroll(self.list.clone(), self.heights()))))
             .child(div().absolute().inset_0().child(Scrollbar::horizontal(&self.pan)));
         let strip = (crate::minimap_shown(cx) && !self.sizes.is_empty())
             .then(|| self.render_strip(window, cx));
