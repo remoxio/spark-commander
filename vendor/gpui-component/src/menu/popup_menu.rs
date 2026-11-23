@@ -1491,6 +1491,9 @@ impl PopupMenu {
                 .p_0()
                 .my_0p5()
                 .mx_neg_1()
+                // SparkCommander patch: without the item's frame, which drew a second line over it.
+                .border_0()
+                .rounded_none()
                 .border_b(px(1.))
                 .border_color(cx.theme().border)
                 .disabled(true),

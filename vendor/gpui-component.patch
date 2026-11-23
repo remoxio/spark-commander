@@ -2639,16 +2639,19 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          const EDGE_PADDING: Pixels = px(4.);
          const INNER_PADDING: Pixels = px(8.);
  
-@@ -1272,7 +1491,7 @@
+@@ -1272,7 +1491,10 @@
                  .p_0()
                  .my_0p5()
                  .mx_neg_1()
 -                .border_b(px(2.))
++                // SparkCommander patch: without the item's frame, which drew a second line over it.
++                .border_0()
++                .rounded_none()
 +                .border_b(px(1.))
                  .border_color(cx.theme().border)
                  .disabled(true),
              PopupMenuItem::Label(label) => this.disabled(true).cursor_default().child(
-@@ -1322,6 +1541,10 @@
+@@ -1322,6 +1544,10 @@
                  let show_link_icon = *is_link && self.external_link_icon;
                  let action = action.as_ref().map(|action| action.boxed_clone());
                  let key = self.render_key_binding(action, window, cx);
@@ -2659,7 +2662,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
                  this.when(!disabled, |this| {
                      this.on_click(
-@@ -1344,7 +1567,7 @@
+@@ -1344,7 +1570,7 @@
                          .gap_3()
                          .items_center()
                          .justify_between()
@@ -2668,7 +2671,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                          .children(right_check_icon)
                          .when(show_link_icon, |this| {
                              this.child(
-@@ -1368,9 +1591,20 @@
+@@ -1368,9 +1594,20 @@
                  label,
                  menu,
                  disabled,
@@ -2690,7 +2693,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .items_start()
                  .child(
                      h_flex()
-@@ -1391,11 +1625,17 @@
+@@ -1391,11 +1628,17 @@
                                  .gap_2()
                                  .items_center()
                                  .justify_between()
@@ -2712,7 +2715,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                                  ),
                          ),
                  )
-@@ -1421,7 +1661,8 @@
+@@ -1421,7 +1664,8 @@
                          )
                          .with_priority(self.priority + 1)
                      })
@@ -2722,7 +2725,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          }
      }
  }
-@@ -1466,10 +1707,23 @@
+@@ -1466,10 +1710,23 @@
          let view = cx.entity().clone();
          let items_count = self.menu_items.len();
  
@@ -2750,7 +2753,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
          let has_left_icon = self
              .menu_items
-@@ -1495,6 +1749,7 @@
+@@ -1495,6 +1752,7 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
@@ -2758,7 +2761,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              .on_mouse_down_out(cx.listener(Self::on_mouse_down_out))
              .popover_style(cx)
              .text_color(cx.theme().popover_foreground)
-@@ -1508,11 +1763,9 @@
+@@ -1508,11 +1766,9 @@
                      .min_w(rems(8.))
                      .when_some(self.min_width, |this, min_width| this.min_w(min_width))
                      .max_w(max_width)
@@ -2773,7 +2776,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1523,9 +1776,6 @@
+@@ -1523,9 +1779,6 @@
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),
              )
