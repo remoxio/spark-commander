@@ -678,17 +678,19 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
      protocol::{
          sync,
          xinput::{self, ConnectionExt as _},
-@@ -292,6 +292,9 @@
+@@ -292,6 +292,11 @@
      pub handle: AnyWindowHandle,
      last_insets: [u32; 4],
      accesskit_adapter: Option<accesskit_unix::Adapter>,
 +    /// SparkCommander patch: not resizable: as small and as large as it is, so the
 +    /// window manager offers no maximize; kept so as the app resizes it.
 +    fixed_size: bool,
++    /// SparkCommander patch: false: the window manager offers no minimize (a dialog's, as Qt's).
++    minimizable: bool,
  }
  
  impl X11WindowState {
-@@ -533,6 +536,11 @@
+@@ -533,6 +538,11 @@
              bounds.size.height = 600.into();
          }
  
@@ -700,7 +702,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
          check_reply(
              || {
                  format!(
-@@ -540,7 +548,7 @@
+@@ -540,7 +550,7 @@
                      visual.depth,
                      x_window,
                      visual_set.root,
@@ -709,7 +711,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
                      bounds.origin.y.0,
                      bounds.size.width.0,
                      bounds.size.height.0
-@@ -550,7 +558,7 @@
+@@ -550,7 +560,7 @@
                  visual.depth,
                  x_window,
                  visual_set.root,
@@ -718,7 +720,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
                  bounds.origin.y.0 as i16,
                  bounds.size.width.0 as u16,
                  bounds.size.height.0 as u16,
-@@ -790,6 +798,18 @@
+@@ -790,6 +800,18 @@
                      Some((f32::from(size.width) as i32, f32::from(size.height) as i32));
              }
              size_hints.max_size = Some((max_texture_size as i32, max_texture_size as i32));
@@ -737,7 +739,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
              check_reply(
                  || {
                      format!(
-@@ -802,14 +822,18 @@
+@@ -802,14 +824,18 @@
  
              if let Some(image) = params.icon {
                  // https://specifications.freedesktop.org/wm-spec/1.4/ar01s05.html#id-1.6.13
@@ -764,15 +766,16 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
  
                  check_reply(
                      || "X11 ChangeProperty32 for _NET_ICON_NAME failed.",
-@@ -856,6 +880,7 @@
+@@ -856,6 +882,8 @@
                  last_insets: [0, 0, 0, 0],
                  edge_constraints: None,
                  accesskit_adapter: None,
 +                fixed_size: !params.is_resizable,
++                minimizable: params.is_minimizable,
                  counter_id: sync_request_counter,
                  last_sync_counter: None,
              })
-@@ -1298,13 +1323,20 @@
+@@ -1298,13 +1326,20 @@
              let is_resize = bounds.size.width != state.bounds.size.width
                  || bounds.size.height != state.bounds.size.height;
  
@@ -800,7 +803,7 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
  
              let gpu_size = query_render_extent(&self.xcb, self.x_window)?;
              if let Some(renderer) = &mut state.renderer {
-@@ -1441,6 +1473,13 @@
+@@ -1441,6 +1476,13 @@
          let size = size.to_device_pixels(state.scale_factor);
          let width = size.width.0 as u32;
          let height = size.height.0 as u32;
@@ -814,6 +817,23 @@ diff -ruN a/src/linux/x11/window.rs b/src/linux/x11/window.rs
  
          check_reply(
              || {
+@@ -1928,10 +1970,15 @@
+         }
+ 
+         // https://github.com/rust-windowing/winit/blob/master/src/platform_impl/linux/x11/util/hint.rs#L53-L87
+-        let hints_data: [u32; 5] = match decorations {
++        let mut hints_data: [u32; 5] = match decorations {
+             WindowDecorations::Server => [1 << 1, 0, 1, 0, 0],
+             WindowDecorations::Client => [1 << 1, 0, 0, 0, 0],
+         };
++        // SparkCommander patch: Motif's functions, minimize left out: move and close, resize and maximize when resizable.
++        if !state.minimizable {
++            hints_data[0] |= 1;
++            hints_data[1] = 4 | 32 | if state.fixed_size { 0 } else { 2 | 16 };
++        }
+ 
+         let success = check_reply(
+             || "X11 ChangeProperty for _MOTIF_WM_HINTS failed.",
 diff -ruN a/src/linux.rs b/src/linux.rs
 --- a/src/linux.rs	2026-11-19 07:46:00.616729293 +0100
 +++ b/src/linux.rs	2026-11-19 07:46:00.619132962 +0100

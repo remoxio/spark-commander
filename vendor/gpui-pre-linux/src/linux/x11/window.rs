@@ -295,6 +295,8 @@ pub struct X11WindowState {
     /// SparkCommander patch: not resizable: as small and as large as it is, so the
     /// window manager offers no maximize; kept so as the app resizes it.
     fixed_size: bool,
+    /// SparkCommander patch: false: the window manager offers no minimize (a dialog's, as Qt's).
+    minimizable: bool,
 }
 
 impl X11WindowState {
@@ -881,6 +883,7 @@ impl X11WindowState {
                 edge_constraints: None,
                 accesskit_adapter: None,
                 fixed_size: !params.is_resizable,
+                minimizable: params.is_minimizable,
                 counter_id: sync_request_counter,
                 last_sync_counter: None,
             })
@@ -1967,10 +1970,15 @@ impl PlatformWindow for X11Window {
         }
 
         // https://github.com/rust-windowing/winit/blob/master/src/platform_impl/linux/x11/util/hint.rs#L53-L87
-        let hints_data: [u32; 5] = match decorations {
+        let mut hints_data: [u32; 5] = match decorations {
             WindowDecorations::Server => [1 << 1, 0, 1, 0, 0],
             WindowDecorations::Client => [1 << 1, 0, 0, 0, 0],
         };
+        // SparkCommander patch: Motif's functions, minimize left out: move and close, resize and maximize when resizable.
+        if !state.minimizable {
+            hints_data[0] |= 1;
+            hints_data[1] = 4 | 32 | if state.fixed_size { 0 } else { 2 | 16 };
+        }
 
         let success = check_reply(
             || "X11 ChangeProperty for _MOTIF_WM_HINTS failed.",
