@@ -36,8 +36,10 @@ impl Commander {
         }
         // Windows: drawn here, as WinUI's, so a dialog's backdrop dims it with the window.
         if cfg!(windows) {
-            let caption = crate::dialogs::dialog_window::caption("Spark Commander".into(), true, window, cx).flex_1().bg(self.colors.bar);
             let toggle = (self.settings.sidebar_button == sc_core::settings::SidebarButton::TitleBar).then(|| self.windows_sidebar_toggle(cx));
+            // Beside ☰ the icon as far from its lines as from the title.
+            let lead = if toggle.is_some() { px(0.) } else { px(8.) };
+            let caption = crate::dialogs::dialog_window::caption("Spark Commander".into(), true, lead, window, cx).flex_1().bg(self.colors.bar);
             return Some(h_flex().bg(self.colors.bar).children(toggle).child(caption).into_any_element());
         }
         // The title kept clear of the toolbar's buttons (32 px and a gap each, Back's and Forward's arrow 18).
@@ -116,7 +118,7 @@ impl Commander {
         let shade = cx.theme().foreground.opacity(0.06);
         div()
             .id("caption-sidebar")
-            .w(px(40.))
+            .w(px(34.))
             .h(px(32.))
             .flex()
             .flex_none()
@@ -175,7 +177,7 @@ pub(crate) fn mac_capsule(buttons: Vec<AnyElement>, cx: &App) -> Div {
 /// A window's own title bar: Windows' caption as the main window's, else `title_bar`'s.
 pub(crate) fn window_bar(title: impl Into<SharedString>, window: &Window, cx: &mut App) -> Option<AnyElement> {
     if cfg!(windows) {
-        return Some(crate::dialogs::dialog_window::caption(title.into(), true, window, cx).into_any_element());
+        return Some(crate::dialogs::dialog_window::caption(title.into(), true, px(8.), window, cx).into_any_element());
     }
     title_bar(title, window, cx).map(IntoElement::into_any_element)
 }

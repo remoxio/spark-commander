@@ -328,7 +328,7 @@ impl Render for DialogWindow {
         #[cfg(not(windows))]
         let header = crate::header::title_bar(SharedString::default(), window, cx);
         #[cfg(windows)]
-        let header = Some(caption(self.title.clone(), false, window, cx));
+        let header = Some(caption(self.title.clone(), false, px(8.), window, cx));
         // The title heads the content, as the kit's in-window dialogs.
         let heading = self.heading.then(|| div().px_4().pt_4().text_xl().font_weight(FontWeight::SEMIBOLD).child(self.title.clone()));
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
@@ -378,7 +378,8 @@ impl Render for DialogWindow {
 /// Windows: the caption as Windows 11 draws it, a dialog's without maximize (as
 /// KWin's): the app's icon, the title, minimize (maximize) and close in 46 px cells;
 /// Windows moves the window by it and takes the buttons' clicks.
-pub(crate) fn caption(title: SharedString, maximize: bool, window: &Window, cx: &App) -> Div {
+/// `lead`: the room before the icon, 8 px at the window's edge.
+pub(crate) fn caption(title: SharedString, maximize: bool, lead: Pixels, window: &Window, cx: &App) -> Div {
     use gpui_kit::component::{AlertIcon, NativeControls};
     let theme = cx.theme();
     let frame = cx.try_global::<NativeControls>().and_then(|native| native.dialog_frame);
@@ -389,7 +390,7 @@ pub(crate) fn caption(title: SharedString, maximize: bool, window: &Window, cx: 
     let glyph = |code: &'static str| div().font_family("Segoe MDL2 Assets").text_size(px(10.)).child(code);
     let cell = |id: &'static str, area: WindowControlArea| div().id(id).w(px(46.)).h_full().flex().items_center().justify_center().window_control_area(area);
     // Siblings, not inside the drag area: Windows takes the first area under the pointer.
-    let drag = h_flex().id("caption").flex_1().min_w_0().h_full().pl(px(8.)).gap(px(8.)).window_control_area(WindowControlArea::Drag);
+    let drag = h_flex().id("caption").flex_1().min_w_0().h_full().pl(lead).gap(px(8.)).window_control_area(WindowControlArea::Drag);
     let icon = cx.try_global::<AlertIcon>().map(|icon| img(icon.0.clone()).size(px(16.)).flex_none());
     // Windows' own close under the pointer: white on e81123.
     let close = cell("caption-close", WindowControlArea::Close).hover(|style| style.bg(rgb(0xe81123)).text_color(white()));
