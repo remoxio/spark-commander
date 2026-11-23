@@ -2861,8 +2861,8 @@ impl Render for Commander {
                 el.on_key_down(move |event, window, cx| menus::alt_letter(&bar, event, window, cx)).child(
                     div()
                         .bg(self.colors.bar)
-                        .border_b_1()
-                        .border_color(cx.theme().border)
+                        // Windows: one band with the title bar and the toolbar, as WinUI's.
+                        .when(!cfg!(windows), |el| el.border_b_1().border_color(cx.theme().border))
                         .child(self.menu_bar.clone()),
                 )
             })

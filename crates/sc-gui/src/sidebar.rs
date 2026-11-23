@@ -266,13 +266,14 @@ impl Commander {
             true => WindowBackgroundAppearance::Blurred,
         });
         window.set_see_through(see_through, cx);
-        // The title bar as Windows draws it on an opaque window, as the menu bar under it;
+        // The title bar in the menu bar's colour, one band as WinUI's;
         // a see-through backdrop had turned it black.
         #[cfg(windows)]
         if let Ok(raw_window_handle::RawWindowHandle::Win32(handle)) =
             raw_window_handle::HasWindowHandle::window_handle(window).map(|handle| handle.as_raw())
         {
-            let rgb = if cx.theme().mode.is_dark() { 0x202020 } else { 0xffffff };
+            let bar = gpui_kit::Rgba::from(self.colors.bar);
+            let rgb = [bar.r, bar.g, bar.b].into_iter().fold(0, |rgb, part| rgb << 8 | (part * 255.).round() as u32);
             sc_core::system::theme::set_caption_color(handle.hwnd.get(), rgb);
         }
     }
