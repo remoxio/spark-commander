@@ -20,7 +20,7 @@ pub mod tools_dialog;
 
 use gpui_kit::component::{ActiveTheme, NativeControls, WindowClose, h_flex};
 use gpui_kit::prelude::FluentBuilder;
-use gpui_kit::{App, Div, Styled, px};
+use gpui_kit::{AnyElement, App, Div, IntoElement, ParentElement, RenderOnce, StyleRefinement, Styled, Window, px};
 use sc_core::system::theme::{ButtonOrder, button_order};
 
 /// A dialog button's part, for the desktop's order of them.
@@ -72,15 +72,44 @@ pub(crate) fn ok_cancel<T>(ok: T, cancel: T) -> Vec<T> {
 }
 
 /// A dialog's button row; Windows' in a band across its foot, as WinUI's ContentDialog.
-pub(crate) fn footer(cx: &App) -> Div {
+pub(crate) fn footer(cx: &App) -> Footer {
     let native = cx.try_global::<NativeControls>();
     let band = native.and_then(|native| native.command_bar).filter(|_| {
         native.and_then(|native| native.dialog_frame).is_some_and(|frame| frame.close == WindowClose::Fluent)
     });
     // Out to the dialog's edges, over its 24 px padding (the kit's, a content dialog's).
-    h_flex().gap_2().justify_end().when_some(band, |row, fill| {
+    let row = h_flex().gap_2().justify_end().when_some(band, |row, fill| {
         row.mx(px(-24.)).mb(px(-24.)).mt_3().p(px(24.)).bg(fill).border_t_1().border_color(cx.theme().border).rounded_b(px(7.))
-    })
+    });
+    Footer { row, buttons: Vec::new(), band: band.is_some() }
+}
+
+#[derive(IntoElement)]
+pub(crate) struct Footer {
+    row: Div,
+    buttons: Vec<AnyElement>,
+    band: bool,
+}
+
+impl ParentElement for Footer {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.buttons.extend(elements);
+    }
+}
+
+impl Styled for Footer {
+    fn style(&mut self) -> &mut StyleRefinement {
+        self.row.style()
+    }
+}
+
+impl RenderOnce for Footer {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        // WinUI's ContentDialog: up to three buttons share the band's width alike.
+        let even = self.band && (1..=3).contains(&self.buttons.len());
+        let count = self.buttons.len() as u16;
+        self.row.when(even, |row| row.grid().grid_cols(count)).children(self.buttons)
+    }
 }
 
 #[cfg(test)]

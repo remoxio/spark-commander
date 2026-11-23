@@ -144,7 +144,7 @@ pub(crate) fn answer(main: Option<Main>, window: &mut Window, cx: &mut App, f: i
 
 struct DialogWindow {
     title: SharedString,
-    /// The title over the content (macOS) or in the drawn title bar (Linux), else the content's own heading.
+    /// The title over the content, else the content's own heading.
     heading: bool,
     content: AnyView,
     ok: Option<Ok>,
@@ -169,7 +169,7 @@ pub(crate) fn open<V: Render>(
     open_window(title, size, true, parent, cx, build)
 }
 
-/// As `open`, the view heading itself: macOS's sheet puts no title over it.
+/// As `open`, the view heading itself: no title over it.
 pub(crate) fn open_headed<V: Render>(
     title: String,
     size: Size<Pixels>,
@@ -198,8 +198,8 @@ fn open_window<V: Render>(
         is_resizable: false,
         // Windows: it minimizes the app (`native_dialog`).
         is_minimizable: cfg!(windows),
-        // Linux: the desktop's own title bar untitled too, the view heading itself.
-        ..crate::over_main_window(if heading || !cfg!(target_os = "linux") { title.clone() } else { String::new() }, over, cx)
+        // Linux: the desktop's own title bar untitled, the title a heading in the window.
+        ..crate::over_main_window(if cfg!(target_os = "linux") { String::new() } else { title.clone() }, over, cx)
     };
     // Windows: its caption drawn here (`caption`), as Windows' own greys out a maximize beside minimize.
     #[cfg(windows)]
@@ -324,13 +324,13 @@ impl Render for DialogWindow {
         }
         let theme = cx.theme().clone();
         let height = self.height.clone();
-        // GNOME's on Wayland: the app draws the frame; a view heading itself leaves it untitled, as libadwaita's dialogs.
+        // GNOME's on Wayland: the app draws the frame, untitled, as libadwaita's dialogs.
         #[cfg(not(windows))]
-        let header = crate::header::title_bar(if self.heading { self.title.clone() } else { SharedString::default() }, window, cx);
+        let header = crate::header::title_bar(SharedString::default(), window, cx);
         #[cfg(windows)]
         let header = Some(caption(self.title.clone(), false, window, cx));
-        // macOS: a sheet has no title bar; its title heads it, as an alert's.
-        let heading = (cfg!(target_os = "macos") && self.heading).then(|| div().px_4().pt_4().text_sm().font_weight(FontWeight::BOLD).child(self.title.clone()));
+        // The title heads the content, as the kit's in-window dialogs.
+        let heading = self.heading.then(|| div().px_4().pt_4().text_xl().font_weight(FontWeight::SEMIBOLD).child(self.title.clone()));
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
             let button = Button::new("dialog-ok").label(label).min_w(px(80.));
             let button = if ok.danger { button.danger() } else { button.primary() };

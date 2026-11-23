@@ -24,7 +24,7 @@ use crate::{
     ActiveTheme as _, IconName, Sizable as _, StyledExt, TITLE_BAR_HEIGHT, WindowExt as _,
     animation::cubic_bezier,
     button::{Button, ButtonVariant, ButtonVariants as _},
-    dialog::{DialogContent, DialogDispatchAnchor, DialogTitle},
+    dialog::{DialogContent, DialogDispatchAnchor},
     scroll::ScrollableElement as _,
     v_flex,
 };
@@ -842,9 +842,10 @@ impl RenderOnce for Dialog {
         let command_bar = cx.try_global::<crate::NativeControls>().and_then(|native| native.command_bar);
         // SparkCommander patch: the desktop's window title bar, see `NativeControls::dialog_frame`.
         let frame = cx.try_global::<crate::NativeControls>().and_then(|native| native.dialog_frame).filter(|_| mac.is_none());
-        // SparkCommander patch: Windows' as WinUI's ContentDialog: no title bar, the title a heading.
+        // SparkCommander patch: Windows' as WinUI's ContentDialog: no title bar.
         let content_dialog = frame.is_some_and(|frame| frame.close == crate::WindowClose::Fluent);
-        let heading = if content_dialog { self.title.take() } else { None };
+        // SparkCommander patch: the title a heading over the content everywhere; a band stays untitled.
+        let heading = self.title.take();
         let icon = frame
             .filter(|frame| frame.icon)
             .and_then(|_| cx.try_global::<crate::AlertIcon>())
@@ -980,7 +981,7 @@ impl RenderOnce for Dialog {
                                         .max_h(max_height)
                                         // SparkCommander patch: the title is in a band, which
                                         // shows where the dialog is moved by.
-                                        .when_some(self.title, |this, title| {
+                                        .when(has_title && !content_dialog, |this| {
                                             let moving = moving.clone();
                                             let theme = cx.theme();
                                             this.child(
@@ -1005,23 +1006,6 @@ impl RenderOnce for Dialog {
                                                         (None, None) => this.bg(theme.muted).border_b_1().border_color(theme.border),
                                                     })
                                                     .rounded_t(corner - px(1.))
-                                                    // SparkCommander patch: the window title's size; a long one ends in "…".
-                                                    .child(
-                                                        DialogTitle::new()
-                                                            .text_sm()
-                                                            .when(mac.is_some(), |this| {
-                                                                this.font_semibold().text_color(theme.muted_foreground)
-                                                            })
-                                                            .when_some(frame, |this, frame| match frame.close {
-                                                                crate::WindowClose::Adwaita => this.text_center().font_bold(),
-                                                                crate::WindowClose::Fluent => this.text_xs(),
-                                                                _ => this.text_center(),
-                                                            })
-                                                            .flex_1()
-                                                            .min_w_0()
-                                                            .truncate()
-                                                            .child(title),
-                                                    )
                                                     // SparkCommander patch: the app's icon at the left, as KWin's.
                                                     .when_some(icon.clone(), |this, icon| {
                                                         this.relative().child(

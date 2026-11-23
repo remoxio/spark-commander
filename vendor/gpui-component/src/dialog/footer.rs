@@ -1,6 +1,7 @@
 use gpui::{
     AnyElement, App, InteractiveElement as _, IntoElement, ParentElement, RenderOnce,
-    StatefulInteractiveElement, StyleRefinement, Styled, Window, div, relative,
+    StatefulInteractiveElement, StyleRefinement, Styled, Window, div, prelude::FluentBuilder as _,
+    relative,
 };
 
 use crate::{
@@ -48,12 +49,18 @@ impl Styled for DialogFooter {
 
 impl RenderOnce for DialogFooter {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        // SparkCommander patch: WinUI's ContentDialog: up to three buttons share the width alike.
+        let native = cx.try_global::<crate::NativeControls>();
+        let fluent = native.is_some_and(|native| native.command_bar.is_some())
+            && native.and_then(|native| native.dialog_frame).is_some_and(|frame| frame.close == crate::WindowClose::Fluent);
+        let count = self.children.len();
         h_flex()
             .gap_2()
             .justify_end()
             .line_height(relative(1.25))
             .rounded_b(cx.theme().radius_lg)
             .refine_style(&self.style)
+            .when(fluent && (1..=3).contains(&count), |this| this.grid().grid_cols(count as u16))
             .children(self.children)
     }
 }
