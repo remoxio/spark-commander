@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Lisää erotin"
   },
+  "settings.toolbar.icons": {
+    "message": "Vain kuvakkeet"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Kuvakkeet ja teksti"
+  },
   "settings.toolbar.move_down": {
     "message": "Siirrä alas"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Erotin"
+  },
+  "settings.toolbar.text": {
+    "message": "Vain teksti"
   },
   "settings.toolbar.title": {
     "message": "Työkalurivin painikkeet"

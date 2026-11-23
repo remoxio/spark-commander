@@ -966,10 +966,9 @@ impl SettingsDialog {
                 },
             )));
         let place = t!("settings.toolbar.place");
-        // Windows and Linux: macOS's buttons sit in capsules, icons only.
-        let styles = [ToolbarStyle::Icons, ToolbarStyle::IconsAndText];
+        let (styles, names): (Vec<ToolbarStyle>, Vec<String>) = crate::toolbar_styles().into_iter().unzip();
         let style = RadioGroup::horizontal("toolbar-style")
-            .children([t!("settings.toolbar.icons"), t!("settings.toolbar.icons_text")])
+            .children(names)
             .selected_index(styles.iter().position(|style| *style == self.draft.toolbar_style))
             .on_click(cx.listener(move |this, at: &usize, _, cx| {
                 this.draft.toolbar_style = styles[*at];
@@ -978,7 +977,7 @@ impl SettingsDialog {
         GroupBox::new().outline().title(t!("settings.toolbar.title")).child(
             v_flex()
                 .gap_2()
-                .when(!cfg!(target_os = "macos"), |el| el.child(style))
+                .child(style)
                 .child(div().whitespace_normal().text_color(cx.theme().muted_foreground).child(place))
                 .children(rows)
                 .child(buttons),

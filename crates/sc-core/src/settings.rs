@@ -51,12 +51,13 @@ pub enum SidebarLayout {
     Vertical,
 }
 
-/// What the toolbar's buttons show: their icon, or their name beside it too (Windows and Linux).
+/// What the toolbar's buttons show: their icon, their name beside it too, or their name alone.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ToolbarStyle {
     #[default]
     Icons,
     IconsAndText,
+    Text,
 }
 
 /// Windows: where the sidebar's button is, WinUI's navigation button (☰) in the title bar or the toolbar's.

@@ -1594,7 +1594,8 @@ impl Commander {
             return None;
         }
         let mac = cfg!(target_os = "macos");
-        let text = !mac && self.settings.toolbar_style == settings::ToolbarStyle::IconsAndText;
+        let style = self.settings.toolbar_style;
+        let (icons, text) = (style != settings::ToolbarStyle::Text, style != settings::ToolbarStyle::Icons);
         let button_for = |command: Command| {
             let icon = menus::toolbar_icon(command)?;
             let [key, _] = self.settings.keys.keys_of(command);
@@ -1604,10 +1605,14 @@ impl Commander {
                 false => format!("{name} ({})", dialogs::keys_dialog::shown(&key)),
             };
             let size = if cfg!(target_os = "macos") { header::MAC_BUTTON } else { gpui_kit::component::Size::Medium };
-            let button = Button::new(("toolbar", command as usize)).ghost().with_size(size).icon(Icon::new(icon)).selected(self.checked(command)).tooltip(tip);
+            let button = Button::new(("toolbar", command as usize)).ghost().with_size(size).when(icons, |button| button.icon(Icon::new(icon))).selected(self.checked(command)).tooltip(tip);
             let button = button.when(text, |button| button.label(name.trim_end_matches(['…', '.'])));
-            // macOS: as wide as AppKit's in a group's capsule.
-            let button = if mac { button.w(px(34.)).h(px(26.)).rounded(px(13.)) } else { button };
+            // macOS: as wide as AppKit's in a group's capsule, with its name as wide as that.
+            let button = match (mac, text) {
+                (true, false) => button.w(px(34.)).h(px(26.)).rounded(px(13.)),
+                (true, true) => button.h(px(26.)).px(px(10.)).rounded(px(13.)),
+                (false, _) => button,
+            };
             let button = button.on_click(cx.listener(move |this, _, window, cx| {
                 // Pressed, the terminal's button hides it; the command would give it the keys, the panels having them.
                 if command == Command::TerminalPanel && this.terminal_shown {
@@ -1644,32 +1649,32 @@ impl Commander {
             }
         }
         groups.retain(|group| !group.is_empty());
-        // A press on it must not start moving the window from the title bar.
-        let bar = h_flex().id("toolbar").when(mac, |bar| bar.gap_2()).when(!mac, |bar| bar.gap_0p5()).px_1().py_0p5().on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation());
-        // macOS: each group a capsule, as AppKit's.
-        if mac {
-            let capsules = groups.into_iter().map(|group| header::mac_capsule(group.into_iter().map(|(_, button)| button).collect(), cx).into_any_element());
-            return Some(bar.children(capsules).into_any_element());
-        }
-        // Elsewhere a line between the groups; what does not fit goes behind "…", as WinUI's CommandBar.
-        let mut items: Vec<(Option<Command>, AnyElement)> = Vec::new();
+        let bar = h_flex().id("toolbar").when(mac, |bar| bar.gap_2()).when(!mac, |bar| bar.gap_0p5()).px_1().py_0p5();
+        // macOS: each group a capsule, as AppKit's; elsewhere a line between the groups.
+        // What does not fit goes behind "…", as WinUI's CommandBar; a capsule whole.
+        let mut items: Vec<(Vec<Command>, AnyElement)> = Vec::new();
         for (at, group) in groups.into_iter().enumerate() {
-            if at > 0 {
-                items.push((None, div().flex_none().w(px(1.)).h(px(18.)).mx_1().bg(cx.theme().border).into_any_element()));
+            if mac {
+                let (commands, buttons): (Vec<Command>, Vec<AnyElement>) = group.into_iter().unzip();
+                items.push((commands, header::mac_capsule(buttons, cx).into_any_element()));
+                continue;
             }
-            items.extend(group.into_iter().map(|(command, button)| (Some(command), button)));
+            if at > 0 {
+                items.push((Vec::new(), div().flex_none().w(px(1.)).h(px(18.)).mx_1().bg(cx.theme().border).into_any_element()));
+            }
+            items.extend(group.into_iter().map(|(command, button)| (vec![command], button)));
         }
-        let key: Vec<Option<Command>> = items.iter().map(|(command, _)| *command).collect();
+        let key: Vec<Vec<Command>> = items.iter().map(|(commands, _)| commands.clone()).collect();
         let shown = {
             let mut fit = self.toolbar_fit.borrow_mut();
-            if fit.key != (text, key.clone()) {
+            if fit.key != (style, key.clone()) {
                 // Other buttons: all shown once, to be measured.
-                fit.key = (text, key);
+                fit.key = (style, key);
                 fit.widths = vec![Pixels::ZERO; items.len()];
             }
-            fit.shown()
+            fit.shown(mac)
         };
-        let hidden: Vec<Option<Command>> = items[shown..].iter().map(|(command, _)| *command).collect();
+        let hidden: Vec<Vec<Command>> = items[shown..].iter().map(|(commands, _)| commands.clone()).collect();
         let fit = self.toolbar_fit.clone();
         let buttons = items.into_iter().take(shown).enumerate().map(|(at, (_, button))| {
             let fit = fit.clone();
@@ -1683,24 +1688,30 @@ impl Commander {
                 },
                 |_, _, _, _| {},
             );
-            div().relative().flex_none().child(button).child(measure.absolute().size_full())
+            // A press on it must not start moving the window from the title bar; between them it does.
+            div().relative().flex_none().on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation()).child(button).child(measure.absolute().size_full())
         });
         let more = (!hidden.is_empty()).then(|| {
             let focus = self.focus.clone();
             let menu = move |menu: PopupMenu, _: &mut Window, _: &mut Context<PopupMenu>| {
-                hidden.iter().fold(menu.action_context(focus.clone()), |menu, command| match command {
-                    None => menu.separator(),
-                    Some(command) => {
+                hidden.iter().enumerate().fold(menu.action_context(focus.clone()), |menu, (at, commands)| {
+                    // A line for a separator; macOS's between capsules.
+                    let menu = if commands.is_empty() || mac && at > 0 { menu.separator() } else { menu };
+                    commands.iter().fold(menu, |menu, command| {
                         let name = sc_core::menu::name(*command);
                         match menus::toolbar_icon(*command) {
                             Some(icon) => menu.menu_with_icon(name, Icon::new(icon), Box::new(Run(*command))),
                             None => menu.menu(name, Box::new(Run(*command))),
                         }
-                    }
+                    })
                 })
             };
-            let size = gpui_kit::component::Size::Medium;
-            Button::new("toolbar-more").ghost().with_size(size).icon(Icon::new(IconName::Ellipsis)).dropdown_menu_with_anchor(Anchor::TopRight, menu)
+            let size = if mac { header::MAC_BUTTON } else { gpui_kit::component::Size::Medium };
+            let button = Button::new("toolbar-more").ghost().with_size(size).icon(Icon::new(IconName::Ellipsis));
+            let button = if mac { button.w(px(34.)).h(px(26.)).rounded(px(13.)) } else { button };
+            let button = button.dropdown_menu_with_anchor(Anchor::TopRight, menu).into_any_element();
+            let button = if mac { header::mac_capsule(vec![button], cx).into_any_element() } else { button };
+            div().flex_none().on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation()).child(button)
         });
         let room = self.toolbar_fit.clone();
         let measure = canvas(
@@ -2970,66 +2981,68 @@ const SIDEWAYS: Pixels = px(40.);
 /// The toolbar's buttons as last laid out: the room, each one's width (a line's too).
 #[derive(Default)]
 struct ToolbarFit {
-    /// Whether they show their names, and which they are: others are measured again.
-    key: (bool, Vec<Option<Command>>),
+    /// What they show, and which they are (none: a line): others are measured again.
+    key: (settings::ToolbarStyle, Vec<Vec<Command>>),
     widths: Vec<Pixels>,
     room: Pixels,
 }
 
 impl ToolbarFit {
-    /// How many fit, the rest behind "…"; all until each is measured.
-    fn shown(&self) -> usize {
-        const GAP: f32 = 2.;
+    /// How many fit, the rest behind "…"; all until each is measured. macOS's
+    /// are capsules 8 px apart, its "…" one too.
+    fn shown(&self, mac: bool) -> usize {
+        let (gap, more) = if mac { (8., 42.) } else { (2., 34.) };
         const EDGES: f32 = 8.;
-        const MORE: f32 = 34.;
         let widths: Vec<f32> = self.widths.iter().map(|width| f32::from(*width)).collect();
         if self.room <= Pixels::ZERO || widths.iter().any(|width| *width <= 0.) {
             return widths.len();
         }
         let room = f32::from(self.room) - EDGES;
-        let all: f32 = widths.iter().map(|width| width + GAP).sum();
+        let all: f32 = widths.iter().map(|width| width + gap).sum();
         if all <= room {
             return widths.len();
         }
-        let mut used = MORE;
+        let mut used = more;
         let mut shown = 0;
         for width in &widths {
-            used += width + GAP;
+            used += width + gap;
             if used > room {
                 break;
             }
             shown += 1;
         }
         // Not a line last.
-        while shown > 0 && self.key.1[shown - 1].is_none() {
+        while shown > 0 && self.key.1[shown - 1].is_empty() {
             shown -= 1;
         }
         shown
     }
 }
 
+/// What the toolbar's buttons can show, each with its name.
+pub(crate) fn toolbar_styles() -> [(settings::ToolbarStyle, String); 3] {
+    use settings::ToolbarStyle::*;
+    [(Icons, sc_core::t!("settings.toolbar.icons")), (IconsAndText, sc_core::t!("settings.toolbar.icons_text")), (Text, sc_core::t!("settings.toolbar.text"))]
+}
+
 /// The toolbar's right-click menu: what its buttons show, Customize Toolbar, Settings on its page.
 pub(crate) fn toolbar_menu(commander: WeakEntity<Commander>) -> impl Fn(PopupMenu, &mut Window, &mut Context<PopupMenu>) -> PopupMenu + 'static {
     move |menu, _, cx| {
-        // Windows and Linux: what the buttons show, as Settings > Toolbar.
+        // What the buttons show, as Settings > Toolbar (and Finder's).
         let current = commander.upgrade().map(|this| this.read(cx).settings.toolbar_style);
-        let styles = [(settings::ToolbarStyle::Icons, sc_core::t!("settings.toolbar.icons")), (settings::ToolbarStyle::IconsAndText, sc_core::t!("settings.toolbar.icons_text"))];
-        let menu = match cfg!(target_os = "macos") {
-            true => menu,
-            false => styles
-                .into_iter()
-                .fold(menu, |menu, (style, label)| {
-                    let commander = commander.clone();
-                    menu.item(PopupMenuItem::new(label).checked(current == Some(style)).on_click(move |_, window, cx| {
-                        let _ = commander.update(cx, |this, cx| {
-                            this.settings.toolbar_style = style;
-                            this.save_settings(window, cx);
-                            cx.notify();
-                        });
-                    }))
-                })
-                .separator(),
-        };
+        let menu = toolbar_styles()
+            .into_iter()
+            .fold(menu, |menu, (style, label)| {
+                let commander = commander.clone();
+                menu.item(PopupMenuItem::new(label).checked(current == Some(style)).on_click(move |_, window, cx| {
+                    let _ = commander.update(cx, |this, cx| {
+                        this.settings.toolbar_style = style;
+                        this.save_settings(window, cx);
+                        cx.notify();
+                    });
+                }))
+            })
+            .separator();
         let commander = commander.clone();
         let item = PopupMenuItem::new(sc_core::t!("toolbar.customize")).when_some(menus::menu_icon(Command::Settings), |item, icon| item.icon(Icon::new(icon)));
         menu.item(item.on_click(move |_, window, cx| {

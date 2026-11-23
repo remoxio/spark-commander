@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Ayırıcı ekle"
   },
+  "settings.toolbar.icons": {
+    "message": "Yalnızca simgeler"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Simgeler ve metin"
+  },
   "settings.toolbar.move_down": {
     "message": "Aşağı taşı"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Ayırıcı"
+  },
+  "settings.toolbar.text": {
+    "message": "Yalnızca metin"
   },
   "settings.toolbar.title": {
     "message": "Araç çubuğu düğmeleri"

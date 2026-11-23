@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Tambah pemisah"
   },
+  "settings.toolbar.icons": {
+    "message": "Hanya ikon"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikon dan teks"
+  },
   "settings.toolbar.move_down": {
     "message": "Pindah ke bawah"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Pemisah"
+  },
+  "settings.toolbar.text": {
+    "message": "Hanya teks"
   },
   "settings.toolbar.title": {
     "message": "Tombol bilah alat"

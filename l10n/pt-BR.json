@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Adicionar separador"
   },
+  "settings.toolbar.icons": {
+    "message": "Somente ícones"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ícones e texto"
+  },
   "settings.toolbar.move_down": {
     "message": "Mover para baixo"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Separador"
+  },
+  "settings.toolbar.text": {
+    "message": "Somente texto"
   },
   "settings.toolbar.title": {
     "message": "Botões da barra de ferramentas"

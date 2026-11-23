@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "구분선 추가"
   },
+  "settings.toolbar.icons": {
+    "message": "아이콘만"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "아이콘 및 텍스트"
+  },
   "settings.toolbar.move_down": {
     "message": "아래로 이동"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "구분선"
+  },
+  "settings.toolbar.text": {
+    "message": "텍스트만"
   },
   "settings.toolbar.title": {
     "message": "도구 모음 버튼"

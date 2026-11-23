@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Προσθήκη διαχωριστικού"
   },
+  "settings.toolbar.icons": {
+    "message": "Μόνο εικονίδια"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Εικονίδια και κείμενο"
+  },
   "settings.toolbar.move_down": {
     "message": "Μετακίνηση κάτω"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Διαχωριστικό"
+  },
+  "settings.toolbar.text": {
+    "message": "Μόνο κείμενο"
   },
   "settings.toolbar.title": {
     "message": "Κουμπιά γραμμής εργαλείων"

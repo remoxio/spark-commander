@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Dodaj separator"
   },
+  "settings.toolbar.icons": {
+    "message": "Tylko ikony"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikony i tekst"
+  },
   "settings.toolbar.move_down": {
     "message": "Przesuń w dół"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Separator"
+  },
+  "settings.toolbar.text": {
+    "message": "Tylko tekst"
   },
   "settings.toolbar.title": {
     "message": "Przyciski paska narzędzi"

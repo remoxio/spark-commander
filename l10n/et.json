@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Lisa eraldaja"
   },
+  "settings.toolbar.icons": {
+    "message": "Ainult ikoonid"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikoonid ja tekst"
+  },
   "settings.toolbar.move_down": {
     "message": "Liiguta alla"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Eraldaja"
+  },
+  "settings.toolbar.text": {
+    "message": "Ainult tekst"
   },
   "settings.toolbar.title": {
     "message": "Tööriistariba nupud"

@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "新增分隔線"
   },
+  "settings.toolbar.icons": {
+    "message": "僅圖示"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "圖示和文字"
+  },
   "settings.toolbar.move_down": {
     "message": "下移"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "分隔線"
+  },
+  "settings.toolbar.text": {
+    "message": "僅文字"
   },
   "settings.toolbar.title": {
     "message": "工具列按鈕"

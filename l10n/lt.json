@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Pridėti skyriklį"
   },
+  "settings.toolbar.icons": {
+    "message": "Tik piktogramos"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Piktogramos ir tekstas"
+  },
   "settings.toolbar.move_down": {
     "message": "Perkelti žemyn"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Skyriklis"
+  },
+  "settings.toolbar.text": {
+    "message": "Tik tekstas"
   },
   "settings.toolbar.title": {
     "message": "Įrankių juostos mygtukai"

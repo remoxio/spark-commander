@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Afegeix un separador"
   },
+  "settings.toolbar.icons": {
+    "message": "Només icones"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Icones i text"
+  },
   "settings.toolbar.move_down": {
     "message": "Mou avall"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Separador"
+  },
+  "settings.toolbar.text": {
+    "message": "Només text"
   },
   "settings.toolbar.title": {
     "message": "Botons de la barra d’eines"

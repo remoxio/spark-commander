@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Pievienot atdalītāju"
   },
+  "settings.toolbar.icons": {
+    "message": "Tikai ikonas"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikonas un teksts"
+  },
   "settings.toolbar.move_down": {
     "message": "Pārvietot uz leju"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Atdalītājs"
+  },
+  "settings.toolbar.text": {
+    "message": "Tikai teksts"
   },
   "settings.toolbar.title": {
     "message": "Rīkjoslas pogas"

@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Přidat oddělovač"
   },
+  "settings.toolbar.icons": {
+    "message": "Pouze ikony"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikony a text"
+  },
   "settings.toolbar.move_down": {
     "message": "Posunout dolů"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Oddělovač"
+  },
+  "settings.toolbar.text": {
+    "message": "Pouze text"
   },
   "settings.toolbar.title": {
     "message": "Tlačítka panelu nástrojů"

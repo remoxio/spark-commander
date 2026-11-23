@@ -5400,11 +5400,11 @@
     "message": "Add Separator"
   },
   "settings.toolbar.icons": {
-    "description": "Settings › Toolbar (Windows and Linux): a choice; the toolbar's buttons show their icon only (the default).",
+    "description": "Settings › Toolbar and the toolbar's right-click menu: a choice; the toolbar's buttons show their icon only.",
     "message": "Icons only"
   },
   "settings.toolbar.icons_text": {
-    "description": "Settings › Toolbar (Windows and Linux): a choice; the toolbar's buttons show their name beside the icon.",
+    "description": "Settings › Toolbar and the toolbar's right-click menu: a choice; the toolbar's buttons show their name beside their icon.",
     "message": "Icons and text"
   },
   "settings.toolbar.move_down": {
@@ -5434,6 +5434,10 @@
   "settings.toolbar.separator": {
     "description": "Settings › Toolbar: a row standing for a separator, which divides the toolbar's buttons into groups (on macOS, each group one capsule).",
     "message": "Separator"
+  },
+  "settings.toolbar.text": {
+    "description": "Settings › Toolbar and the toolbar's right-click menu: a choice; the toolbar's buttons show their name only.",
+    "message": "Text only"
   },
   "settings.toolbar.title": {
     "description": "Settings › Toolbar: the box's title.",

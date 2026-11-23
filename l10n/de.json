@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Trennlinie hinzufügen"
   },
+  "settings.toolbar.icons": {
+    "message": "Nur Symbole"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Symbole und Text"
+  },
   "settings.toolbar.move_down": {
     "message": "Nach unten"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Trennlinie"
+  },
+  "settings.toolbar.text": {
+    "message": "Nur Text"
   },
   "settings.toolbar.title": {
     "message": "Schaltflächen der Symbolleiste"

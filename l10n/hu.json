@@ -4076,6 +4076,9 @@
   "settings.toolbar.separator": {
     "message": "Elválasztó"
   },
+  "settings.toolbar.text": {
+    "message": "Csak szöveg"
+  },
   "settings.toolbar.title": {
     "message": "Az eszköztár gombjai"
   },

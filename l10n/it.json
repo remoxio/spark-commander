@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Aggiungi separatore"
   },
+  "settings.toolbar.icons": {
+    "message": "Solo icone"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Icone e testo"
+  },
   "settings.toolbar.move_down": {
     "message": "Sposta giù"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Separatore"
+  },
+  "settings.toolbar.text": {
+    "message": "Solo testo"
   },
   "settings.toolbar.title": {
     "message": "Pulsanti della barra degli strumenti"

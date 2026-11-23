@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "区切り線を追加"
   },
+  "settings.toolbar.icons": {
+    "message": "アイコンのみ"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "アイコンとテキスト"
+  },
   "settings.toolbar.move_down": {
     "message": "下へ移動"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "区切り線"
+  },
+  "settings.toolbar.text": {
+    "message": "テキストのみ"
   },
   "settings.toolbar.title": {
     "message": "ツールバーのボタン"

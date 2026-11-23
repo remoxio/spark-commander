@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Tilføj skillelinje"
   },
+  "settings.toolbar.icons": {
+    "message": "Kun ikoner"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikoner og tekst"
+  },
   "settings.toolbar.move_down": {
     "message": "Flyt ned"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Skillelinje"
+  },
+  "settings.toolbar.text": {
+    "message": "Kun tekst"
   },
   "settings.toolbar.title": {
     "message": "Værktøjslinjens knapper"

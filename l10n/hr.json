@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Dodaj razdjelnik"
   },
+  "settings.toolbar.icons": {
+    "message": "Samo ikone"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikone i tekst"
+  },
   "settings.toolbar.move_down": {
     "message": "Pomakni dolje"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Razdjelnik"
+  },
+  "settings.toolbar.text": {
+    "message": "Samo tekst"
   },
   "settings.toolbar.title": {
     "message": "Gumbi alatne trake"

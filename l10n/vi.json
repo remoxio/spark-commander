@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Thêm dấu phân cách"
   },
+  "settings.toolbar.icons": {
+    "message": "Chỉ biểu tượng"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Biểu tượng và văn bản"
+  },
   "settings.toolbar.move_down": {
     "message": "Chuyển xuống"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Dấu phân cách"
+  },
+  "settings.toolbar.text": {
+    "message": "Chỉ văn bản"
   },
   "settings.toolbar.title": {
     "message": "Nút trên thanh công cụ"

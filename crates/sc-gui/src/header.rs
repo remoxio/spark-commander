@@ -97,7 +97,7 @@ impl Commander {
             .border_color(cx.theme().border)
             .children(title)
             // Together at the left: the bar spreads its children apart.
-            .child(h_flex().gap_2().children((!sidebar).then(|| mac_capsule(vec![self.sidebar_toggle()], cx))).children(toolbar.take()));
+            .child(h_flex().flex_1().min_w_0().gap_2().children((!sidebar).then(|| mac_capsule(vec![self.sidebar_toggle()], cx))).children(toolbar.take()));
         // Right-clicked anywhere on it, as Finder's.
         match self.main_commander(cx) {
             Some(commander) => div().id("title-bar-area").child(bar).context_menu(crate::toolbar_menu(commander)).into_any_element(),

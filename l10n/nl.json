@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Scheidingslijn toevoegen"
   },
+  "settings.toolbar.icons": {
+    "message": "Alleen pictogrammen"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Pictogrammen en tekst"
+  },
   "settings.toolbar.move_down": {
     "message": "Omlaag"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Scheidingslijn"
+  },
+  "settings.toolbar.text": {
+    "message": "Alleen tekst"
   },
   "settings.toolbar.title": {
     "message": "Werkbalkknoppen"

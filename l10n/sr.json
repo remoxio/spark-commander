@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Додај разделник"
   },
+  "settings.toolbar.icons": {
+    "message": "Само иконе"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Иконе и текст"
+  },
   "settings.toolbar.move_down": {
     "message": "Помери надоле"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Разделник"
+  },
+  "settings.toolbar.text": {
+    "message": "Само текст"
   },
   "settings.toolbar.title": {
     "message": "Дугмад на траци са алаткама"

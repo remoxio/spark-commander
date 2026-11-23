@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Додати роздільник"
   },
+  "settings.toolbar.icons": {
+    "message": "Лише піктограми"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Піктограми й текст"
+  },
   "settings.toolbar.move_down": {
     "message": "Перемістити вниз"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Роздільник"
+  },
+  "settings.toolbar.text": {
+    "message": "Лише текст"
   },
   "settings.toolbar.title": {
     "message": "Кнопки панелі інструментів"

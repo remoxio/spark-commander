@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Dodaj ločilo"
   },
+  "settings.toolbar.icons": {
+    "message": "Samo ikone"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikone in besedilo"
+  },
   "settings.toolbar.move_down": {
     "message": "Premakni navzdol"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Ločilo"
+  },
+  "settings.toolbar.text": {
+    "message": "Samo besedilo"
   },
   "settings.toolbar.title": {
     "message": "Gumbi orodne vrstice"

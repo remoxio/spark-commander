@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Adăugați un separator"
   },
+  "settings.toolbar.icons": {
+    "message": "Doar pictograme"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Pictograme și text"
+  },
   "settings.toolbar.move_down": {
     "message": "Mutați în jos"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Separator"
+  },
+  "settings.toolbar.text": {
+    "message": "Doar text"
   },
   "settings.toolbar.title": {
     "message": "Butoanele barei de instrumente"

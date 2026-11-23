@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "เพิ่มตัวคั่น"
   },
+  "settings.toolbar.icons": {
+    "message": "ไอคอนเท่านั้น"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "ไอคอนและข้อความ"
+  },
   "settings.toolbar.move_down": {
     "message": "ย้ายลง"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "ตัวคั่น"
+  },
+  "settings.toolbar.text": {
+    "message": "ข้อความเท่านั้น"
   },
   "settings.toolbar.title": {
     "message": "ปุ่มบนแถบเครื่องมือ"

@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Добавяне на разделител"
   },
+  "settings.toolbar.icons": {
+    "message": "Само икони"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Икони и текст"
+  },
   "settings.toolbar.move_down": {
     "message": "Преместване надолу"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Разделител"
+  },
+  "settings.toolbar.text": {
+    "message": "Само текст"
   },
   "settings.toolbar.title": {
     "message": "Бутони на лентата с инструменти"

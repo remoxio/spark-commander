@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Lägg till avgränsare"
   },
+  "settings.toolbar.icons": {
+    "message": "Endast symboler"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Symboler och text"
+  },
   "settings.toolbar.move_down": {
     "message": "Flytta ned"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Avgränsare"
+  },
+  "settings.toolbar.text": {
+    "message": "Endast text"
   },
   "settings.toolbar.title": {
     "message": "Knappar i verktygsfältet"

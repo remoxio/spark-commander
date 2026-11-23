@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "विभाजक जोड़ें"
   },
+  "settings.toolbar.icons": {
+    "message": "केवल आइकन"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "आइकन और टेक्स्ट"
+  },
   "settings.toolbar.move_down": {
     "message": "नीचे ले जाएं"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "विभाजक"
+  },
+  "settings.toolbar.text": {
+    "message": "केवल टेक्स्ट"
   },
   "settings.toolbar.title": {
     "message": "टूलबार बटन"

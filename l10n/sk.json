@@ -4040,6 +4040,12 @@
   "settings.toolbar.add_separator": {
     "message": "Pridať oddeľovač"
   },
+  "settings.toolbar.icons": {
+    "message": "Iba ikony"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikony a text"
+  },
   "settings.toolbar.move_down": {
     "message": "Posunúť nadol"
   },
@@ -4060,6 +4066,9 @@
   },
   "settings.toolbar.separator": {
     "message": "Oddeľovač"
+  },
+  "settings.toolbar.text": {
+    "message": "Iba text"
   },
   "settings.toolbar.title": {
     "message": "Tlačidlá panela nástrojov"
