@@ -391,7 +391,21 @@ pub(crate) fn caption(title: SharedString, maximize: bool, lead: Pixels, window:
     let cell = |id: &'static str, area: WindowControlArea| div().id(id).w(px(46.)).h_full().flex().items_center().justify_center().window_control_area(area);
     // Siblings, not inside the drag area: Windows takes the first area under the pointer.
     let drag = h_flex().id("caption").flex_1().min_w_0().h_full().pl(lead).gap(px(8.)).window_control_area(WindowControlArea::Drag);
-    let icon = cx.try_global::<AlertIcon>().map(|icon| img(icon.0.clone()).size(px(16.)).flex_none());
+    // The window's menu: right-clicked, or its icon clicked, as Windows' own caption.
+    #[cfg(windows)]
+    let drag = drag.on_mouse_down(MouseButton::Right, |_, window, cx| {
+        cx.stop_propagation();
+        system_menu(window, cx);
+    });
+    let icon = cx.try_global::<AlertIcon>().map(|icon| {
+        let icon = div().id("caption-icon").flex_none().child(img(icon.0.clone()).size(px(16.)));
+        #[cfg(windows)]
+        let icon = icon.on_mouse_down(MouseButton::Left, |_, window, cx| {
+            cx.stop_propagation();
+            system_menu(window, cx);
+        });
+        icon
+    });
     // Windows' own close under the pointer: white on e81123.
     let close = cell("caption-close", WindowControlArea::Close).hover(|style| style.bg(rgb(0xe81123)).text_color(white()));
     h_flex()
@@ -406,6 +420,14 @@ pub(crate) fn caption(title: SharedString, maximize: bool, lead: Pixels, window:
             bar.child(cell("caption-maximize", WindowControlArea::Max).hover(move |style| style.bg(shade)).child(glyph))
         })
         .child(close.child(glyph("\u{E8BB}")))
+}
+
+/// Windows: the window's menu, once this event is over: its own loop would run inside GPUI's.
+#[cfg(windows)]
+fn system_menu(window: &Window, cx: &mut App) {
+    if let Some(hwnd) = hwnd(window) {
+        cx.spawn(async move |_| sc_core::system::theme::system_menu(hwnd)).detach();
+    }
 }
 
 /// A button of `choose`'s: how it looks, what it does on the window asked over.

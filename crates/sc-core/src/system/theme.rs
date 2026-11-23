@@ -1175,6 +1175,35 @@ pub fn native_dialog(hwnd: isize) {
 }
 
 
+/// The window's own menu (Restore, Move, Size, Minimize, Maximize, Close) at the
+/// pointer, as Windows opens it from a caption it draws; its choice done.
+#[cfg(windows)]
+pub fn system_menu(hwnd: isize) {
+    use windows::Win32::Foundation::{HWND, LPARAM, POINT, WPARAM};
+    use windows::Win32::UI::WindowsAndMessaging::*;
+    let hwnd = HWND(hwnd as _);
+    // SAFETY: a live window of this thread's.
+    unsafe {
+        let menu = GetSystemMenu(hwnd, false);
+        if menu.is_invalid() {
+            return;
+        }
+        let zoomed = IsZoomed(hwnd).as_bool();
+        let state = |on: bool| if on { MF_ENABLED } else { MF_GRAYED };
+        let _ = EnableMenuItem(menu, SC_RESTORE, MF_BYCOMMAND | state(zoomed));
+        let _ = EnableMenuItem(menu, SC_MOVE, MF_BYCOMMAND | state(!zoomed));
+        let _ = EnableMenuItem(menu, SC_SIZE, MF_BYCOMMAND | state(!zoomed));
+        let _ = EnableMenuItem(menu, SC_MAXIMIZE, MF_BYCOMMAND | state(!zoomed));
+        let _ = SetMenuDefaultItem(menu, SC_CLOSE, 0);
+        let mut at = POINT::default();
+        let _ = GetCursorPos(&mut at);
+        let chosen = TrackPopupMenu(menu, TPM_RETURNCMD | TPM_RIGHTBUTTON, at.x, at.y, None, hwnd, None);
+        if chosen.0 != 0 {
+            let _ = PostMessageW(Some(hwnd), WM_SYSCOMMAND, WPARAM(chosen.0 as usize), LPARAM(0));
+        }
+    }
+}
+
 /// A dialog's Minimize minimizes the app's window instead, which hides the dialog
 /// with it; the app's window brought back (its taskbar button), the dialog takes
 /// the keys again, as Windows' own dialogs do.
