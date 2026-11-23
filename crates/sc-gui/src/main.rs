@@ -1594,7 +1594,11 @@ impl Commander {
             return None;
         }
         let mac = cfg!(target_os = "macos");
-        let style = self.settings.toolbar_style;
+        // Text only: macOS's (Finder's) alone.
+        let style = match self.settings.toolbar_style {
+            settings::ToolbarStyle::Text if !mac => settings::ToolbarStyle::Icons,
+            style => style,
+        };
         let (icons, text) = (style != settings::ToolbarStyle::Text, style != settings::ToolbarStyle::Icons);
         let button_for = |command: Command| {
             let icon = menus::toolbar_icon(command)?;
@@ -3019,10 +3023,14 @@ impl ToolbarFit {
     }
 }
 
-/// What the toolbar's buttons can show, each with its name.
-pub(crate) fn toolbar_styles() -> [(settings::ToolbarStyle, String); 3] {
+/// What the toolbar's buttons can show, each with its name; text only on macOS, as Finder's.
+pub(crate) fn toolbar_styles() -> Vec<(settings::ToolbarStyle, String)> {
     use settings::ToolbarStyle::*;
-    [(Icons, sc_core::t!("settings.toolbar.icons")), (IconsAndText, sc_core::t!("settings.toolbar.icons_text")), (Text, sc_core::t!("settings.toolbar.text"))]
+    let mut styles = vec![(Icons, sc_core::t!("settings.toolbar.icons")), (IconsAndText, sc_core::t!("settings.toolbar.icons_text"))];
+    if cfg!(target_os = "macos") {
+        styles.push((Text, sc_core::t!("settings.toolbar.text")));
+    }
+    styles
 }
 
 /// The toolbar's right-click menu: what its buttons show, Customize Toolbar, Settings on its page.
@@ -3030,7 +3038,10 @@ pub(crate) fn toolbar_menu(commander: WeakEntity<Commander>) -> impl Fn(PopupMen
     move |menu, _, cx| {
         // What the buttons show, as Settings > Toolbar (and Finder's).
         let current = commander.upgrade().map(|this| this.read(cx).settings.toolbar_style);
-        let menu = toolbar_styles()
+        let styles = toolbar_styles();
+        // A style not offered here (text only, set on macOS) shows as icons only, the default.
+        let current = current.map(|current| if styles.iter().any(|(style, _)| *style == current) { current } else { settings::ToolbarStyle::Icons });
+        let menu = styles
             .into_iter()
             .fold(menu, |menu, (style, label)| {
                 let commander = commander.clone();

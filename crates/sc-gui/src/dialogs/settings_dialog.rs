@@ -969,7 +969,7 @@ impl SettingsDialog {
         let (styles, names): (Vec<ToolbarStyle>, Vec<String>) = crate::toolbar_styles().into_iter().unzip();
         let style = RadioGroup::horizontal("toolbar-style")
             .children(names)
-            .selected_index(styles.iter().position(|style| *style == self.draft.toolbar_style))
+            .selected_index(styles.iter().position(|style| *style == self.draft.toolbar_style).or(Some(0)))
             .on_click(cx.listener(move |this, at: &usize, _, cx| {
                 this.draft.toolbar_style = styles[*at];
                 cx.notify();
