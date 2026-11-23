@@ -71,9 +71,8 @@ impl Commander {
                     .w_full()
                     .px_1()
                     .children(toolbar.take().zip(self.main_commander(cx)).map(|(bar, commander)| {
-                        div().id("toolbar-area").child(bar).context_menu(crate::toolbar_menu(commander))
+                        h_flex().id("toolbar-area").flex_1().min_w_0().child(bar).context_menu(crate::toolbar_menu(commander))
                     }))
-                    .child(div().flex_1())
                     .children(self.menus_behind_button(window).then_some(menu)),
             );
         Some(bar.into_any_element())

@@ -17,7 +17,7 @@ use gpui_kit::component::{Icon, IndexPath};
 use gpui_kit::component::menu::{DropdownMenu, PopupMenu, PopupMenuItem};
 use sc_core::dates::{self, Clock};
 use sc_core::menu::{self, ToolbarItem};
-use sc_core::settings::{AddonUpdates, FontChoice, MenuStyle, PAGES, Settings, Blur, SidebarButton, SidebarLayout, SidebarOpacity, TerminalOpacity, StartFont, StartMode};
+use sc_core::settings::{AddonUpdates, FontChoice, MenuStyle, PAGES, Settings, Blur, SidebarButton, SidebarLayout, SidebarOpacity, ToolbarStyle, TerminalOpacity, StartFont, StartMode};
 use sc_core::system::theme::Appearance;
 use sc_core::t;
 
@@ -965,9 +965,19 @@ impl SettingsDialog {
                 },
             )));
         let place = t!("settings.toolbar.place");
+        // Windows and Linux: macOS's buttons sit in capsules, icons only.
+        let styles = [ToolbarStyle::Icons, ToolbarStyle::IconsAndText];
+        let style = RadioGroup::horizontal("toolbar-style")
+            .children([t!("settings.toolbar.icons"), t!("settings.toolbar.icons_text")])
+            .selected_index(styles.iter().position(|style| *style == self.draft.toolbar_style))
+            .on_click(cx.listener(move |this, at: &usize, _, cx| {
+                this.draft.toolbar_style = styles[*at];
+                cx.notify();
+            }));
         GroupBox::new().outline().title(t!("settings.toolbar.title")).child(
             v_flex()
                 .gap_2()
+                .when(!cfg!(target_os = "macos"), |el| el.child(style))
                 .child(div().whitespace_normal().text_color(cx.theme().muted_foreground).child(place))
                 .children(rows)
                 .child(buttons),

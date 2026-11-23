@@ -5343,6 +5343,14 @@
     "description": "Settings › Toolbar: adds a separator at the end of the toolbar; keep it short.",
     "message": "Add Separator"
   },
+  "settings.toolbar.icons": {
+    "description": "Settings › Toolbar (Windows and Linux): a choice; the toolbar's buttons show their icon only (the default).",
+    "message": "Icons only"
+  },
+  "settings.toolbar.icons_text": {
+    "description": "Settings › Toolbar (Windows and Linux): a choice; the toolbar's buttons show their name beside the icon.",
+    "message": "Icons and text"
+  },
   "settings.toolbar.move_down": {
     "description": "Settings › Toolbar: tooltip of the arrow that moves a button one place down.",
     "message": "Move down"

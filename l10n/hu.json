@@ -4007,6 +4007,12 @@
   "settings.toolbar.add_separator": {
     "message": "Elválasztó hozzáadása"
   },
+  "settings.toolbar.icons": {
+    "message": "Csak ikonok"
+  },
+  "settings.toolbar.icons_text": {
+    "message": "Ikonok és szöveg"
+  },
   "settings.toolbar.move_down": {
     "message": "Mozgatás lefelé"
   },

@@ -51,6 +51,14 @@ pub enum SidebarLayout {
     Vertical,
 }
 
+/// What the toolbar's buttons show: their icon, or their name beside it too (Windows and Linux).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ToolbarStyle {
+    #[default]
+    Icons,
+    IconsAndText,
+}
+
 /// Windows: where the sidebar's button is, WinUI's navigation button (☰) in the title bar or the toolbar's.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SidebarButton {
@@ -132,6 +140,7 @@ pub struct Settings {
     /// Saved only when changed, so an unchanged one follows the default.
     #[serde(skip_serializing_if = "Toolbar::is_default")]
     pub toolbar: Toolbar,
+    pub toolbar_style: ToolbarStyle,
     pub queue: QueueSettings,
     /// The app's language, a tag of `l10n/`; the system's when none.
     pub language: Option<String>,

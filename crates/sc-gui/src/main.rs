@@ -22,7 +22,7 @@ mod viewer;
 mod workspaces;
 
 use std::borrow::Cow;
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -32,7 +32,7 @@ use std::time::{Duration, Instant};
 
 use gpui_kit::component::button::{Button, ButtonVariants, DropdownButton};
 use gpui_kit::component::input::{Input, InputEvent, InputState};
-use gpui_kit::component::menu::{AppMenuBar, ContextMenuExt, PopupMenu, PopupMenuItem};
+use gpui_kit::component::menu::{AppMenuBar, ContextMenuExt, DropdownMenu, PopupMenu, PopupMenuItem};
 use gpui_kit::component::notification::Notification;
 use gpui_kit::component::scroll::Scrollbar;
 use gpui_kit::component::tab::{Tab, TabBar};
@@ -544,6 +544,8 @@ struct Commander {
     terminal_shown: bool,
     /// Its share of the window's height, so it grows and shrinks with the window.
     terminal_share: f32,
+    /// The toolbar's room and its buttons' widths, from the last frame shown.
+    toolbar_fit: Rc<RefCell<ToolbarFit>>,
     /// How much it covers the desktop behind it (none: solid), and whether that is blurred.
     terminal_look: (Option<f32>, bool),
     /// Quick View's viewer has the keys: no panel shows a cursor.
@@ -718,6 +720,7 @@ impl Commander {
             switches: 0,
             terminals: Vec::new(),
             terminal_tab: 0,
+            toolbar_fit: Rc::default(),
             terminal_shown: false,
             terminal_look,
             terminal_share: match session.terminal_share {
@@ -1587,6 +1590,7 @@ impl Commander {
             return None;
         }
         let mac = cfg!(target_os = "macos");
+        let text = !mac && self.settings.toolbar_style == settings::ToolbarStyle::IconsAndText;
         let button_for = |command: Command| {
             let icon = menus::toolbar_icon(command)?;
             let [key, _] = self.settings.keys.keys_of(command);
@@ -1597,6 +1601,7 @@ impl Commander {
             };
             let size = if cfg!(target_os = "macos") { header::MAC_BUTTON } else { gpui_kit::component::Size::Medium };
             let button = Button::new(("toolbar", command as usize)).ghost().with_size(size).icon(Icon::new(icon)).selected(self.checked(command)).tooltip(tip);
+            let button = button.when(text, |button| button.label(name.trim_end_matches(['…', '.'])));
             // macOS: as wide as AppKit's in a group's capsule.
             let button = if mac { button.w(px(34.)).h(px(26.)).rounded(px(13.)) } else { button };
             let button = button.on_click(cx.listener(move |this, _, window, cx| {
@@ -1622,7 +1627,7 @@ impl Commander {
             Some(split.dropdown_menu_with_anchor(Anchor::TopLeft, places).into_any_element())
         };
         // The buttons in groups, as the separators part them.
-        let mut groups: Vec<Vec<AnyElement>> = vec![Vec::new()];
+        let mut groups: Vec<Vec<(Command, AnyElement)>> = vec![Vec::new()];
         // Windows and Linux: the sidebar's button first, apart (macOS has its own by the window's buttons,
         // Windows the title bar's unless chosen here).
         let sidebar = [ToolbarItem::Button(Command::ToggleSidebar), ToolbarItem::Separator];
@@ -1631,28 +1636,81 @@ impl Commander {
         for item in first.iter().chain(shown) {
             match *item {
                 ToolbarItem::Separator => groups.push(Vec::new()),
-                ToolbarItem::Button(command) => groups.last_mut().expect("a group").extend(button_for(command)),
+                ToolbarItem::Button(command) => groups.last_mut().expect("a group").extend(button_for(command).map(|button| (command, button))),
             }
         }
         groups.retain(|group| !group.is_empty());
-        // macOS: each group a capsule, as AppKit's; elsewhere a line between them.
-        let buttons: Vec<AnyElement> = match mac {
-            true => groups.into_iter().map(|group| header::mac_capsule(group, cx).into_any_element()).collect(),
-            false => {
-                let line = || div().flex_none().w(px(1.)).h(px(18.)).mx_1().bg(cx.theme().border).into_any_element();
-                let mut all = Vec::new();
-                for (at, group) in groups.into_iter().enumerate() {
-                    if at > 0 {
-                        all.push(line());
-                    }
-                    all.extend(group);
-                }
-                all
-            }
-        };
         // A press on it must not start moving the window from the title bar.
         let bar = h_flex().id("toolbar").when(mac, |bar| bar.gap_2()).when(!mac, |bar| bar.gap_0p5()).px_1().py_0p5().on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation());
-        Some(bar.children(buttons).into_any_element())
+        // macOS: each group a capsule, as AppKit's.
+        if mac {
+            let capsules = groups.into_iter().map(|group| header::mac_capsule(group.into_iter().map(|(_, button)| button).collect(), cx).into_any_element());
+            return Some(bar.children(capsules).into_any_element());
+        }
+        // Elsewhere a line between the groups; what does not fit goes behind "…", as WinUI's CommandBar.
+        let mut items: Vec<(Option<Command>, AnyElement)> = Vec::new();
+        for (at, group) in groups.into_iter().enumerate() {
+            if at > 0 {
+                items.push((None, div().flex_none().w(px(1.)).h(px(18.)).mx_1().bg(cx.theme().border).into_any_element()));
+            }
+            items.extend(group.into_iter().map(|(command, button)| (Some(command), button)));
+        }
+        let key: Vec<Option<Command>> = items.iter().map(|(command, _)| *command).collect();
+        let shown = {
+            let mut fit = self.toolbar_fit.borrow_mut();
+            if fit.key != (text, key.clone()) {
+                // Other buttons: all shown once, to be measured.
+                fit.key = (text, key);
+                fit.widths = vec![Pixels::ZERO; items.len()];
+            }
+            fit.shown()
+        };
+        let hidden: Vec<Option<Command>> = items[shown..].iter().map(|(command, _)| *command).collect();
+        let fit = self.toolbar_fit.clone();
+        let buttons = items.into_iter().take(shown).enumerate().map(|(at, (_, button))| {
+            let fit = fit.clone();
+            let measure = canvas(
+                move |bounds, window, _| {
+                    let mut fit = fit.borrow_mut();
+                    if fit.widths.get(at).is_some_and(|width| *width != bounds.size.width) {
+                        fit.widths[at] = bounds.size.width;
+                        window.refresh();
+                    }
+                },
+                |_, _, _, _| {},
+            );
+            div().relative().flex_none().child(button).child(measure.absolute().size_full())
+        });
+        let more = (!hidden.is_empty()).then(|| {
+            let focus = self.focus.clone();
+            let menu = move |menu: PopupMenu, _: &mut Window, _: &mut Context<PopupMenu>| {
+                hidden.iter().fold(menu.action_context(focus.clone()), |menu, command| match command {
+                    None => menu.separator(),
+                    Some(command) => {
+                        let name = sc_core::menu::name(*command);
+                        match menus::toolbar_icon(*command) {
+                            Some(icon) => menu.menu_with_icon(name, Icon::new(icon), Box::new(Run(*command))),
+                            None => menu.menu(name, Box::new(Run(*command))),
+                        }
+                    }
+                })
+            };
+            let size = gpui_kit::component::Size::Medium;
+            Button::new("toolbar-more").ghost().with_size(size).icon(Icon::new(IconName::Ellipsis)).dropdown_menu_with_anchor(Anchor::TopRight, menu)
+        });
+        let room = self.toolbar_fit.clone();
+        let measure = canvas(
+            move |bounds, window, _| {
+                let mut fit = room.borrow_mut();
+                if fit.room != bounds.size.width {
+                    fit.room = bounds.size.width;
+                    window.refresh();
+                }
+            },
+            |_, _, _, _| {},
+        );
+        let bar = bar.relative().flex_1().min_w_0().overflow_hidden().child(measure.absolute().size_full());
+        Some(bar.children(buttons).children(more).into_any_element())
     }
 
     fn track_place(&mut self, window: &Window, cx: &App) {
@@ -2837,7 +2895,7 @@ impl Render for Commander {
             .min_w_0()
             .h_full()
             .children(beside)
-            .children(toolbar.map(|bar| div().id("toolbar-row").bg(self.colors.bar).child(bar).context_menu(toolbar_menu(cx.entity().downgrade()))))
+            .children(toolbar.map(|bar| h_flex().id("toolbar-row").bg(self.colors.bar).child(bar).context_menu(toolbar_menu(cx.entity().downgrade()))))
             .child(v_flex().flex_1().min_h_0().bg(background).child(panels))
             .children(self.render_terminal(window, cx))
             .child(
@@ -2898,6 +2956,47 @@ impl Render for Commander {
 }
 
 /// The toolbar's right-click menu: Customize Toolbar, Settings on its page.
+/// The toolbar's buttons as last laid out: the room, each one's width (a line's too).
+#[derive(Default)]
+struct ToolbarFit {
+    /// Whether they show their names, and which they are: others are measured again.
+    key: (bool, Vec<Option<Command>>),
+    widths: Vec<Pixels>,
+    room: Pixels,
+}
+
+impl ToolbarFit {
+    /// How many fit, the rest behind "…"; all until each is measured.
+    fn shown(&self) -> usize {
+        const GAP: f32 = 2.;
+        const EDGES: f32 = 8.;
+        const MORE: f32 = 34.;
+        let widths: Vec<f32> = self.widths.iter().map(|width| f32::from(*width)).collect();
+        if self.room <= Pixels::ZERO || widths.iter().any(|width| *width <= 0.) {
+            return widths.len();
+        }
+        let room = f32::from(self.room) - EDGES;
+        let all: f32 = widths.iter().map(|width| width + GAP).sum();
+        if all <= room {
+            return widths.len();
+        }
+        let mut used = MORE;
+        let mut shown = 0;
+        for width in &widths {
+            used += width + GAP;
+            if used > room {
+                break;
+            }
+            shown += 1;
+        }
+        // Not a line last.
+        while shown > 0 && self.key.1[shown - 1].is_none() {
+            shown -= 1;
+        }
+        shown
+    }
+}
+
 pub(crate) fn toolbar_menu(commander: WeakEntity<Commander>) -> impl Fn(PopupMenu, &mut Window, &mut Context<PopupMenu>) -> PopupMenu + 'static {
     move |menu, _, _| {
         let commander = commander.clone();
