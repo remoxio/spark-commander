@@ -43,6 +43,8 @@ pub struct PdfView {
     zoom: f32,
     pan: ScrollHandle,
     strip: Rc<Cell<Bounds<Pixels>>>,
+    /// Where in the marked part the pointer holds it, while dragging.
+    grab: Option<f32>,
     error: Option<String>,
 }
 
@@ -75,6 +77,7 @@ impl PdfView {
             zoom: 1.,
             pan: ScrollHandle::new(),
             strip: Rc::default(),
+            grab: None,
             error: None,
         }
     }
@@ -171,15 +174,31 @@ impl PdfView {
         (offset.clamp(0., (total - shown).max(0.)), marked, height)
     }
 
-    /// A click or drag on the strip: the pages there come into view.
-    fn jump(&mut self, position: Point<Pixels>, cx: &mut Context<Self>) {
+    /// A press on the strip: the marked part held where it is pressed, else
+    /// centred there, as the text minimap's.
+    fn grab(&mut self, position: Point<Pixels>, cx: &mut Context<Self>) {
         if self.sizes.is_empty() {
             return;
         }
+        let (offset, marked, height) = self.strip_geometry(&self.thumb_tops());
+        let y = f32::from(position.y - self.strip.get().origin.y);
+        let top = marked - offset;
+        let grab = if (top..=top + height).contains(&y) { y - top } else { height / 2. };
+        self.grab = Some(grab);
+        self.jump(y - grab, cx);
+    }
+
+    /// The marked part's top at `top` on the strip: as the scrollbar's thumb,
+    /// the strip's whole height goes through all the pages, however fast it moves.
+    fn jump(&mut self, top: f32, cx: &mut Context<Self>) {
         let tops = self.thumb_tops();
-        let (offset, _, height) = self.strip_geometry(&tops);
-        let y = f32::from(position.y - self.strip.get().origin.y) + offset - height / 2.;
-        let y = y.clamp(0., tops[tops.len() - 1]);
+        let (_, _, height) = self.strip_geometry(&tops);
+        let (total, shown) = (tops[tops.len() - 1], f32::from(self.strip.get().size.height));
+        let y = match total > shown {
+            true => top / (shown - height).max(1.) * (total - height),
+            false => top,
+        };
+        let y = y.clamp(0., (total - height).max(0.));
         let page = tops
             .partition_point(|&top| top <= y)
             .saturating_sub(1)
@@ -232,6 +251,7 @@ impl PdfView {
             }
         }
         let strip = self.strip.clone();
+        let (dragging, view) = (self.grab.is_some(), cx.entity().downgrade());
         let theme = cx.theme();
         let slider = theme.foreground.opacity(0.16);
         div()
@@ -246,17 +266,32 @@ impl PdfView {
             .bg(theme.background)
             .on_mouse_down(
                 MouseButton::Left,
-                cx.listener(|this, event: &MouseDownEvent, _, cx| this.jump(event.position, cx)),
+                cx.listener(|this, event: &MouseDownEvent, _, cx| this.grab(event.position, cx)),
             )
-            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, _, cx| {
-                if event.pressed_button == Some(MouseButton::Left) {
-                    this.jump(event.position, cx);
-                }
-            }))
             .child(
-                canvas(move |bounds, _, _| strip.set(bounds), |_, _, _, _| {})
-                    .absolute()
-                    .size_full(),
+                canvas(move |bounds, _, _| strip.set(bounds), move |_, _, window, _| {
+                    // Held, it follows the pointer past the strip's edges too.
+                    if !dragging {
+                        return;
+                    }
+                    window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, cx| {
+                        if phase != DispatchPhase::Bubble {
+                            return;
+                        }
+                        let _ = view.update(cx, |this, cx| match (this.grab, event.pressed_button) {
+                            (Some(grab), Some(MouseButton::Left)) => {
+                                let y = f32::from(event.position.y - this.strip.get().origin.y);
+                                this.jump(y - grab, cx);
+                            }
+                            _ => {
+                                this.grab = None;
+                                cx.notify();
+                            }
+                        });
+                    });
+                })
+                .absolute()
+                .size_full(),
             )
             .children(thumbs)
             .child(
