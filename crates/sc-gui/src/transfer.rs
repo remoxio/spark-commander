@@ -677,7 +677,7 @@ impl Render for TransferDialog {
         let heading = h_flex()
             .gap_2()
             .children(crate::menus::toolbar_icon(command).map(|icon| Icon::new(icon).size_5().text_color(muted)))
-            .child(div().text_lg().font_semibold().child(shown.heading.clone()));
+            .child(div().text_xl().font_semibold().child(shown.heading.clone()));
         // The one's icon as the panel shows it; several, a stack.
         let icon = match &shown.one {
             Some((name, folder)) => {
@@ -686,8 +686,13 @@ impl Render for TransferDialog {
             }
             None => Icon::new(gpui_kit::assets::IconName::Files).size(px(24.)).text_color(muted).into_any_element(),
         };
+        // Framed, as WinUI's cards: it fills the width and needs no line under it.
         let card = h_flex()
             .gap_3()
+            .p_3()
+            .rounded(px(8.))
+            .border_1()
+            .border_color(border)
             .child(div().flex_none().size(px(48.)).rounded(px(10.)).bg(tile).flex().items_center().justify_center().child(icon))
             .child(
                 v_flex()
@@ -724,7 +729,6 @@ impl Render for TransferDialog {
             }))
             .child(heading)
             .child(card)
-            .child(div().h(px(1.)).bg(border))
             .child(destination)
             .child(exists)
             .child(
