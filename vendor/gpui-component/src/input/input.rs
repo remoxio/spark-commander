@@ -809,7 +809,9 @@ impl RenderOnce for Input {
                 this.bg(bg)
                     .rounded(cx.theme().radius)
                     .when(self.bordered, |this| {
-                        this.border_1().border_color(cx.theme().input)
+                        // SparkCommander patch: Windows' faint frame, ControlStrokeColorDefault.
+                        let frame = native.filter(|_| field_line.is_some()).map_or(cx.theme().input, |native| native.button[0].1);
+                        this.border_1().border_color(frame)
                     })
                     // SparkCommander patch: AppKit's text field, see `MacControls`: a
                     // faint frame, 6 px corners, 24 px as the push buttons beside it.
@@ -831,7 +833,7 @@ impl RenderOnce for Input {
             .gap(gap_x)
             .refine_style(&self.style)
             .when(
-                focused && self.appearance && self.bordered && self.focus_bordered,
+                focused && self.appearance && self.bordered && self.focus_bordered && field_line.is_none(),
                 |this| this.focus_ring_style(window, cx),
             )
             .children(prefix.map(|p| {

@@ -1436,8 +1436,8 @@ diff -ruN a/src/highlighter/mod.rs b/src/highlighter/mod.rs
  }
  
 diff -ruN a/src/input/input.rs b/src/input/input.rs
---- a/src/input/input.rs	2026-11-20 11:57:02.421946532 +0100
-+++ b/src/input/input.rs	2026-11-20 22:20:00.730719986 +0100
+--- a/src/input/input.rs	2006-07-24 03:21:28.000000000 +0200
++++ b/src/input/input.rs	2026-11-23 08:49:44.794177438 +0100
 @@ -705,6 +705,10 @@
          };
  
@@ -1477,18 +1477,23 @@ diff -ruN a/src/input/input.rs b/src/input/input.rs
                      )
                  })
              })
-@@ -797,6 +811,21 @@
+@@ -795,14 +809,31 @@
+                 this.bg(bg)
+                     .rounded(cx.theme().radius)
                      .when(self.bordered, |this| {
-                         this.border_1().border_color(cx.theme().input)
-                     })
+-                        this.border_1().border_color(cx.theme().input)
++                        // SparkCommander patch: Windows' faint frame, ControlStrokeColorDefault.
++                        let frame = native.filter(|_| field_line.is_some()).map_or(cx.theme().input, |native| native.button[0].1);
++                        this.border_1().border_color(frame)
++                    })
 +                    // SparkCommander patch: AppKit's text field, see `MacControls`: a
 +                    // faint frame, 6 px corners, 24 px as the push buttons beside it.
 +                    .when_some(mac, |this, mac| {
 +                        this.rounded(px(6.))
 +                            .when(self.bordered, |this| this.border_color(mac.field_frame))
 +                            .when(!is_multi_line && matches!(self.size, Size::Medium), |this| this.h(px(24.)).py_0())
-+                    })
-+            })
+                     })
+             })
 +            // In place of the bottom border: the field clips what is on its border.
 +            .when_some(field_line, |this, (line, accent)| {
 +                let (height, color) = if focused { (px(2.), accent) } else { (px(1.), line) };
@@ -1496,9 +1501,16 @@ diff -ruN a/src/input/input.rs b/src/input/input.rs
 +                this.relative()
 +                    .border_b_0()
 +                    .child(div().absolute().left(inset).right(inset).bottom_0().h(height).bg(color))
-             })
++            })
              .items_center()
              .gap(gap_x)
+             .refine_style(&self.style)
+             .when(
+-                focused && self.appearance && self.bordered && self.focus_bordered,
++                focused && self.appearance && self.bordered && self.focus_bordered && field_line.is_none(),
+                 |this| this.focus_ring_style(window, cx),
+             )
+             .children(prefix.map(|p| {
 diff -ruN a/src/input/popovers/completion_menu.rs b/src/input/popovers/completion_menu.rs
 --- a/src/input/popovers/completion_menu.rs	2026-11-20 11:57:02.422124400 +0100
 +++ b/src/input/popovers/completion_menu.rs	2026-11-20 22:20:00.730564030 +0100
