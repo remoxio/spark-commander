@@ -366,7 +366,8 @@ pub(crate) fn caption(title: SharedString, maximize: bool, window: &Window, cx: 
     // Siblings, not inside the drag area: Windows takes the first area under the pointer.
     let drag = h_flex().id("caption").flex_1().min_w_0().h_full().pl(px(8.)).gap(px(8.)).window_control_area(WindowControlArea::Drag);
     let icon = cx.try_global::<AlertIcon>().map(|icon| img(icon.0.clone()).size(px(16.)).flex_none());
-    let close = cell("caption-close", WindowControlArea::Close).group("caption-close").hover(|style| style.bg(rgb(0xc42b1c)));
+    // Windows' own close under the pointer: white on e81123.
+    let close = cell("caption-close", WindowControlArea::Close).hover(|style| style.bg(rgb(0xe81123)).text_color(white()));
     h_flex()
         .h(height)
         .flex_none()
@@ -378,7 +379,7 @@ pub(crate) fn caption(title: SharedString, maximize: bool, window: &Window, cx: 
             let glyph = glyph(if window.is_maximized() { "\u{E923}" } else { "\u{E922}" });
             bar.child(cell("caption-maximize", WindowControlArea::Max).hover(move |style| style.bg(shade)).child(glyph))
         })
-        .child(close.child(glyph("\u{E8BB}").group_hover("caption-close", |style| style.text_color(white()))))
+        .child(close.child(glyph("\u{E8BB}")))
 }
 
 /// A button of `choose`'s: how it looks, what it does on the window asked over.
