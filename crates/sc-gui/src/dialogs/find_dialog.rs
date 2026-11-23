@@ -113,7 +113,7 @@ impl Render for FindDialog {
             .child(h_flex().items_start().child(left).child(right))
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("find-ok")
                             .primary()
                             .label(t!("find.ok"))
@@ -122,14 +122,12 @@ impl Render for FindDialog {
                                 this.finish(window, cx);
                                 crate::dialogs::dialog_window::close(window, cx);
                             })),
-                    )
-                    .child(
                         Button::new("find-cancel")
                             .outline()
                             .label(t!("find.cancel"))
                             .min_w(px(80.))
                             .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    ),
+                    )),
             )
     }
 }

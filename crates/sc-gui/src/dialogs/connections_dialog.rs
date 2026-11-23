@@ -304,20 +304,18 @@ impl Render for EditConnection {
             .when(self.scheme == Scheme::S3, |el| el.child(field(t!("connections.field.region"), &self.region)))
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("connection-ok")
                             .primary()
                             .label(t!("remote.dialog.ok"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                    )
-                    .child(
                         Button::new("connection-cancel")
                             .outline()
                             .label(t!("remote.dialog.cancel"))
                             .min_w(px(80.))
                             .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    ),
+                    )),
             )
     }
 }

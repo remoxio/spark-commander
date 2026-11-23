@@ -223,6 +223,13 @@ pub struct CancelLabel(pub fn() -> SharedString);
 
 impl gpui::Global for CancelLabel {}
 
+/// SparkCommander patch: the default OK button before Cancel, as Windows and
+/// KDE have them; without it, after, as macOS and GTK.
+#[derive(Clone, Copy)]
+pub struct MainButtonFirst;
+
+impl gpui::Global for MainButtonFirst {}
+
 /// A default dialog button: activating it dispatches `action` on the dialog
 /// it sits in, whatever holds focus at that moment.
 #[derive(IntoElement)]

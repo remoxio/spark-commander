@@ -270,7 +270,7 @@ impl Render for AttributesDialog {
             })
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("attr-ok")
                             .primary()
                             .label(sc_core::t!("attributes.ok"))
@@ -280,14 +280,12 @@ impl Render for AttributesDialog {
                                     crate::dialogs::dialog_window::close(window, cx);
                                 }
                             })),
-                    )
-                    .child(
                         Button::new("attr-cancel")
                             .outline()
                             .label(sc_core::t!("attributes.cancel"))
                             .min_w(px(80.))
                             .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    ),
+                    )),
             )
     }
 }

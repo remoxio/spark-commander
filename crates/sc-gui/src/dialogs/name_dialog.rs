@@ -57,7 +57,7 @@ impl Render for NameDialog {
             )
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("name-ok")
                             .primary()
                             .label(sc_core::t!("name_dialog.ok"))
@@ -66,14 +66,12 @@ impl Render for NameDialog {
                                 this.finish(window, cx);
                                 crate::dialogs::dialog_window::close(window, cx);
                             })),
-                    )
-                    .child(
                         Button::new("name-cancel")
                             .outline()
                             .label(sc_core::t!("name_dialog.cancel"))
                             .min_w(px(80.))
                             .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    ),
+                    )),
             )
     }
 }

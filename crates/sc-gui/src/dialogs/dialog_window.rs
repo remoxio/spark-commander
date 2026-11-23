@@ -14,6 +14,8 @@ use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
 use sc_core::t;
 
+use crate::dialogs::Role;
+
 const CONTEXT: &str = "DialogWindow";
 
 /// What Enter or OK does: true closes the dialog.
@@ -307,17 +309,15 @@ impl Render for DialogWindow {
         let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
             let button = Button::new("dialog-ok").label(label).min_w(px(80.));
             let button = if ok.danger { button.danger() } else { button.primary() };
-            crate::dialogs::footer(cx)
-                .child(button.on_click(cx.listener(|this, _, window, cx| this.confirm(window, cx))))
-                .when(ok.cancel, |el| {
-                    el.child(
-                        Button::new("dialog-cancel")
-                            .outline()
-                            .label(t!("remote.dialog.cancel"))
-                            .min_w(px(80.))
-                            .on_click(|_, window, _| window.remove_window()),
-                    )
-                })
+            let cancel = ok.cancel.then(|| {
+                Button::new("dialog-cancel")
+                    .outline()
+                    .label(t!("remote.dialog.cancel"))
+                    .min_w(px(80.))
+                    .on_click(|_, window, _| window.remove_window())
+            });
+            let ok = button.on_click(cx.listener(|this, _, window, cx| this.confirm(window, cx)));
+            crate::dialogs::footer(cx).children(crate::dialogs::ordered(std::iter::once((Role::Main, ok)).chain(cancel.map(|cancel| (Role::Dismiss, cancel)))))
         });
         let page = v_flex()
             .relative()
@@ -397,7 +397,9 @@ pub(crate) enum Style {
 }
 
 /// `text` (under a small `note`) and a button for each choice, in a dialog
-/// window over `parent`; a button closes it, then runs on `parent`.
+/// window over `parent`; a button closes it, then runs on `parent`. The
+/// choices as Windows orders them, the last one leaving things as they were
+/// (Cancel).
 pub(crate) fn choose(title: String, note: Option<String>, text: String, choices: Vec<Choice>, width: Pixels, parent: &mut Window, cx: &mut App) {
     open(title, size(width, px(200.)), parent, cx, move |main, _, cx| (cx.new(|_| Choose { note, text, choices: choices.into(), main }), None));
 }
@@ -412,6 +414,8 @@ struct Choose {
 impl Render for Choose {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let main = self.main;
+        let primary = self.choices.iter().position(|choice| matches!(choice.style, Style::Primary));
+        let last = self.choices.len().saturating_sub(1);
         let buttons = self.choices.iter().enumerate().map(|(ix, choice)| {
             let run = choice.run.clone();
             let button = Button::new(("choice", ix)).label(choice.label.clone()).on_click(move |_, window, cx| {
@@ -419,17 +423,23 @@ impl Render for Choose {
                 let run = run.clone();
                 main.run(cx, move |window, cx| run(window, cx));
             });
-            match choice.style {
+            let role = match ix {
+                _ if Some(ix) == primary => Role::Main,
+                _ if ix == last => Role::Dismiss,
+                _ => Role::Other,
+            };
+            let button = match choice.style {
                 Style::Primary => button.primary(),
                 Style::Danger => button.danger(),
                 Style::Outline => button.outline(),
-            }
+            };
+            (role, button)
         });
         v_flex()
             .gap_3()
             .text_sm()
             .children(self.note.clone().map(|note| div().text_xs().child(note)))
             .child(div().whitespace_normal().child(self.text.clone()))
-            .child(crate::dialogs::footer(cx).flex_wrap().children(buttons))
+            .child(crate::dialogs::footer(cx).flex_wrap().children(crate::dialogs::ordered(buttons)))
     }
 }

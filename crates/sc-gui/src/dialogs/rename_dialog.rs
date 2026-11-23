@@ -19,6 +19,7 @@ use sc_core::ops::rename::{self, Case, Rules, Source};
 use sc_core::vfs::Fs;
 
 use crate::Commander;
+use crate::dialogs::Role;
 
 /// What the buttons put into the name mask.
 const FIELDS: [&str; 7] = ["[N]", "[E]", "[C]", "[P]", "[Y]-[M]-[D]", "[h][m][s]", "[N1-3]"];
@@ -452,29 +453,25 @@ impl Render for RenameDialog {
             .child(
                 crate::dialogs::footer(cx)
                     .child(div().flex_1().child(self.status.clone()))
-                    .child(
-                        Button::new("rename-start")
+                    .children(crate::dialogs::ordered([
+                        (Role::Main, Button::new("rename-start")
                             .primary()
                             .label(sc_core::t!("rename.start"))
                             .min_w(px(80.))
                             .disabled(blocked || self.busy)
-                            .on_click(cx.listener(|this, _, _, cx| this.start(cx))),
-                    )
-                    .child(
-                        Button::new("rename-undo")
+                            .on_click(cx.listener(|this, _, _, cx| this.start(cx)))),
+                        (Role::Other, Button::new("rename-undo")
                             .outline()
                             .label(sc_core::t!("rename.undo"))
                             .min_w(px(80.))
                             .disabled(self.undo.is_none() || self.busy)
-                            .on_click(cx.listener(|this, _, _, cx| this.undo(cx))),
-                    )
-                    .child(
-                        Button::new("rename-close")
+                            .on_click(cx.listener(|this, _, _, cx| this.undo(cx)))),
+                        (Role::Dismiss, Button::new("rename-close")
                             .outline()
                             .label(sc_core::t!("rename.close"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    ),
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                    ])),
             )
     }
 }

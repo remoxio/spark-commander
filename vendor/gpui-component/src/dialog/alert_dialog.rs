@@ -371,12 +371,15 @@ impl AlertDialog {
             .children(self.children)
             .when(!has_footer, |this| {
                 // Default footer for AlertDialog if user doesn't provide one, with OK and optional Cancel button
+                // SparkCommander patch: in the desktop's order, see `MainButtonFirst`.
+                let first = cx.has_global::<super::MainButtonFirst>();
                 this.footer(
                     DialogFooter::new()
+                        .when(first, |this| this.child(button_props.render_ok(window, cx)))
                         .when(button_props.is_cancel_shown(), |this| {
                             this.child(button_props.render_cancel(window, cx))
                         })
-                        .child(button_props.render_ok(window, cx)),
+                        .when(!first, |this| this.child(button_props.render_ok(window, cx))),
                 )
             })
     }

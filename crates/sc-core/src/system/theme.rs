@@ -430,6 +430,26 @@ pub fn blurs() -> bool {
     see_through()
 }
 
+/// How this desktop orders a dialog's buttons.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ButtonOrder {
+    /// Windows': the main one first, then the others, Cancel, Apply.
+    Windows,
+    /// Qt's on KDE Plasma and LXQt: as Windows', Apply before Cancel.
+    Kde,
+    /// macOS's and GTK's (GNOME, Xfce, MATE, Cinnamon): Apply, the others,
+    /// Cancel, the main one last.
+    MainLast,
+}
+
+pub fn button_order() -> ButtonOrder {
+    match () {
+        _ if cfg!(windows) => ButtonOrder::Windows,
+        _ if cfg!(any(target_os = "linux", target_os = "freebsd")) && (on_kde() || on_desktop("LXQt")) => ButtonOrder::Kde,
+        _ => ButtonOrder::MainLast,
+    }
+}
+
 /// The desktop style whose controls the app draws.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ControlStyle {

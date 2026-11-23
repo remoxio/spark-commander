@@ -20,6 +20,7 @@ use sc_core::ops::{Answer, JobView, Kind, Operation, Overwrite, Question, Queue,
 use sc_core::vfs::{Fs, Local, Meta};
 
 use crate::Commander;
+use crate::dialogs::Role;
 use crate::panel::drag_drop::DragLabel;
 use gpui_kit::component::menu::ContextMenuExt;
 use sc_core::sidebar::SidebarTab;
@@ -585,7 +586,7 @@ impl Render for TransferDialog {
             )
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("transfer-ok")
                             .primary()
                             .label(sc_core::t!("transfer.ok"))
@@ -594,14 +595,12 @@ impl Render for TransferDialog {
                                 this.finish(window, cx);
                                 this.close(window, cx);
                             })),
-                    )
-                    .child(
                         Button::new("transfer-cancel")
                             .outline()
                             .label(sc_core::t!("transfer.cancel"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.close(window, cx))),
-                    ),
+                    )),
             )
     }
 }
@@ -675,9 +674,9 @@ fn ask(queue: &Queue, job: &JobView, window: &mut Window, cx: &mut App) {
                     crate::dialogs::dialog_window::close(window, cx);
                 });
             match answer {
-                Answer::Overwrite | Answer::Retry => button.primary(),
-                Answer::Cancel => button.with_variant(ButtonVariant::Danger),
-                _ => button.outline(),
+                Answer::Overwrite | Answer::Retry => (Role::Main, button.primary()),
+                Answer::Cancel => (Role::Dismiss, button.with_variant(ButtonVariant::Danger)),
+                _ => (Role::Other, button.outline()),
             }
         });
         dialog
@@ -692,7 +691,7 @@ fn ask(queue: &Queue, job: &JobView, window: &mut Window, cx: &mut App) {
                     .text_sm()
                     .child(div().text_xs().child(job_title.clone()))
                     .child(div().whitespace_normal().child(text.clone()))
-                    .child(crate::dialogs::footer(cx).flex_wrap().children(buttons)),
+                    .child(crate::dialogs::footer(cx).flex_wrap().children(crate::dialogs::ordered(buttons))),
             )
     });
 }

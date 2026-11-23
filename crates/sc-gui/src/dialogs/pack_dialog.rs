@@ -188,25 +188,22 @@ pub(crate) fn buttons<V: 'static>(
     cx: &mut Context<V>,
     finish: fn(&mut V, &mut Window, &mut Context<V>) -> bool,
 ) -> impl IntoElement {
-    crate::dialogs::footer(cx)
-        .child(
-            Button::new((id, 0usize))
-                .primary()
-                .label(sc_core::t!("pack.ok"))
-                .min_w(px(80.))
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    if finish(this, window, cx) {
-                        crate::dialogs::dialog_window::close(window, cx);
-                    }
-                })),
-        )
-        .child(
-            Button::new((id, 1usize))
-                .outline()
-                .label(sc_core::t!("pack.cancel"))
-                .min_w(px(80.))
-                .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-        )
+    crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
+        Button::new((id, 0usize))
+            .primary()
+            .label(sc_core::t!("pack.ok"))
+            .min_w(px(80.))
+            .on_click(cx.listener(move |this, _, window, cx| {
+                if finish(this, window, cx) {
+                    crate::dialogs::dialog_window::close(window, cx);
+                }
+            })),
+        Button::new((id, 1usize))
+            .outline()
+            .label(sc_core::t!("pack.cancel"))
+            .min_w(px(80.))
+            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
+    ))
 }
 
 pub(crate) fn check<V: 'static>(

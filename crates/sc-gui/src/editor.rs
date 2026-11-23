@@ -18,6 +18,7 @@ use gpui_kit::component::{ActiveTheme, Icon, IconName, WindowExt, h_flex, v_flex
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
 
+use crate::dialogs::Role;
 use crate::editor::find_bar::{FindBar, SelectAllMatches};
 use crate::menus::Entries;
 use minimap::Minimap;
@@ -530,12 +531,13 @@ impl TextEditor {
         }
         window.open_dialog(cx, move |dialog, _, cx| {
             let reload = this.clone();
-            let buttons = crate::dialogs::footer(cx)
-                .child(Button::new("editor-reload").danger().label(t!("editor.reload.button")).on_click(move |_, window, cx| {
+            let buttons = crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
+                Button::new("editor-reload").danger().label(t!("editor.reload.button")).on_click(move |_, window, cx| {
                     crate::dialogs::dialog_window::close(window, cx);
                     let _ = reload.update(cx, |this, cx| this.read_again(window, cx));
-                }))
-                .child(Button::new("editor-reload-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
+                }),
+                Button::new("editor-reload-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
+            ));
             dialog
                 .title(t!("editor.reload.title"))
                 .overlay_closable(false)
@@ -576,15 +578,16 @@ impl TextEditor {
         }
         window.open_dialog(cx, move |dialog, _, cx| {
             let save = this.clone();
-            let buttons = crate::dialogs::footer(cx)
-                .child(Button::new("editor-save-anyway").danger().label(t!("editor.save_anyway.button")).on_click(move |_, window, cx| {
+            let buttons = crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
+                Button::new("editor-save-anyway").danger().label(t!("editor.save_anyway.button")).on_click(move |_, window, cx| {
                     crate::dialogs::dialog_window::close(window, cx);
                     let _ = save.update(cx, |this, cx| {
                         this.forced = false;
                         this.save(window, cx)
                     });
-                }))
-                .child(Button::new("editor-save-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
+                }),
+                Button::new("editor-save-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
+            ));
             dialog
                 .title(t!("editor.save_anyway.title"))
                 .overlay_closable(false)
@@ -638,8 +641,8 @@ impl TextEditor {
         }
         window.open_dialog(cx, move |dialog, _, cx| {
             let save = this.clone();
-            let buttons = crate::dialogs::footer(cx)
-                .child(Button::new("editor-save").primary().label(t!("editor.close.save")).on_click(move |_, window, cx| {
+            let buttons = crate::dialogs::footer(cx).children(crate::dialogs::ordered([
+                (Role::Main, Button::new("editor-save").primary().label(t!("editor.close.save")).on_click(move |_, window, cx| {
                     // A server's copy: closed once sent.
                     let saved = save.update(cx, |this, cx| {
                         let saved = match this.edited {
@@ -656,9 +659,10 @@ impl TextEditor {
                         Ok(true) => window.remove_window(),
                         _ => crate::dialogs::dialog_window::close(window, cx),
                     }
-                }))
-                .child(Button::new("editor-discard").outline().label(t!("editor.close.discard")).on_click(|_, window, _| window.remove_window()))
-                .child(Button::new("editor-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)));
+                })),
+                (Role::Other, Button::new("editor-discard").outline().label(t!("editor.close.discard")).on_click(|_, window, _| window.remove_window())),
+                (Role::Dismiss, Button::new("editor-cancel").outline().label(t!("editor.dialog.cancel")).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+            ]));
             dialog
                 .title(t!("editor.close.title"))
                 .overlay_closable(false)

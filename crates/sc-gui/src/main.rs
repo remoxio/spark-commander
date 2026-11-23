@@ -204,6 +204,9 @@ fn main() {
         cx.set_app_identity("Remoxio.SparkCommander", "Spark Commander");
         gpui_kit::init(cx);
         cx.set_global(gpui_kit::component::dialog::CancelLabel(|| sc_core::t!("alert.cancel").into()));
+        if sc_core::system::theme::button_order() != sc_core::system::theme::ButtonOrder::MainLast {
+            cx.set_global(gpui_kit::component::dialog::MainButtonFirst);
+        }
         let keys = Some(CONTEXT);
         cx.bind_keys([
             KeyBinding::new("tab", SwitchPanel, keys),

@@ -257,7 +257,7 @@ impl Render for EditAssociation {
             }))
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("assoc-ok")
                             .primary()
                             .label(sc_core::t!("associations.ok"))
@@ -267,14 +267,12 @@ impl Render for EditAssociation {
                                     crate::dialogs::dialog_window::close(window, cx);
                                 }
                             })),
-                    )
-                    .child(
                         Button::new("assoc-cancel")
                             .outline()
                             .label(sc_core::t!("associations.cancel"))
                             .min_w(px(80.))
                             .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    ),
+                    )),
             )
     }
 }

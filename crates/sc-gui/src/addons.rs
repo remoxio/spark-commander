@@ -16,6 +16,8 @@ use gpui_kit::*;
 use sc_core::addons::{Addon, Manifest, Presence};
 use sc_core::t;
 
+use crate::dialogs::Role;
+
 /// After the window is up, then a day apart.
 const FIRST: Duration = Duration::from_secs(5);
 const DAY: Duration = Duration::from_secs(24 * 60 * 60);
@@ -187,18 +189,18 @@ pub fn offer(
                     .text_sm()
                     .child(div().whitespace_normal().child(text.clone()))
                     .child(
-                        crate::dialogs::footer(cx)
-                            .child(Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(move |_, window, cx| {
+                        crate::dialogs::footer(cx).children(crate::dialogs::ordered([
+                            (Role::Main, Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(move |_, window, cx| {
                                 crate::dialogs::dialog_window::close(window, cx);
                                 let Some(settings) = yes.upgrade().map(|this| this.read(cx).settings.clone()) else { return };
                                 let page = sc_core::settings::PAGES.iter().position(|&page| page == "Add-ons").unwrap_or(0);
                                 crate::dialogs::settings_dialog::open(yes.clone(), settings, page, window, cx);
-                            }))
-                            .child(Button::new("offer-no").outline().label(t!("addons.offer.no")).on_click(move |_, window, cx| {
+                            })),
+                            (Role::Dismiss, Button::new("offer-no").outline().label(t!("addons.offer.no")).on_click(move |_, window, cx| {
                                 crate::dialogs::dialog_window::close(window, cx);
                                 no(window, cx);
-                            }))
-                            .child(Button::new("offer-never").outline().label(t!("addons.offer.never")).on_click(
+                            })),
+                            (Role::Other, Button::new("offer-never").outline().label(t!("addons.offer.never")).on_click(
                                 move |_, window, cx| {
                                     crate::dialogs::dialog_window::close(window, cx);
                                     let _ = commander.update(cx, |this, cx| {
@@ -208,6 +210,7 @@ pub fn offer(
                                     never(window, cx);
                                 },
                             )),
+                        ])),
                     ),
             )
     });
@@ -326,20 +329,20 @@ impl Render for Offer {
             .text_sm()
             .child(div().whitespace_normal().child(self.text.clone()))
             .child(
-                crate::dialogs::footer(cx)
-                    .child(Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(cx.listener(|this, _, window, cx| {
+                crate::dialogs::footer(cx).children(crate::dialogs::ordered([
+                    (Role::Main, Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(cx.listener(|this, _, window, cx| {
                         let commander = this.commander.clone();
                         this.answer(window, cx, move |window, cx| {
                             let Some(settings) = commander.upgrade().map(|this| this.read(cx).settings.clone()) else { return };
                             let page = sc_core::settings::PAGES.iter().position(|&page| page == "Add-ons").unwrap_or(0);
                             crate::dialogs::settings_dialog::open(commander, settings, page, window, cx);
                         });
-                    })))
-                    .child(Button::new("offer-no").outline().label(t!("addons.offer.no")).on_click(cx.listener(|this, _, window, cx| {
+                    }))),
+                    (Role::Dismiss, Button::new("offer-no").outline().label(t!("addons.offer.no")).on_click(cx.listener(|this, _, window, cx| {
                         let go_on = this.go_on.clone();
                         this.answer(window, cx, move |window, cx| go_on(window, cx));
-                    })))
-                    .child(Button::new("offer-never").outline().label(t!("addons.offer.never")).on_click(cx.listener(|this, _, window, cx| {
+                    }))),
+                    (Role::Other, Button::new("offer-never").outline().label(t!("addons.offer.never")).on_click(cx.listener(|this, _, window, cx| {
                         let (commander, go_on) = (this.commander.clone(), this.go_on.clone());
                         this.answer(window, cx, move |window, cx| {
                             let _ = commander.update(cx, |this, cx| {
@@ -349,6 +352,7 @@ impl Render for Offer {
                             go_on(window, cx);
                         });
                     }))),
+                ])),
             )
     }
 }

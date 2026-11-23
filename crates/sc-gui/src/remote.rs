@@ -25,7 +25,7 @@ use sc_core::session::TabState;
 use sc_core::t;
 
 use crate::Commander;
-use crate::dialogs::passwords_dialog;
+use crate::dialogs::{Role, passwords_dialog};
 
 impl Commander {
     /// `sftp://…`, `ftp://…`: connects in the background, then shows it on
@@ -377,20 +377,18 @@ impl Render for LoginDialog {
             )
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("login-ok")
                             .primary()
                             .label(t!("remote.dialog.ok"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                    )
-                    .child(
                         Button::new("login-cancel")
                             .outline()
                             .label(t!("remote.dialog.cancel"))
                             .min_w(px(80.))
                             .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    ),
+                    )),
             )
     }
 }
@@ -498,20 +496,11 @@ fn ask_user(
                             .text_sm()
                             .child(div().whitespace_normal().child(text.clone()))
                             .child(
-                                crate::dialogs::footer(cx)
-                                    .child(
-                                        button(
-                                            "Connect and remember",
-                                            t!("remote.unknown_host.remember"),
-                                            Reply::Trust { remember: true },
-                                        )
-                                        .primary(),
-                                    )
-                                    .child(
-                                        button("Connect once", t!("remote.unknown_host.once"), Reply::Trust { remember: false })
-                                            .outline(),
-                                    )
-                                    .child(button("Cancel", t!("remote.dialog.cancel"), Reply::Cancel).outline()),
+                                crate::dialogs::footer(cx).children(crate::dialogs::ordered([
+                                    (Role::Main, button("Connect and remember", t!("remote.unknown_host.remember"), Reply::Trust { remember: true }).primary()),
+                                    (Role::Other, button("Connect once", t!("remote.unknown_host.once"), Reply::Trust { remember: false }).outline()),
+                                    (Role::Dismiss, button("Cancel", t!("remote.dialog.cancel"), Reply::Cancel).outline()),
+                                ])),
                             ),
                     )
             });
@@ -556,10 +545,11 @@ impl Render for HostKeyDialog {
             .text_sm()
             .child(div().whitespace_normal().child(self.text.clone()))
             .child(
-                crate::dialogs::footer(cx)
-                    .child(button("Connect and remember", t!("remote.unknown_host.remember"), Reply::Trust { remember: true }).primary())
-                    .child(button("Connect once", t!("remote.unknown_host.once"), Reply::Trust { remember: false }).outline())
-                    .child(button("Cancel", t!("remote.dialog.cancel"), Reply::Cancel).outline()),
+                crate::dialogs::footer(cx).children(crate::dialogs::ordered([
+                    (Role::Main, button("Connect and remember", t!("remote.unknown_host.remember"), Reply::Trust { remember: true }).primary()),
+                    (Role::Other, button("Connect once", t!("remote.unknown_host.once"), Reply::Trust { remember: false }).outline()),
+                    (Role::Dismiss, button("Cancel", t!("remote.dialog.cancel"), Reply::Cancel).outline()),
+                ])),
             )
     }
 }
@@ -610,14 +600,12 @@ impl Render for SecretDialog {
             })
             .child(
                 crate::dialogs::footer(cx)
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("secret-ok")
                             .primary()
                             .label(t!("remote.dialog.ok"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                    )
-                    .child(
                         Button::new("secret-cancel")
                             .outline()
                             .label(t!("remote.dialog.cancel"))
@@ -626,7 +614,7 @@ impl Render for SecretDialog {
                                 this.answer.borrow_mut().send(Reply::Cancel);
                                 crate::dialogs::dialog_window::close(window, cx);
                             })),
-                    ),
+                    )),
             )
     }
 }

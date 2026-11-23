@@ -22,6 +22,7 @@ use sc_core::system::theme::Appearance;
 use sc_core::t;
 
 use crate::Commander;
+use crate::dialogs::Role;
 use crate::menus::toolbar_icon;
 
 const WIDTH: f32 = 720.;
@@ -1355,32 +1356,28 @@ fn buttons(view: &Entity<SettingsDialog>, changed: bool) -> impl IntoElement {
     h_flex()
         .gap_2()
         .justify_end()
-        .child(
-            Button::new("settings-ok")
+        .children(crate::dialogs::ordered([
+            (Role::Main, Button::new("settings-ok")
                 .primary()
                 .label(t!("settings.ok"))
                 .min_w(px(80.))
                 .on_click(move |_, window, cx| {
                     ok.update(cx, |this, cx| this.apply(window, cx));
                     crate::dialogs::dialog_window::close(window, cx);
-                }),
-        )
-        .child(
-            Button::new("settings-cancel")
+                })),
+            (Role::Dismiss, Button::new("settings-cancel")
                 .outline()
                 .label(t!("settings.cancel"))
                 .min_w(px(80.))
                 .on_click(move |_, window, cx| {
                     cancel.update(cx, |this, cx| this.untry(window, cx));
                     crate::dialogs::dialog_window::close(window, cx);
-                }),
-        )
-        .child(
-            Button::new("settings-apply")
+                })),
+            (Role::Apply, Button::new("settings-apply")
                 .outline()
                 .label(t!("settings.apply"))
                 .min_w(px(80.))
                 .disabled(!changed)
-                .on_click(move |_, window, cx| apply.update(cx, |this, cx| this.apply(window, cx))),
-        )
+                .on_click(move |_, window, cx| apply.update(cx, |this, cx| this.apply(window, cx)))),
+        ]))
 }

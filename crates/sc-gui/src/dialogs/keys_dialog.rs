@@ -12,7 +12,7 @@ use gpui_kit::*;
 use sc_core::keymap::{self, Choice, KeySettings, Preset};
 use sc_core::menu::{self, Command};
 
-use crate::{Commander, dialogs::name_dialog};
+use crate::{Commander, dialogs::{Role, name_dialog}};
 
 type Choices = SelectState<Vec<SharedString>>;
 
@@ -420,31 +420,27 @@ impl Render for KeysDialog {
                                 cx.notify();
                             })),
                     )
-                    .child(
-                        Button::new("keys-ok")
+                    .children(crate::dialogs::ordered([
+                        (Role::Main, Button::new("keys-ok")
                             .primary()
                             .label(sc_core::t!("keys.ok"))
                             .min_w(px(80.))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.apply(window, cx);
                                 crate::dialogs::dialog_window::close(window, cx);
-                            })),
-                    )
-                    .child(
-                        Button::new("keys-cancel")
+                            }))),
+                        (Role::Dismiss, Button::new("keys-cancel")
                             .outline()
                             .label(sc_core::t!("keys.cancel"))
                             .min_w(px(80.))
-                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    )
-                    .child(
-                        Button::new("keys-apply")
+                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                        (Role::Apply, Button::new("keys-apply")
                             .outline()
                             .label(sc_core::t!("keys.apply"))
                             .min_w(px(80.))
                             .disabled(!changed)
-                            .on_click(cx.listener(|this, _, window, cx| this.apply(window, cx))),
-                    ),
+                            .on_click(cx.listener(|this, _, window, cx| this.apply(window, cx)))),
+                    ])),
             )
     }
 }

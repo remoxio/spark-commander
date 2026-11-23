@@ -400,15 +400,15 @@ impl Render for SyncDirs {
                     .border_t_1()
                     .border_color(theme.border)
                     .child(div().flex_1().min_w_0().truncate().text_color(theme.muted_foreground).child(self.status.clone()))
-                    .child(
+                    .children(crate::dialogs::ok_cancel(
                         Button::new("synchronize")
                             .small()
                             .primary()
                             .label(t!("sync.synchronize"))
                             .disabled(comparing || !todo)
                             .on_click(cx.listener(|this, _, window, cx| this.synchronize(window, cx))),
-                    )
-                    .child(Button::new("close").small().outline().label(t!("sync.close")).on_click(|_, window, _| window.remove_window())),
+                        Button::new("close").small().outline().label(t!("sync.close")).on_click(|_, window, _| window.remove_window()),
+                    )),
             )
     }
 }
