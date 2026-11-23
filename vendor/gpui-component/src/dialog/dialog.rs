@@ -408,6 +408,37 @@ fn mac_close_button(button: gpui_base::Button, mac: crate::MacControls, active: 
 }
 
 /// SparkCommander patch: the desktop's close button in the title bar, see `WindowClose`.
+/// SparkCommander patch: over the app's own caption (minimize, maximize, close in
+/// 46 px cells), Windows taking their clicks; drawn again under the pointer.
+fn caption_buttons(height: Pixels, maximized: bool, cx: &App) -> impl IntoElement {
+    let dark = cx.theme().mode.is_dark();
+    let shade = hsla(0., 0., if dark { 1. } else { 0. }, if dark { 0.06 } else { 0.04 });
+    let ink = cx.theme().foreground;
+    let cell = |id: &'static str, area: WindowControlArea, glyph: &'static str, fill: Hsla, text: Hsla| {
+        div()
+            .id(id)
+            // Not the drag area under it: Windows takes the first area under the pointer.
+            .occlude()
+            .w(px(46.))
+            .h_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .window_control_area(area)
+            .text_color(gpui::transparent_black())
+            .hover(move |style| style.bg(fill).text_color(text))
+            .child(div().font_family("Segoe MDL2 Assets").text_size(px(10.)).child(glyph))
+    };
+    crate::h_flex()
+        .absolute()
+        .top_0()
+        .right_0()
+        .h(height)
+        .child(cell("smoke-minimize", WindowControlArea::Min, "\u{E921}", shade, ink))
+        .child(cell("smoke-maximize", WindowControlArea::Max, if maximized { "\u{E923}" } else { "\u{E922}" }, shade, ink))
+        .child(cell("smoke-close", WindowControlArea::Close, "\u{E8BB}", gpui::rgb(0xe81123).into(), gpui::white()))
+}
+
 fn window_close_button(close: gpui_base::DialogClose, frame: crate::DialogFrame, band: Pixels, corner: Pixels) -> gpui_base::DialogClose {
     let red = |dark: u32| -> Hsla { gpui::rgb(dark).into() };
     let cross = |size: f32| crate::Icon::new(IconName::Close).size(px(size));
@@ -920,16 +951,17 @@ impl RenderOnce for Dialog {
                             .close_on_backdrop_press(self.props.overlay_closable)
                             .dismiss_below_y(TITLE_BAR_HEIGHT)
                             .when(self.props.overlay, |this| {
-                                this.backdrop(
-                                    div()
-                                        .absolute()
-                                        .size_full()
-                                        .window_control_area(WindowControlArea::Drag)
-                                        .when(self.props.overlay_visible, |overlay| {
-                                            // WinUI's SmokeFillColorDefault.
-                                            overlay.bg(if content_dialog { hsla(0., 0., 0., 0.3) } else { overlay_color(true, cx) })
-                                        }),
-                                )
+                                let smoke = div()
+                                    .absolute()
+                                    .size_full()
+                                    .window_control_area(WindowControlArea::Drag)
+                                    .when(self.props.overlay_visible, |overlay| {
+                                        // WinUI's SmokeFillColorDefault.
+                                        overlay.bg(if content_dialog { hsla(0., 0., 0., 0.3) } else { overlay_color(true, cx) })
+                                    });
+                                // SparkCommander patch: the window's caption buttons work under it, as WinUI's.
+                                let buttons = content_dialog.then(|| caption_buttons(band, window.is_maximized(), cx));
+                                this.backdrop(div().absolute().size_full().child(smoke).children(buttons))
                             })
                             .on_ok(move |event, window, cx| on_ok(event, window, cx))
                             .on_cancel(move |event, window, cx| on_cancel(event, window, cx))

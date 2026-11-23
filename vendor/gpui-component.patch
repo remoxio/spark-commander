@@ -890,7 +890,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          }
      }
  }
-@@ -327,7 +382,112 @@
+@@ -327,7 +382,143 @@
      cx.theme().overlay
  }
  
@@ -921,6 +921,37 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
 +}
 +
 +/// SparkCommander patch: the desktop's close button in the title bar, see `WindowClose`.
++/// SparkCommander patch: over the app's own caption (minimize, maximize, close in
++/// 46 px cells), Windows taking their clicks; drawn again under the pointer.
++fn caption_buttons(height: Pixels, maximized: bool, cx: &App) -> impl IntoElement {
++    let dark = cx.theme().mode.is_dark();
++    let shade = hsla(0., 0., if dark { 1. } else { 0. }, if dark { 0.06 } else { 0.04 });
++    let ink = cx.theme().foreground;
++    let cell = |id: &'static str, area: WindowControlArea, glyph: &'static str, fill: Hsla, text: Hsla| {
++        div()
++            .id(id)
++            // Not the drag area under it: Windows takes the first area under the pointer.
++            .occlude()
++            .w(px(46.))
++            .h_full()
++            .flex()
++            .items_center()
++            .justify_center()
++            .window_control_area(area)
++            .text_color(gpui::transparent_black())
++            .hover(move |style| style.bg(fill).text_color(text))
++            .child(div().font_family("Segoe MDL2 Assets").text_size(px(10.)).child(glyph))
++    };
++    crate::h_flex()
++        .absolute()
++        .top_0()
++        .right_0()
++        .h(height)
++        .child(cell("smoke-minimize", WindowControlArea::Min, "\u{E921}", shade, ink))
++        .child(cell("smoke-maximize", WindowControlArea::Max, if maximized { "\u{E923}" } else { "\u{E922}" }, shade, ink))
++        .child(cell("smoke-close", WindowControlArea::Close, "\u{E8BB}", gpui::rgb(0xe81123).into(), gpui::white()))
++}
++
 +fn window_close_button(close: gpui_base::DialogClose, frame: crate::DialogFrame, band: Pixels, corner: Pixels) -> gpui_base::DialogClose {
 +    let red = |dark: u32| -> Hsla { gpui::rgb(dark).into() };
 +    let cross = |size: f32| crate::Icon::new(IconName::Close).size(px(size));
@@ -1004,7 +1035,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
      vec![
          BoxShadow {
              color: hsla(0., 0., 0., 0.1 * delta),
-@@ -344,6 +504,9 @@
+@@ -344,6 +535,9 @@
              inset: false,
          },
      ]
@@ -1014,7 +1045,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
  }
  
  impl Dialog {
-@@ -475,6 +638,13 @@
+@@ -475,6 +669,13 @@
          self
      }
  
@@ -1028,7 +1059,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
      /// Sets the width of the dialog, defaults to 448px.
      ///
      /// The dialog is never wider than the viewport minus a margin on each side.
-@@ -598,6 +768,13 @@
+@@ -598,6 +799,13 @@
  
          let layer_ix = self.layer_ix;
          let selection_scope = self.selection_scope;
@@ -1042,7 +1073,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          let on_close = self.button_props.close_handler();
          let on_ok = self.button_props.ok_handler();
          let on_cancel = self.button_props.cancel_handler();
-@@ -632,7 +809,64 @@
+@@ -632,7 +840,64 @@
          let base_size = window.text_style().font_size;
          let rem_size = window.rem_size();
  
@@ -1108,17 +1139,34 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
          if let Some(pl) = self.style.padding.left {
              paddings.left = pl.to_pixels(base_size, rem_size);
          }
-@@ -692,7 +926,8 @@
-                                         .size_full()
-                                         .window_control_area(WindowControlArea::Drag)
-                                         .when(self.props.overlay_visible, |overlay| {
+@@ -686,15 +951,17 @@
+                             .close_on_backdrop_press(self.props.overlay_closable)
+                             .dismiss_below_y(TITLE_BAR_HEIGHT)
+                             .when(self.props.overlay, |this| {
+-                                this.backdrop(
+-                                    div()
+-                                        .absolute()
+-                                        .size_full()
+-                                        .window_control_area(WindowControlArea::Drag)
+-                                        .when(self.props.overlay_visible, |overlay| {
 -                                            overlay.bg(overlay_color(true, cx))
-+                                            // WinUI's SmokeFillColorDefault.
-+                                            overlay.bg(if content_dialog { hsla(0., 0., 0., 0.3) } else { overlay_color(true, cx) })
-                                         }),
-                                 )
+-                                        }),
+-                                )
++                                let smoke = div()
++                                    .absolute()
++                                    .size_full()
++                                    .window_control_area(WindowControlArea::Drag)
++                                    .when(self.props.overlay_visible, |overlay| {
++                                        // WinUI's SmokeFillColorDefault.
++                                        overlay.bg(if content_dialog { hsla(0., 0., 0., 0.3) } else { overlay_color(true, cx) })
++                                    });
++                                // SparkCommander patch: the window's caption buttons work under it, as WinUI's.
++                                let buttons = content_dialog.then(|| caption_buttons(band, window.is_maximized(), cx));
++                                this.backdrop(div().absolute().size_full().child(smoke).children(buttons))
                              })
-@@ -708,48 +943,116 @@
+                             .on_ok(move |event, window, cx| on_ok(event, window, cx))
+                             .on_cancel(move |event, window, cx| on_cancel(event, window, cx))
+@@ -708,48 +975,116 @@
                              })
                              .popup(
                                  gpui_base::Positioner::corner(
@@ -1245,7 +1293,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                      )
                                                  })
                                                  .when_some(self.content_builder, |this, builder| {
-@@ -771,6 +1074,7 @@
+@@ -771,6 +1106,7 @@
                                                                  .overflow_y_scrollbar()
                                                                  .pl(paddings.left)
                                                                  .pr(paddings.right)
@@ -1253,7 +1301,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                                  .children(self.children),
                                                          ),
                                                      )
-@@ -781,24 +1085,40 @@
+@@ -781,24 +1117,40 @@
                                                  div()
                                                      .pl(paddings.left)
                                                      .pr(paddings.right)
@@ -1302,7 +1350,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          }))
                                          .map(|surface| {
                                              if animated {
-@@ -806,15 +1126,15 @@
+@@ -806,15 +1158,15 @@
                                                      .with_animation(
                                                          "slide-down-shadow",
                                                          animation.clone(),
@@ -1321,7 +1369,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                                      .text_selection_scope(selection_scope)
                                                      .into_any_element()
                                              }
-@@ -841,7 +1161,8 @@
+@@ -841,7 +1193,8 @@
                                          }),
                                  )
                                  .map(|positioner| {
@@ -1331,7 +1379,7 @@ diff -ruN a/src/dialog/dialog.rs b/src/dialog/dialog.rs
                                          positioner
                                              .with_animation(
                                                  "slide-down",
-@@ -876,6 +1197,38 @@
+@@ -876,6 +1229,38 @@
      }
  }
  
