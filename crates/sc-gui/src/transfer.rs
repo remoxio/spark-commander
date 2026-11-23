@@ -522,8 +522,8 @@ struct Shown {
     local: bool,
     /// The one file's name the target ends in, kept in a folder browsed for.
     file_name: Option<OsString>,
-    /// The command's key, which pressed again here does it: the keystroke, as shown.
-    key: Option<(Keystroke, String)>,
+    /// The command's key, which pressed again here does it.
+    key: Option<Keystroke>,
 }
 
 impl Shown {
@@ -564,7 +564,7 @@ impl Shown {
             },
             local: server.is_none(),
             file_name: batch.one.as_ref().filter(|(_, _, folder)| !folder).map(|(name, _, _)| name.clone()),
-            key: stroke.map(|stroke| (stroke, crate::dialogs::keys_dialog::shown(key))),
+            key: stroke,
         }
     }
 }
@@ -708,17 +708,13 @@ impl Render for TransferDialog {
             .child(label(shown.destination.clone()))
             .child(h_flex().gap_2().child(div().flex_1().min_w_0().child(Input::new(&self.input))).child(browse));
         let exists = v_flex().gap_1p5().child(label(sc_core::t!("transfer.if_exists"))).child(Select::new(&self.choices));
-        // The command's key, pressed again, does it.
-        let hint = shown.key.as_ref().map(|(_, key)| {
-            let chip = div().px_1p5().rounded(px(4.)).border_1().border_color(border).text_xs().child(key.clone());
-            h_flex().gap_1p5().text_color(muted).child(chip).child(verb(shown.kind))
-        });
         v_flex()
             .w_full()
             .gap_4()
             .text_sm()
             .on_key_down(cx.listener(|this, event: &KeyDownEvent, window, cx| {
-                let Some((key, _)) = &this.shown.key else { return };
+                // The command's key, pressed again, does it.
+                let Some(key) = &this.shown.key else { return };
                 // Held from opening it, it repeats: not an answer.
                 if !event.is_held && event.keystroke.key == key.key && event.keystroke.modifiers == key.modifiers {
                     cx.stop_propagation();
@@ -733,7 +729,6 @@ impl Render for TransferDialog {
             .child(exists)
             .child(
                 crate::dialogs::footer(cx)
-                    .child(div().flex_1().min_w_0().children(hint))
                     .children(crate::dialogs::ok_cancel(
                         Button::new("transfer-ok")
                             .primary()
