@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Perkelti aukštyn"
   },
-  "settings.toolbar.place": {
-    "message": "Po meniu juosta; antraštės juostoje, kai meniu paslėpti po ☰ mygtuku, kaip GNOME programose. Jei mygtukų nėra, juosta nerodoma."
-  },
   "settings.toolbar.remove": {
     "message": "Šalinti"
   },

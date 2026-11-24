@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "上移"
   },
-  "settings.toolbar.place": {
-    "message": "位於選單列下方；若選單收在 ☰ 按鈕中（如 GNOME 應用程式），則位於標題列中。沒有按鈕時不顯示。"
-  },
   "settings.toolbar.remove": {
     "message": "移除"
   },

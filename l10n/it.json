@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Sposta su"
   },
-  "settings.toolbar.place": {
-    "message": "Sotto la barra dei menu; nella barra del titolo quando i menu sono dietro il pulsante ☰, come nelle app di GNOME. Senza pulsanti, nessuna barra."
-  },
   "settings.toolbar.remove": {
     "message": "Rimuovi"
   },

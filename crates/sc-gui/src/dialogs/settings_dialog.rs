@@ -952,7 +952,6 @@ impl SettingsDialog {
                 })))
         });
         let rows: Vec<_> = rows.collect();
-        let place = t!("settings.toolbar.place");
         let (styles, names): (Vec<ToolbarStyle>, Vec<String>) = crate::toolbar_styles().into_iter().unzip();
         // GNOME: none to choose, icons alone.
         let offered = !styles.is_empty();
@@ -967,7 +966,6 @@ impl SettingsDialog {
             v_flex()
                 .gap_2()
                 .when(offered, |el| el.child(style))
-                .child(div().whitespace_normal().text_color(cx.theme().muted_foreground).child(place))
                 .children(rows),
         )
     }
@@ -1330,6 +1328,8 @@ impl SettingsDialog {
                     .flex_1()
                     .min_h_0()
                     .gap_3()
+                    // The scrollbar beside the boxes, not over them.
+                    .pr(gpui_kit::component::scroll::Scrollbar::width())
                     .overflow_y_scrollbar()
                     .children(content),
             )

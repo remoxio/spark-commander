@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Mou amunt"
   },
-  "settings.toolbar.place": {
-    "message": "Sota la barra de menús; a la barra de títol quan els menús són darrere del botó ☰, com a les aplicacions de GNOME. Sense botons, no n’hi ha."
-  },
   "settings.toolbar.remove": {
     "message": "Elimina"
   },

@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Liiguta üles"
   },
-  "settings.toolbar.place": {
-    "message": "Menüüriba all; tiitliribal, kui menüüd on ☰ nupu taga, nagu GNOME rakendustes. Kui nuppe pole, siis ribat pole."
-  },
   "settings.toolbar.remove": {
     "message": "Eemalda"
   },

@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Posunúť nahor"
   },
-  "settings.toolbar.place": {
-    "message": "Pod lištou ponúk; v záhlaví okna, ak sú ponuky za tlačidlom ☰ ako v aplikáciách GNOME. Bez tlačidiel sa nezobrazí."
-  },
   "settings.toolbar.remove": {
     "message": "Odstrániť"
   },

@@ -4052,9 +4052,6 @@
   "settings.toolbar.move_up": {
     "message": "Mozgatás felfelé"
   },
-  "settings.toolbar.place": {
-    "message": "A menüsor alatt; a címsorban, ha a menük a ☰ gomb mögött vannak, ahogy a GNOME alkalmazásaiban. Gombok nélkül nincs eszköztár."
-  },
   "settings.toolbar.remove": {
     "message": "Eltávolítás"
   },

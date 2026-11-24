@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Nach oben"
   },
-  "settings.toolbar.place": {
-    "message": "Unter der Menüleiste; in der Titelleiste, wenn die Menüs hinter der ☰-Schaltfläche liegen, wie bei GNOME-Apps. Ohne Schaltflächen keine."
-  },
   "settings.toolbar.remove": {
     "message": "Entfernen"
   },

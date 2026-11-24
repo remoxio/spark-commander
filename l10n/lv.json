@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Pārvietot uz augšu"
   },
-  "settings.toolbar.place": {
-    "message": "Zem izvēļņu joslas; virsrakstjoslā, ja izvēlnes ir aiz ☰ pogas, kā GNOME lietotnēs. Ja nav pogu, rīkjoslas nav."
-  },
   "settings.toolbar.remove": {
     "message": "Noņemt"
   },

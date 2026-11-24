@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "上へ移動"
   },
-  "settings.toolbar.place": {
-    "message": "メニューバーの下に表示されます。GNOME のアプリのようにメニューが ☰ ボタンにまとめられている場合は、タイトルバーに表示されます。ボタンがない場合は表示されません。"
-  },
   "settings.toolbar.remove": {
     "message": "削除"
   },

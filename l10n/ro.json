@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Mutați în sus"
   },
-  "settings.toolbar.place": {
-    "message": "Sub bara de meniu; în bara de titlu când meniurile sunt în spatele butonului ☰, ca în aplicațiile GNOME. Fără butoane, nu apare."
-  },
   "settings.toolbar.remove": {
     "message": "Eliminați"
   },

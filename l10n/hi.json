@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "ऊपर ले जाएं"
   },
-  "settings.toolbar.place": {
-    "message": "मेन्यू बार के नीचे; जहां मेन्यू ☰ बटन के पीछे होते हैं, वहां टाइटल बार में, जैसे GNOME के ऐप्स में। कोई बटन न हो, तो टूलबार भी नहीं।"
-  },
   "settings.toolbar.remove": {
     "message": "हटाएं"
   },

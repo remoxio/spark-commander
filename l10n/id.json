@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Pindah ke atas"
   },
-  "settings.toolbar.place": {
-    "message": "Di bawah bilah menu; di bilah judul jika menu berada di balik tombol ☰, seperti aplikasi GNOME. Tanpa tombol, bilah alat tidak ditampilkan."
-  },
   "settings.toolbar.remove": {
     "message": "Hapus"
   },

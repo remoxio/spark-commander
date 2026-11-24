@@ -98,5 +98,5 @@ fn content(cx: &App) -> impl IntoElement + use<> {
         .child(div().border_t_1().border_color(cx.theme().border))
         .child(div().font_semibold().child(t!("about.made_with")))
         // A box of its own height, the list scrolling in it.
-        .child(v_flex().h(px(340.)).child(div().id("about-parts").flex_1().min_h_0().overflow_y_scrollbar().child(parts)))
+        .child(v_flex().h(px(340.)).child(div().id("about-parts").flex_1().min_h_0().pr(gpui_kit::component::scroll::Scrollbar::width()).overflow_y_scrollbar().child(parts)))
 }

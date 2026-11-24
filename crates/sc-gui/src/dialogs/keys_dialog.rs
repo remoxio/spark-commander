@@ -1,5 +1,5 @@
 //! Configuration > Shortcuts: each command's keys, a preset's, changed one by one.
-use gpui_kit::component::scroll::ScrollableElement as _;
+use gpui_kit::component::scroll::{ScrollableElement as _, Scrollbar};
 
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::input::{Input, InputEvent, InputState};
@@ -369,13 +369,16 @@ impl KeysDialog {
                     .child(div().flex_1().child(sc_core::t!("keys.column.command")))
                     .child(div().w(px(KEY_WIDTH)).child(sc_core::t!("keys.column.shortcut")))
                     .child(div().w(px(KEY_WIDTH)).child(sc_core::t!("keys.column.alternate")))
-                    .child(div().w(px(22.))),
+                    .child(div().w(px(22.)))
+                    .child(div().w(Scrollbar::width())),
             )
             .child(
                 div()
                     .id("keys-list")
                     .flex_1()
                     .min_h_0()
+                    // The scrollbar beside the rows' buttons, not over them.
+                    .pr(Scrollbar::width())
                     .overflow_y_scrollbar()
                     .child(list),
             )

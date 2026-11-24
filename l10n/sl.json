@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Premakni navzgor"
   },
-  "settings.toolbar.place": {
-    "message": "Pod menijsko vrstico; v naslovni vrstici, kjer so meniji za gumbom ☰, kot v programih GNOME. Brez gumbov je ni."
-  },
   "settings.toolbar.remove": {
     "message": "Odstrani"
   },

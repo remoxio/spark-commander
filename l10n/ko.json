@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "위로 이동"
   },
-  "settings.toolbar.place": {
-    "message": "메뉴 막대 아래에 표시됩니다. GNOME 앱처럼 메뉴가 ☰ 버튼 안에 있으면 제목 표시줄에 표시됩니다. 버튼이 없으면 표시되지 않습니다."
-  },
   "settings.toolbar.remove": {
     "message": "제거"
   },

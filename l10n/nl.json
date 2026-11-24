@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Omhoog"
   },
-  "settings.toolbar.place": {
-    "message": "Onder de menubalk; in de titelbalk als de menu’s achter de ☰-knop zitten, zoals bij de apps van GNOME. Zonder knoppen geen werkbalk."
-  },
   "settings.toolbar.remove": {
     "message": "Verwijderen"
   },

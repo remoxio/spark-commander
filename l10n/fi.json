@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Siirrä ylös"
   },
-  "settings.toolbar.place": {
-    "message": "Valikkorivin alla; otsikkopalkissa, kun valikot ovat ☰-painikkeen takana kuten GNOMEn sovelluksissa. Ilman painikkeita työkaluriviä ei näytetä."
-  },
   "settings.toolbar.remove": {
     "message": "Poista"
   },

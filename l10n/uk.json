@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Перемістити вгору"
   },
-  "settings.toolbar.place": {
-    "message": "Під смугою меню; у заголовку вікна, якщо меню сховано за кнопкою ☰, як у програмах GNOME. Без кнопок панелі немає."
-  },
   "settings.toolbar.remove": {
     "message": "Вилучити"
   },

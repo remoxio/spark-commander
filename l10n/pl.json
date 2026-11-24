@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Przesuń w górę"
   },
-  "settings.toolbar.place": {
-    "message": "Pod paskiem menu; na pasku tytułu, gdy menu jest ukryte za przyciskiem ☰, jak w aplikacjach GNOME. Bez przycisków pasek się nie pojawia."
-  },
   "settings.toolbar.remove": {
     "message": "Usuń"
   },

@@ -488,7 +488,9 @@ impl Commander {
             false => self.render_accordion(tab, false, cx),
         };
         // GNOME: as high as the window, the title bar beside it, as Files' and Builder's.
-        let title = self.menus_behind_button(window).then(|| sidebar_title(window, cx));
+        // Its tabs icons alone, the open one's name; as names one under another, the app's.
+        let name = self::sections().into_iter().find(|section| horizontal && section.0 == tab).map_or_else(|| "Spark Commander".to_owned(), |section| section.2);
+        let title = self.menus_behind_button(window).then(|| sidebar_title(name, window, cx));
         let (top_left, _) = gpui_kit::component::top_corners(window, cx);
         let (bottom_left, _) = gpui_kit::component::bottom_corners(window, cx);
         let theme = cx.theme();
@@ -1741,7 +1743,7 @@ impl Commander {
 
 /// GNOME: the sidebar's top, as tall as the title bar beside it, with the app's
 /// name; it moves the window, maximizes it and gives its menu as the title bar does.
-fn sidebar_title(window: &mut Window, cx: &mut App) -> AnyElement {
+fn sidebar_title(name: String, window: &mut Window, cx: &mut App) -> AnyElement {
     let height = sc_core::system::theme::header_bar().map_or(gpui_kit::component::TITLE_BAR_HEIGHT, |header| px(header.height));
     let pressed = window.use_keyed_state("sidebar-title-pressed", cx, |_, _| Rc::new(Cell::new(false))).read(cx).clone();
     let (down, up) = (pressed.clone(), pressed.clone());
@@ -1751,7 +1753,7 @@ fn sidebar_title(window: &mut Window, cx: &mut App) -> AnyElement {
         .h(height)
         .px_3()
         .justify_center()
-        .child(div().min_w_0().truncate().font_weight(FontWeight::BOLD).child("Spark Commander"))
+        .child(div().min_w_0().truncate().font_weight(FontWeight::BOLD).child(name))
         .on_double_click(|_, window, _| window.zoom_window())
         .on_mouse_down(MouseButton::Left, move |_, _, _| down.set(true))
         .on_mouse_up(MouseButton::Left, move |_, _, _| up.set(false))

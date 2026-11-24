@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Помери нагоре"
   },
-  "settings.toolbar.place": {
-    "message": "Испод траке менија; на насловној траци када су менији иза дугмета ☰, као у GNOME програмима. Без дугмади, нема је."
-  },
   "settings.toolbar.remove": {
     "message": "Уклони"
   },

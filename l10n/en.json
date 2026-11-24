@@ -5403,10 +5403,6 @@
     "description": "Settings › Toolbar: tooltip of the arrow that moves a button one place up.",
     "message": "Move up"
   },
-  "settings.toolbar.place": {
-    "description": "Settings › Toolbar: where the toolbar is shown; ☰ is the menu button's icon.",
-    "message": "Under the menu bar; in the title bar where the menus are behind the ☰ button, as GNOME's apps have them. With no buttons, none."
-  },
   "settings.toolbar.remove": {
     "description": "Settings › Toolbar: tooltip of the × that takes a button off the toolbar.",
     "message": "Remove"

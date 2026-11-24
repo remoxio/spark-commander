@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Преместване нагоре"
   },
-  "settings.toolbar.place": {
-    "message": "Под лентата с менюта; в заглавната лента, когато менютата са зад бутона ☰, както при приложенията на GNOME. Без бутони лентата не се показва."
-  },
   "settings.toolbar.remove": {
     "message": "Премахване"
   },

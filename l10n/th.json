@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "ย้ายขึ้น"
   },
-  "settings.toolbar.place": {
-    "message": "อยู่ใต้แถบเมนู หรืออยู่ในแถบชื่อเรื่องเมื่อเมนูอยู่หลังปุ่ม ☰ แบบแอปของ GNOME ถ้าไม่มีปุ่มก็จะไม่แสดง"
-  },
   "settings.toolbar.remove": {
     "message": "เอาออก"
   },

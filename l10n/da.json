@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Flyt op"
   },
-  "settings.toolbar.place": {
-    "message": "Under menulinjen; i titellinjen, hvor menuerne ligger bag ☰-knappen, som i GNOME’s programmer. Uden knapper vises den ikke."
-  },
   "settings.toolbar.remove": {
     "message": "Fjern"
   },

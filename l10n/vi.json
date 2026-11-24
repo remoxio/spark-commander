@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Chuyển lên"
   },
-  "settings.toolbar.place": {
-    "message": "Dưới thanh menu; trên thanh tiêu đề khi menu nằm sau nút ☰, như các ứng dụng GNOME. Không có nút nào thì không hiện thanh công cụ."
-  },
   "settings.toolbar.remove": {
     "message": "Xóa"
   },

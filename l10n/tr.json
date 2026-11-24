@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Yukarı taşı"
   },
-  "settings.toolbar.place": {
-    "message": "Menü çubuğunun altında; menülerin ☰ düğmesinin arkasında olduğu yerde, GNOME uygulamalarındaki gibi başlık çubuğunda. Düğme yoksa araç çubuğu da gösterilmez."
-  },
   "settings.toolbar.remove": {
     "message": "Kaldır"
   },

@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Pomakni gore"
   },
-  "settings.toolbar.place": {
-    "message": "Ispod trake s izbornicima; u naslovnoj traci kad su izbornici iza gumba ☰, kao u aplikacijama okruženja GNOME. Bez gumba alatne trake nema."
-  },
   "settings.toolbar.remove": {
     "message": "Ukloni"
   },

@@ -4043,9 +4043,6 @@
   "settings.toolbar.move_up": {
     "message": "Subir"
   },
-  "settings.toolbar.place": {
-    "message": "Bajo la barra de menús; en la barra de título cuando los menús están tras el botón ☰, como en las aplicaciones de GNOME. Sin botones, no se muestra."
-  },
   "settings.toolbar.remove": {
     "message": "Quitar"
   },
