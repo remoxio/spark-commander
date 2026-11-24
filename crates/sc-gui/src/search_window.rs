@@ -1136,15 +1136,9 @@ impl Render for FindFiles {
                         button("feed", t!("search.feed"))
                             .disabled(searching || !self.results.iter().any(|hit| hit.member.is_none()))
                             .on_click(cx.listener(|this, _, window, cx| this.feed(window, cx))),
-                    ),
-            )
-            .child(
-                div()
-                    .px_3()
-                    .pb_2()
-                    .text_color(theme.muted_foreground)
-                    .truncate()
-                    .child(self.status.clone()),
+                    )
+                    // Beside the buttons, not a line of its own, empty before a search.
+                    .child(div().flex_1().min_w_0().text_right().text_color(theme.muted_foreground).truncate().child(self.status.clone())),
             )
     }
 }

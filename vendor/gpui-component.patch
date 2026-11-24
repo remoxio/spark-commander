@@ -2177,7 +2177,7 @@ diff -ruN a/src/menu/context_menu.rs b/src/menu/context_menu.rs
              // takes precedence over where the press landed.
 diff -ruN a/src/menu/dropdown_menu.rs b/src/menu/dropdown_menu.rs
 --- a/src/menu/dropdown_menu.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/dropdown_menu.rs	2026-11-24 14:45:39.025857417 +0100
++++ b/src/menu/dropdown_menu.rs	2026-11-24 22:58:48.778138446 +0100
 @@ -1,9 +1,9 @@
 -use std::rc::Rc;
 +use std::{cell::Cell, rc::Rc};
@@ -2236,8 +2236,11 @@ diff -ruN a/src/menu/dropdown_menu.rs b/src/menu/dropdown_menu.rs
                  // Here is special logic to only create the PopupMenu once and reuse it.
                  // Because this `content` will called in every time render, so we need to store the menu
                  // in state to avoid recreating at every render.
-@@ -134,6 +143,18 @@
+@@ -132,8 +141,21 @@
+                             builder(menu, window, cx)
+                         });
                          menu.update(cx, |menu, cx| {
++                            menu.trigger_bounds = Some(trigger_bounds.clone());
                              menu.set_trigger_focus(Some(trigger_focus.clone()), cx)
                          });
 +                        // SparkCommander patch: on macOS, AppKit's own menu below the
@@ -2255,7 +2258,7 @@ diff -ruN a/src/menu/dropdown_menu.rs b/src/menu/dropdown_menu.rs
                          menu_state.update(cx, |state, _| {
                              state.menu = Some(menu.clone());
                          });
-@@ -168,12 +189,13 @@
+@@ -168,12 +190,13 @@
                      }
                  };
  
@@ -2271,7 +2274,7 @@ diff -ruN a/src/menu/dropdown_menu.rs b/src/menu/dropdown_menu.rs
  
  /// Registers a focus handle on the trigger's dispatch node without ever
  /// focusing it, so the menu opened from the trigger can resolve its shortcut
-@@ -188,17 +210,20 @@
+@@ -188,17 +211,20 @@
  #[derive(Default)]
  struct TriggerFocusState {
      focus_handle: Option<FocusHandle>,
@@ -2293,7 +2296,7 @@ diff -ruN a/src/menu/dropdown_menu.rs b/src/menu/dropdown_menu.rs
      ) -> Self {
          Self {
              id,
-@@ -234,23 +259,24 @@
+@@ -234,23 +260,24 @@
          window: &mut Window,
          cx: &mut App,
      ) -> (LayoutId, Self::RequestLayoutState) {
@@ -2321,7 +2324,7 @@ diff -ruN a/src/menu/dropdown_menu.rs b/src/menu/dropdown_menu.rs
                  child,
              },
          )
-@@ -260,11 +286,12 @@
+@@ -260,11 +287,12 @@
          &mut self,
          _: Option<&GlobalElementId>,
          _: Option<&InspectorElementId>,
@@ -2410,7 +2413,7 @@ diff -ruN a/src/menu/mod.rs b/src/menu/mod.rs
      app_menu_bar::init(cx);
 diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 --- a/src/menu/popup_menu.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/popup_menu.rs	2026-11-24 22:49:55.939946554 +0100
++++ b/src/menu/popup_menu.rs	2026-11-24 22:58:48.777792177 +0100
 @@ -1,8 +1,16 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a long menu's
 +// scrollbar shows while it scrolls. Changes are marked "SparkCommander patch".
@@ -2494,7 +2497,16 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          }
      }
  
-@@ -303,7 +355,6 @@
+@@ -293,6 +345,8 @@
+     /// the very frame the menu opens. GPUI looks a handle up in the previously
+     /// rendered frame, and the trigger was in it when the menu was not yet.
+     pub(crate) trigger_focus_handle: Option<FocusHandle>,
++    /// SparkCommander patch: the button a drop-down menu opened from, where it was drawn.
++    pub(crate) trigger_bounds: Option<std::rc::Rc<std::cell::Cell<Bounds<Pixels>>>>,
+     selected_index: Option<usize>,
+     min_width: Option<Pixels>,
+     max_width: Option<Pixels>,
+@@ -303,7 +357,6 @@
  
      /// The parent menu of this menu, if this is a submenu
      parent_menu: Option<WeakEntity<Self>>,
@@ -2502,7 +2514,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      external_link_icon: bool,
      scroll_handle: ScrollHandle,
      // This will update on render
-@@ -327,6 +378,16 @@
+@@ -327,6 +380,16 @@
      /// reaches it, while the scroll offset is still baked into its anchor.
      priority: usize,
  
@@ -2519,7 +2531,15 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      _subscriptions: Vec<Subscription>,
  }
  
-@@ -345,12 +406,15 @@
+@@ -337,6 +400,7 @@
+             action_context: None,
+             previous_focus_handle: None,
+             trigger_focus_handle: None,
++            trigger_bounds: None,
+             parent_menu: None,
+             menu_items: Vec::new(),
+             selected_index: None,
+@@ -345,12 +409,15 @@
              max_height: None,
              check_side: Side::Left,
              bounds: Bounds::default(),
@@ -2536,7 +2556,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              _subscriptions: vec![],
          }
      }
-@@ -360,7 +424,48 @@
+@@ -360,7 +427,48 @@
          cx: &mut App,
          f: impl FnOnce(Self, &mut Window, &mut Context<PopupMenu>) -> Self,
      ) -> Entity<Self> {
@@ -2586,7 +2606,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      }
  
      /// Set the focus handle of Entity to handle actions.
-@@ -445,9 +550,8 @@
+@@ -445,9 +553,8 @@
          self
      }
  
@@ -2598,7 +2618,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          self
      }
  
-@@ -783,7 +887,8 @@
+@@ -783,7 +890,8 @@
          self
      }
  
@@ -2608,7 +2628,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          mut self,
          items: impl IntoIterator<Item = I>,
          window: &mut Window,
-@@ -801,29 +906,42 @@
+@@ -801,29 +909,42 @@
                      disabled,
                      ..
                  } => {
@@ -2664,7 +2684,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          self
      }
  
-@@ -884,6 +1002,18 @@
+@@ -884,6 +1005,18 @@
                          }
                          self.dismiss(&Cancel, window, cx)
                      }
@@ -2683,7 +2703,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      _ => {}
                  }
              }
-@@ -904,6 +1034,94 @@
+@@ -904,6 +1037,94 @@
          window.dispatch_action(action.boxed_clone(), cx);
      }
  
@@ -2778,7 +2798,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn resolved_action_context(&self, cx: &App) -> Option<FocusHandle> {
          self.action_context.clone().or_else(|| {
              let parent = self.parent_menu.as_ref()?.upgrade()?;
-@@ -919,6 +1137,22 @@
+@@ -919,6 +1140,22 @@
          }
      }
  
@@ -2801,7 +2821,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn select_up(&mut self, _: &SelectUp, _: &mut Window, cx: &mut Context<Self>) {
          cx.stop_propagation();
          let ix = self.selected_index.unwrap_or(0);
-@@ -959,6 +1193,13 @@
+@@ -959,6 +1196,13 @@
      }
  
      fn select_left(&mut self, _: &SelectLeft, window: &mut Window, cx: &mut Context<Self>) {
@@ -2815,7 +2835,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let handled = if matches!(self.submenu_anchor.0, Anchor::TopLeft | Anchor::BottomLeft) {
              self._unselect_submenu(window, cx)
          } else {
-@@ -980,6 +1221,12 @@
+@@ -980,6 +1224,12 @@
      }
  
      fn select_right(&mut self, _: &SelectRight, window: &mut Window, cx: &mut Context<Self>) {
@@ -2828,7 +2848,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let handled = if matches!(self.submenu_anchor.0, Anchor::TopLeft | Anchor::BottomLeft) {
              self._select_submenu(window, cx)
          } else {
-@@ -1002,9 +1249,19 @@
+@@ -1002,9 +1252,23 @@
  
      fn _select_submenu(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
          if let Some(active_submenu) = self.active_submenu() {
@@ -2837,7 +2857,11 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +            let gnome = popover_menus(cx);
 +            if gnome {
 +                self.in_place = true;
-+                active_submenu.update(cx, |view, _| view.embedded = true);
++                let trigger = self.trigger_bounds.clone();
++                active_submenu.update(cx, |view, _| {
++                    view.embedded = true;
++                    view.trigger_bounds = trigger;
++                });
 +            }
 +            let first = !gnome || window.last_input_was_keyboard();
              // Focus the submenu, so that can be handle the action.
@@ -2849,7 +2873,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  view.focus_handle.focus(window, cx);
              });
              cx.notify();
-@@ -1026,6 +1283,23 @@
+@@ -1026,6 +1290,23 @@
          return false;
      }
  
@@ -2873,7 +2897,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn _focus_parent_menu(&mut self, window: &mut Window, cx: &mut Context<Self>) {
          let Some(parent) = self.parent_menu.as_ref() else {
              return;
-@@ -1063,6 +1337,7 @@
+@@ -1063,6 +1344,7 @@
      /// The submenu is closed together with its parent, same as macOS menus.
      fn dismiss(&mut self, _: &Cancel, window: &mut Window, cx: &mut Context<Self>) {
          self.selected_index = None;
@@ -2881,7 +2905,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          cx.emit(DismissEvent);
  
          // Focus back to the previous focused handle, unless the item's click
-@@ -1109,7 +1384,8 @@
+@@ -1109,7 +1391,8 @@
          // inside the submenu, let the submenu to handle it.
          //
          // Otherwise the submenu will be dismissed before its item's `on_click`.
@@ -2891,7 +2915,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              return;
          }
  
-@@ -1179,7 +1455,8 @@
+@@ -1179,7 +1462,8 @@
              Icon::empty()
          };
  
@@ -2901,7 +2925,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      }
  
      #[inline]
-@@ -1205,6 +1482,14 @@
+@@ -1205,6 +1489,14 @@
          };
      }
  
@@ -2916,7 +2940,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn render_item(
          &self,
          ix: usize,
-@@ -1222,21 +1507,31 @@
+@@ -1222,21 +1514,31 @@
          };
  
          let selected = self.selected_index == Some(ix);
@@ -2950,7 +2974,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              .rounded(radius)
              .items_center()
              .selected(selected)
-@@ -1267,12 +1562,16 @@
+@@ -1267,12 +1569,16 @@
              .when_some(item.a11y_label(), |this, label| this.aria_label(label));
  
          match item {
@@ -2970,7 +2994,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .border_color(cx.theme().border)
                  .disabled(true),
              PopupMenuItem::Label(label) => this.disabled(true).cursor_default().child(
-@@ -1322,6 +1621,10 @@
+@@ -1322,6 +1628,10 @@
                  let show_link_icon = *is_link && self.external_link_icon;
                  let action = action.as_ref().map(|action| action.boxed_clone());
                  let key = self.render_key_binding(action, window, cx);
@@ -2981,7 +3005,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
                  this.when(!disabled, |this| {
                      this.on_click(
-@@ -1344,7 +1647,7 @@
+@@ -1344,7 +1654,7 @@
                          .gap_3()
                          .items_center()
                          .justify_between()
@@ -2990,7 +3014,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                          .children(right_check_icon)
                          .when(show_link_icon, |this| {
                              this.child(
-@@ -1368,9 +1671,28 @@
+@@ -1368,9 +1678,28 @@
                  label,
                  menu,
                  disabled,
@@ -3020,7 +3044,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .items_start()
                  .child(
                      h_flex()
-@@ -1391,15 +1713,21 @@
+@@ -1391,15 +1720,21 @@
                                  .gap_2()
                                  .items_center()
                                  .justify_between()
@@ -3047,7 +3071,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      this.child({
                          let (anchor, left) = self.submenu_anchor;
                          let is_bottom_pos =
-@@ -1421,7 +1749,8 @@
+@@ -1421,7 +1756,8 @@
                          )
                          .with_priority(self.priority + 1)
                      })
@@ -3057,7 +3081,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          }
      }
  }
-@@ -1466,10 +1795,23 @@
+@@ -1466,10 +1802,23 @@
          let view = cx.entity().clone();
          let items_count = self.menu_items.len();
  
@@ -3085,7 +3109,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
          let has_left_icon = self
              .menu_items
-@@ -1477,6 +1819,13 @@
+@@ -1477,6 +1826,13 @@
              .any(|item| item.has_left_icon(self.check_side));
  
          let max_width = self.max_width();
@@ -3099,7 +3123,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let options = RenderOptions {
              has_left_icon,
              check_side: self.check_side,
-@@ -1495,24 +1844,79 @@
+@@ -1495,24 +1851,87 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
@@ -3126,13 +3150,21 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +                let view = view.clone();
 +                // Its own submenu in its place: that one's header alone.
 +                let deeper = menu.read(cx).in_place;
-+                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken;
-+                // the window's own frame (GNOME's shadow) too, as the menu is kept inside it.
-+                let frame = match window.window_decorations() {
-+                    gpui::Decorations::Client { tiling } if !tiling.bottom => window.client_inset().unwrap_or_default(),
-+                    _ => px(0.),
++                // As tall as the room above or under its button, the menu going where it fits (else the
++                // window's), inside the window's own frame (GNOME's shadow); not from where the menu is,
++                // which its height decides. The arrow and margins (22 px), the header and frame (38) taken.
++                let (top, bottom) = match window.window_decorations() {
++                    gpui::Decorations::Client { tiling } => {
++                        let inset = window.client_inset().unwrap_or_default();
++                        (if tiling.top { px(0.) } else { inset }, if tiling.bottom { px(0.) } else { inset })
++                    }
++                    gpui::Decorations::Server => (px(0.), px(0.)),
 +                };
-+                let room = window.viewport_size().height - frame - self.bounds.origin.y - px(36. + 12. + 8.);
++                let height = window.viewport_size().height;
++                let room = match self.trigger_bounds.as_ref().map(|trigger| trigger.get()) {
++                    Some(trigger) => (height - bottom - trigger.bottom()).max(trigger.top() - top),
++                    None => height - top - bottom,
++                } - px(22. + 38.);
 +                if room > px(0.) {
 +                    menu.update(cx, |menu, _| menu.max_height = Some(room));
 +                }
@@ -3187,7 +3219,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1522,10 +1926,7 @@
+@@ -1522,10 +1941,7 @@
                              .map(|(ix, item)| self.render_item(ix, item, options, window, cx)),
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),

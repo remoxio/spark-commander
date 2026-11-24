@@ -345,6 +345,8 @@ pub struct PopupMenu {
     /// the very frame the menu opens. GPUI looks a handle up in the previously
     /// rendered frame, and the trigger was in it when the menu was not yet.
     pub(crate) trigger_focus_handle: Option<FocusHandle>,
+    /// SparkCommander patch: the button a drop-down menu opened from, where it was drawn.
+    pub(crate) trigger_bounds: Option<std::rc::Rc<std::cell::Cell<Bounds<Pixels>>>>,
     selected_index: Option<usize>,
     min_width: Option<Pixels>,
     max_width: Option<Pixels>,
@@ -398,6 +400,7 @@ impl PopupMenu {
             action_context: None,
             previous_focus_handle: None,
             trigger_focus_handle: None,
+            trigger_bounds: None,
             parent_menu: None,
             menu_items: Vec::new(),
             selected_index: None,
@@ -1254,7 +1257,11 @@ impl PopupMenu {
             let gnome = popover_menus(cx);
             if gnome {
                 self.in_place = true;
-                active_submenu.update(cx, |view, _| view.embedded = true);
+                let trigger = self.trigger_bounds.clone();
+                active_submenu.update(cx, |view, _| {
+                    view.embedded = true;
+                    view.trigger_bounds = trigger;
+                });
             }
             let first = !gnome || window.last_input_was_keyboard();
             // Focus the submenu, so that can be handle the action.
@@ -1865,13 +1872,21 @@ impl Render for PopupMenu {
                 let view = view.clone();
                 // Its own submenu in its place: that one's header alone.
                 let deeper = menu.read(cx).in_place;
-                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken;
-                // the window's own frame (GNOME's shadow) too, as the menu is kept inside it.
-                let frame = match window.window_decorations() {
-                    gpui::Decorations::Client { tiling } if !tiling.bottom => window.client_inset().unwrap_or_default(),
-                    _ => px(0.),
+                // As tall as the room above or under its button, the menu going where it fits (else the
+                // window's), inside the window's own frame (GNOME's shadow); not from where the menu is,
+                // which its height decides. The arrow and margins (22 px), the header and frame (38) taken.
+                let (top, bottom) = match window.window_decorations() {
+                    gpui::Decorations::Client { tiling } => {
+                        let inset = window.client_inset().unwrap_or_default();
+                        (if tiling.top { px(0.) } else { inset }, if tiling.bottom { px(0.) } else { inset })
+                    }
+                    gpui::Decorations::Server => (px(0.), px(0.)),
                 };
-                let room = window.viewport_size().height - frame - self.bounds.origin.y - px(36. + 12. + 8.);
+                let height = window.viewport_size().height;
+                let room = match self.trigger_bounds.as_ref().map(|trigger| trigger.get()) {
+                    Some(trigger) => (height - bottom - trigger.bottom()).max(trigger.top() - top),
+                    None => height - top - bottom,
+                } - px(22. + 38.);
                 if room > px(0.) {
                     menu.update(cx, |menu, _| menu.max_height = Some(room));
                 }

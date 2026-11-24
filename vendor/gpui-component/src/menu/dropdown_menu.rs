@@ -141,6 +141,7 @@ where
                             builder(menu, window, cx)
                         });
                         menu.update(cx, |menu, cx| {
+                            menu.trigger_bounds = Some(trigger_bounds.clone());
                             menu.set_trigger_focus(Some(trigger_focus.clone()), cx)
                         });
                         // SparkCommander patch: on macOS, AppKit's own menu below the
