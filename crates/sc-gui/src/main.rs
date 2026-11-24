@@ -1610,7 +1610,12 @@ impl Commander {
             };
             let size = if cfg!(target_os = "macos") { header::MAC_BUTTON } else { gpui_kit::component::Size::Medium };
             let button = Button::new(("toolbar", command as usize)).ghost().with_size(size).when(icons, |button| button.icon(Icon::new(icon))).selected(self.checked(command)).tooltip(tip);
-            let button = button.when(text, |button| button.label(name.trim_end_matches(['…', '.'])));
+            // The sidebar's name alone, as its Show submenu; "Sidebar: show or hide" is for lists of commands.
+            let label = match command {
+                Command::ToggleSidebar => sc_core::t!("menu.sidebar"),
+                _ => name.trim_end_matches(['…', '.']).to_owned(),
+            };
+            let button = button.when(text, |button| button.label(label));
             // macOS: as wide as AppKit's in a group's capsule, with its name as wide as that.
             let button = match (mac, text) {
                 (true, false) => button.w(px(34.)).h(px(26.)).rounded(px(13.)),
