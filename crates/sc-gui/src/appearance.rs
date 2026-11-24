@@ -167,7 +167,11 @@ pub fn apply(palette: &Palette, cx: &mut App) -> PanelColors {
         active_path: color(list.active_path),
         inactive_path: color(list.inactive_path),
         bar: color(palette.bar),
-        window: color(palette.window),
+        // GNOME's: libadwaita's sidebar colour, as Files' (#ebebed, dark #2e2e32), its bars'.
+        window: color(match sc_core::system::theme::control_style() {
+            Some(ControlStyle::Adwaita) => palette.bar,
+            _ => palette.window,
+        }),
         marked: color(palette.marked),
     }
 }
