@@ -25,6 +25,11 @@ fn custom() -> SharedString {
 }
 
 const WIDTH: f32 = 780.;
+
+/// GNOME's: each change applied at once, as its preferences; Reset All and a × beside the title.
+fn instant() -> bool {
+    crate::dialogs::dialog_window::separate() && sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita)
+}
 const BODY_HEIGHT: f32 = 560.;
 const KEY_WIDTH: f32 = 150.;
 /// Keys that only change others; a shortcut needs one more.
@@ -89,6 +94,10 @@ pub fn open(
     view.update(cx, |this, _| this.main = main);
     view
     };
+    // GNOME: its title beside Reset All and its × (`render`).
+    if instant() {
+        return crate::dialogs::dialog_window::open_headed(sc_core::t!("keys.title"), size(px(WIDTH), px(560.)), window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
+    }
     crate::dialogs::dialog_window::show(sc_core::t!("keys.title"), size(px(WIDTH), px(560.)), window, cx, build, |_, _, _| false);
 }
 
@@ -386,6 +395,11 @@ impl Render for KeysDialog {
             self.synced = wanted;
         }
         let changed = self.draft != self.saved;
+        // GNOME: a change applied as made.
+        let instant = instant();
+        if instant && changed {
+            cx.defer_in(window, |this, window, cx| this.apply(window, cx));
+        }
         let note = self.note.clone().map(|(text, warn)| {
             let theme = cx.theme();
             div()
@@ -394,6 +408,39 @@ impl Render for KeysDialog {
                 .text_color(if warn { theme.danger } else { theme.muted_foreground })
                 .child(text)
         });
+        let reset_all = Button::new("keys-reset-all")
+            .outline()
+            .label(sc_core::t!("keys.reset_all"))
+            .disabled(self.draft.choice() != Choice::Custom)
+            .on_click(cx.listener(|this, _, _, cx| {
+                // Back to the set chosen, else the preset.
+                match this.draft.set.clone().filter(|name| this.draft.saved.contains_key(name)) {
+                    Some(name) => this.draft.use_saved(&name),
+                    None => this.draft.changed.clear(),
+                }
+                this.note = None;
+                cx.notify();
+            }));
+        if instant {
+            let close = Button::new("keys-close")
+                .ghost()
+                .small()
+                .icon(IconName::Close)
+                .rounded_full()
+                .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx));
+            let title = div().flex_1().text_xl().font_weight(FontWeight::SEMIBOLD).child(sc_core::t!("keys.title"));
+            return v_flex()
+                .w_full()
+                .h(px(BODY_HEIGHT))
+                .gap_3()
+                .text_sm()
+                .child(h_flex().gap_2().items_center().child(title).child(reset_all).child(close))
+                .child(self.render_presets(cx))
+                .child(Input::new(&self.search).small())
+                .child(self.render_list(cx))
+                .children(note)
+                .into_any_element();
+        }
         v_flex()
             .w_full()
             .h(px(BODY_HEIGHT))
@@ -405,21 +452,7 @@ impl Render for KeysDialog {
             .child(
                 crate::dialogs::footer(cx)
                     .child(div().flex_1().min_w_0().children(note))
-                    .child(
-                        Button::new("keys-reset-all")
-                            .outline()
-                            .label(sc_core::t!("keys.reset_all"))
-                            .disabled(self.draft.choice() != Choice::Custom)
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                // Back to the set chosen, else the preset.
-                                match this.draft.set.clone().filter(|name| this.draft.saved.contains_key(name)) {
-                                    Some(name) => this.draft.use_saved(&name),
-                                    None => this.draft.changed.clear(),
-                                }
-                                this.note = None;
-                                cx.notify();
-                            })),
-                    )
+                    .child(reset_all)
                     .children(crate::dialogs::ordered([
                         (Role::Main, Button::new("keys-ok")
                             .primary()
@@ -442,6 +475,7 @@ impl Render for KeysDialog {
                             .on_click(cx.listener(|this, _, window, cx| this.apply(window, cx)))),
                     ])),
             )
+            .into_any_element()
     }
 }
 
