@@ -131,6 +131,8 @@ pub use time::{calendar, date_picker, time_field};
 pub use title_bar::*;
 pub use virtual_list::{VirtualList, VirtualListScrollHandle, h_virtual_list, v_virtual_list};
 pub use window_border::{WindowBorder, WindowCornerRadius, top_corners, window_border, window_paddings};
+// SparkCommander patch: see `Veil`.
+pub use root::Veil;
 pub use window_ext::WindowExt;
 
 rust_i18n::i18n!("locales", fallback = "en");

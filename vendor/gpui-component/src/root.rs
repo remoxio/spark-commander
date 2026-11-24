@@ -1,5 +1,6 @@
 // Modified for Spark Commander (Apache-2.0, section 4b): notifications paint
-// above dialogs. Changes are marked "SparkCommander patch".
+// above dialogs; a `Veil` over the windows the app names. Changes are marked
+// "SparkCommander patch".
 
 use crate::{
     ActiveTheme, ElementExt, Placement,
@@ -19,6 +20,16 @@ use gpui::{
 };
 use gpui_base::{TextSelection, TextSelectionScopeId};
 use std::{any::TypeId, rc::Rc};
+
+/// SparkCommander patch: windows drawn under black at `opacity`, over all their
+/// content (GNOME's alert dialogs dim the window they ask over); the app keeps it.
+#[derive(Default)]
+pub struct Veil {
+    pub windows: Vec<gpui::AnyWindowHandle>,
+    pub opacity: f32,
+}
+
+impl gpui::Global for Veil {}
 
 pub(crate) fn init(cx: &mut App) {
     gpui_base::Root::register_plugin::<WindowState>(cx, WindowState::new);
@@ -504,10 +515,16 @@ struct WindowStateLayers {
 impl RenderOnce for WindowStateLayers {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let root = self.root;
+        // SparkCommander patch: see `Veil`; rounded as the frame.
+        let veil = cx.try_global::<Veil>().filter(|veil| veil.windows.contains(&window.window_handle())).map(|veil| {
+            let (top_left, top_right) = crate::top_corners(window, cx);
+            div().absolute().inset_0().rounded_tl(top_left).rounded_tr(top_right).bg(gpui::hsla(0., 0., 0., veil.opacity)).occlude()
+        });
         div()
             .absolute()
             .inset_0()
             .debug_selector(|| "root-layers".to_string())
+            .children(veil)
             .children(WindowState::sheet_layer(root.clone(), window, cx))
             .children(WindowState::dialog_layer(&root, window, cx))
             // SparkCommander patch: dialogs paint deferred (priority 10 + layer), so

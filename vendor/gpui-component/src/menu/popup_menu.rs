@@ -1851,6 +1851,11 @@ impl Render for PopupMenu {
                 let view = view.clone();
                 // Its own submenu in its place: that one's header alone.
                 let deeper = menu.read(cx).in_place;
+                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken.
+                let room = window.viewport_size().height - self.bounds.origin.y - px(36. + 12. + 8.);
+                if room > px(0.) {
+                    menu.update(cx, |menu, _| menu.max_height = Some(room));
+                }
                 let back = h_flex()
                     .id("submenu-back")
                     .relative()

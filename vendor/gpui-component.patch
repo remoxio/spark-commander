@@ -1769,9 +1769,9 @@ diff -ruN a/src/kbd.rs b/src/kbd.rs
              .into_any_element()
      }
  }
-diff -ruN a/src/lib.rs b/src/lib.rs
+diff -ruN -x .cargo-ok a/src/lib.rs b/src/lib.rs
 --- a/src/lib.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/lib.rs	2026-11-23 13:55:46.979356523 +0100
++++ b/src/lib.rs	2026-11-24 15:44:10.856406267 +0100
 @@ -20,6 +20,15 @@
  mod touch_selection;
  mod virtual_list;
@@ -1788,12 +1788,14 @@ diff -ruN a/src/lib.rs b/src/lib.rs
  mod window_ext;
  
  pub(crate) mod actions {
-@@ -121,7 +130,7 @@
+@@ -121,7 +130,9 @@
  pub use time::{calendar, date_picker, time_field};
  pub use title_bar::*;
  pub use virtual_list::{VirtualList, VirtualListScrollHandle, h_virtual_list, v_virtual_list};
 -pub use window_border::{WindowBorder, window_border, window_paddings};
 +pub use window_border::{WindowBorder, WindowCornerRadius, top_corners, window_border, window_paddings};
++// SparkCommander patch: see `Veil`.
++pub use root::Veil;
  pub use window_ext::WindowExt;
  
  rust_i18n::i18n!("locales", fallback = "en");
@@ -2395,9 +2397,9 @@ diff -ruN a/src/menu/mod.rs b/src/menu/mod.rs
  
  pub(crate) fn init(cx: &mut App) {
      app_menu_bar::init(cx);
-diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
+diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 --- a/src/menu/popup_menu.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/popup_menu.rs	2026-11-24 14:50:40.184203819 +0100
++++ b/src/menu/popup_menu.rs	2026-11-24 15:46:49.738028862 +0100
 @@ -1,8 +1,16 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a long menu's
 +// scrollbar shows while it scrolls. Changes are marked "SparkCommander patch".
@@ -3061,7 +3063,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let options = RenderOptions {
              has_left_icon,
              check_side: self.check_side,
-@@ -1495,24 +1830,69 @@
+@@ -1495,24 +1830,74 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
@@ -3088,6 +3090,11 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +                let view = view.clone();
 +                // Its own submenu in its place: that one's header alone.
 +                let deeper = menu.read(cx).in_place;
++                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken.
++                let room = window.viewport_size().height - self.bounds.origin.y - px(36. + 12. + 8.);
++                if room > px(0.) {
++                    menu.update(cx, |menu, _| menu.max_height = Some(room));
++                }
 +                let back = h_flex()
 +                    .id("submenu-back")
 +                    .relative()
@@ -3139,7 +3146,7 @@ diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1522,10 +1902,7 @@
+@@ -1522,10 +1907,7 @@
                              .map(|(ix, item)| self.render_item(ix, item, options, window, cx)),
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),
@@ -3700,17 +3707,18 @@ diff -ruN a/src/radio.rs b/src/radio.rs
                          .gap_1()
                          .when_some(self.label, |this, label| {
                              this.child(
-diff -ruN a/src/root.rs b/src/root.rs
+diff -ruN -x .cargo-ok a/src/root.rs b/src/root.rs
 --- a/src/root.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/root.rs	2026-11-21 17:58:34.201111645 +0100
-@@ -1,3 +1,6 @@
++++ b/src/root.rs	2026-11-24 15:44:10.856196248 +0100
+@@ -1,3 +1,7 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): notifications paint
-+// above dialogs. Changes are marked "SparkCommander patch".
++// above dialogs; a `Veil` over the windows the app names. Changes are marked
++// "SparkCommander patch".
 +
  use crate::{
      ActiveTheme, ElementExt, Placement,
      dialog::{ANIMATION_DURATION, Dialog},
-@@ -11,8 +14,8 @@
+@@ -11,12 +15,22 @@
  };
  use gpui::{
      App, AppContext, Context, DefiniteLength, ElementId, Entity, FocusHandle, InteractiveElement,
@@ -3721,7 +3729,21 @@ diff -ruN a/src/root.rs b/src/root.rs
  };
  use gpui_base::{TextSelection, TextSelectionScopeId};
  use std::{any::TypeId, rc::Rc};
-@@ -32,6 +35,9 @@
+ 
++/// SparkCommander patch: windows drawn under black at `opacity`, over all their
++/// content (GNOME's alert dialogs dim the window they ask over); the app keeps it.
++#[derive(Default)]
++pub struct Veil {
++    pub windows: Vec<gpui::AnyWindowHandle>,
++    pub opacity: f32,
++}
++
++impl gpui::Global for Veil {}
++
+ pub(crate) fn init(cx: &mut App) {
+     gpui_base::Root::register_plugin::<WindowState>(cx, WindowState::new);
+ }
+@@ -32,6 +46,9 @@
      touch_selection_overlay: Entity<WindowTouchSelectionOverlay>,
      sheet_size: Option<DefiniteLength>,
      pending_focus_restore: Option<WeakFocusHandle>,
@@ -3731,7 +3753,7 @@ diff -ruN a/src/root.rs b/src/root.rs
  }
  
  #[derive(Clone)]
-@@ -82,6 +88,7 @@
+@@ -82,6 +99,7 @@
              touch_selection_overlay: cx.new(|cx| WindowTouchSelectionOverlay::new(window, cx)),
              sheet_size: None,
              pending_focus_restore: None,
@@ -3739,7 +3761,7 @@ diff -ruN a/src/root.rs b/src/root.rs
          }
      }
  
-@@ -441,14 +448,24 @@
+@@ -441,14 +459,24 @@
          TextSelection::activate_scope(self.active_text_selection_scope(), window, cx);
      }
  
@@ -3771,8 +3793,20 @@ diff -ruN a/src/root.rs b/src/root.rs
      }
  
      fn decorate(
-@@ -493,6 +510,12 @@
+@@ -487,12 +515,24 @@
+ impl RenderOnce for WindowStateLayers {
+     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+         let root = self.root;
++        // SparkCommander patch: see `Veil`; rounded as the frame.
++        let veil = cx.try_global::<Veil>().filter(|veil| veil.windows.contains(&window.window_handle())).map(|veil| {
++            let (top_left, top_right) = crate::top_corners(window, cx);
++            div().absolute().inset_0().rounded_tl(top_left).rounded_tr(top_right).bg(gpui::hsla(0., 0., 0., veil.opacity)).occlude()
++        });
+         div()
+             .absolute()
+             .inset_0()
              .debug_selector(|| "root-layers".to_string())
++            .children(veil)
              .children(WindowState::sheet_layer(root.clone(), window, cx))
              .children(WindowState::dialog_layer(&root, window, cx))
 -            .children(WindowState::notification_layer(&root, cx))

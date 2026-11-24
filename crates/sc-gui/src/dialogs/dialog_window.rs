@@ -179,6 +179,17 @@ struct DialogWindow {
     alert: bool,
 }
 
+/// The veil of an alert over `window` off (another alert may keep one).
+fn unveil(window: AnyWindowHandle, cx: &mut App) {
+    if cx.has_global::<gpui_kit::component::Veil>() {
+        let veil = cx.global_mut::<gpui_kit::component::Veil>();
+        if let Some(at) = veil.windows.iter().position(|veiled| *veiled == window) {
+            veil.windows.remove(at);
+        }
+    }
+    let _ = window.update(cx, |_, window, _| window.refresh());
+}
+
 /// GNOME's: questions as libadwaita's alert dialog.
 fn adwaita() -> bool {
     sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita)
@@ -278,6 +289,15 @@ fn open_window<V: Render>(
         titlebar: Some(TitlebarOptions { title: Some(title.clone().into()), appears_transparent: true, traffic_light_position: None }),
         ..options
     };
+    // GNOME: an alert dims the window it asks over, as libadwaita's (black at 30%); other dialogs do not.
+    let veils = alert && adwaita();
+    let asked = parent.window_handle();
+    if veils {
+        let veil = cx.default_global::<gpui_kit::component::Veil>();
+        veil.opacity = 0.3;
+        veil.windows.push(asked);
+        parent.refresh();
+    }
     let opened = gpui_kit::open_window(options, cx, |window, cx| {
         #[cfg(windows)]
         if let Some(hwnd) = hwnd(window) {
@@ -291,16 +311,30 @@ fn open_window<V: Render>(
         if window.focused(cx).is_none() {
             window.focus(&focus, cx);
         }
-        cx.new(|_| DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: page, focus, alert })
+        cx.new(|cx| {
+            // Closed (its window gone), the veil goes.
+            if veils {
+                cx.on_release(move |_, cx| unveil(asked, cx)).detach();
+            }
+            DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: page, focus, alert }
+        })
     });
     match opened {
         Ok((handle, _)) => {
+            // In front with the keys: GNOME gives a dialog not marked modal no focus of its own.
+            let _ = handle.update(cx, |_, window, _| window.activate_window());
             let windows = cx.windows();
             let opened = &mut cx.default_global::<Opened>().0;
             opened.retain(|window| windows.contains(window));
             opened.push(handle);
         }
-        Err(err) => parent.push_notification(Notification::error(err.to_string()), cx),
+        Err(err) => {
+            if veils {
+                unveil(asked, cx);
+                parent.refresh();
+            }
+            parent.push_notification(Notification::error(err.to_string()), cx)
+        }
     }
 }
 
