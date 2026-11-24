@@ -13,7 +13,7 @@ use gpui_kit::*;
 use sc_core::addons::{Addon, Builtin, Presence};
 use gpui_kit::component::select::{SearchableVec, Select, SelectEvent, SelectState};
 use gpui_kit::assets::IconName as Lucide;
-use gpui_kit::component::{Icon, IndexPath};
+use gpui_kit::component::{Icon, IconName, IndexPath};
 use gpui_kit::component::menu::{DropdownMenu, PopupMenu, PopupMenuItem};
 use sc_core::dates::{self, Clock};
 use sc_core::menu::{self, ToolbarItem};
@@ -43,6 +43,11 @@ const START_FONTS: [StartFont; 4] = [
 
 fn fluent() -> bool {
     sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Fluent)
+}
+
+/// GNOME's: each change applied at once, as its preferences, no OK, Cancel or Apply; a × to close.
+fn instant() -> bool {
+    crate::dialogs::dialog_window::separate() && sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita)
 }
 
 /// The main window's font's sample, as Total Commander's.
@@ -219,6 +224,10 @@ pub fn open(
     };
     if crate::dialogs::dialog_window::separate() {
         let size = size(px(WIDTH), px(BODY_HEIGHT + 90.));
+        // GNOME: its title beside its × (`render`).
+        if instant() {
+            return crate::dialogs::dialog_window::open_headed(t!("settings.title"), size, window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
+        }
         return crate::dialogs::dialog_window::open(t!("settings.title"), size, window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
     }
     let view = build(None, window, cx);
@@ -1320,7 +1329,22 @@ impl SettingsDialog {
 }
 
 impl Render for SettingsDialog {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // GNOME: a change applied as made; the title and a × over the page instead of the buttons.
+        if instant() {
+            if self.draft != self.saved {
+                cx.defer_in(window, |this, window, cx| this.apply(window, cx));
+            }
+            let close = Button::new("settings-close")
+                .ghost()
+                .small()
+                .icon(IconName::Close)
+                .rounded_full()
+                .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx));
+            let title = div().text_xl().font_weight(FontWeight::SEMIBOLD).child(t!("settings.title"));
+            let page = h_flex().w_full().h(px(BODY_HEIGHT)).items_start().gap_3().text_sm().child(self.render_rail(cx)).child(self.render_page(cx));
+            return v_flex().w_full().gap_4().child(h_flex().justify_between().items_center().child(title).child(close)).child(page).into_any_element();
+        }
         let page = h_flex()
             .w_full()
             .h(px(BODY_HEIGHT))
@@ -1331,7 +1355,7 @@ impl Render for SettingsDialog {
             .child(self.render_page(cx));
         // In a window of its own: the footer's buttons under it.
         let footer = self.owner.is_some().then(|| div().pt_4().child(buttons(&cx.entity(), self.draft != self.saved)));
-        v_flex().w_full().child(page).children(footer)
+        v_flex().w_full().child(page).children(footer).into_any_element()
     }
 }
 

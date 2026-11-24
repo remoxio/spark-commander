@@ -424,7 +424,18 @@ impl PopupMenu {
         cx: &mut App,
         f: impl FnOnce(Self, &mut Window, &mut Context<PopupMenu>) -> Self,
     ) -> Entity<Self> {
-        cx.new(|cx| f(Self::new(cx), window, cx))
+        cx.new(|cx| {
+            // SparkCommander patch: closed when its window goes to the back (a dialog
+            // opened over it, another app), as GTK's popovers.
+            let behind = cx.observe_window_activation(window, |this: &mut Self, window, cx| {
+                if !window.is_window_active() {
+                    this.dismiss(&Cancel, window, cx);
+                }
+            });
+            let mut menu = f(Self::new(cx), window, cx);
+            menu._subscriptions.push(behind);
+            menu
+        })
     }
 
     /// SparkCommander patch: its items (and its submenus') get letters to press, underlined.
@@ -1373,7 +1384,8 @@ impl PopupMenu {
         // inside the submenu, let the submenu to handle it.
         //
         // Otherwise the submenu will be dismissed before its item's `on_click`.
-        if self.active_submenu().is_some() {
+        // SparkCommander patch: GNOME's only while shown in its place, not its item merely highlighted.
+        if self.active_submenu().is_some() && (!popover_menus(cx) || self.in_place) {
             return;
         }
 
