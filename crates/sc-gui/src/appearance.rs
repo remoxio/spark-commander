@@ -375,7 +375,7 @@ pub fn draw_toolkit_controls(window: &Window, cx: &mut App) {
     cx.spawn(async move |cx| {
         let drawn = cx.background_executor().spawn(async move { sc_core::system::toolkit_style::draw(scale, height) }).await;
         let controls = match drawn {
-            Ok(mut drawn) => toolkit_controls(&mut drawn.images, scale).map(|controls| (drawn.dark, controls)),
+            Ok(mut drawn) => toolkit_controls(&mut drawn, scale).map(|controls| (drawn.dark, controls)),
             Err(err) => {
                 eprintln!("{err}");
                 None
@@ -398,16 +398,18 @@ pub fn draw_toolkit_controls(window: &Window, cx: &mut App) {
 }
 
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
-fn toolkit_controls(images: &mut std::collections::HashMap<String, sc_core::system::toolkit_style::Picture>, scale: f32) -> Option<ToolkitControls> {
+fn toolkit_controls(drawn: &mut sc_core::system::toolkit_style::Drawn, scale: f32) -> Option<ToolkitControls> {
+    let sc_core::system::toolkit_style::Drawn { images, colors, sizes, .. } = drawn;
+    let mut image = |name: &str| -> Option<Arc<RenderImage>> {
+        let picture = images.remove(name)?;
+        // GPUI takes images as BGRA.
+        let mut bgra = picture.rgba;
+        bgra.chunks_exact_mut(4).for_each(|pixel| pixel.swap(0, 2));
+        let image = image::RgbaImage::from_raw(picture.width, picture.height, bgra)?;
+        Some(Arc::new(RenderImage::new([image::Frame::new(image)])))
+    };
     let mut states = |name: &str| -> Option<StateImages> {
-        let [normal, hovered, pressed, disabled] = ["normal", "hovered", "pressed", "disabled"].map(|state| {
-            let picture = images.remove(&name.replace("{}", state))?;
-            // GPUI takes images as BGRA.
-            let mut bgra = picture.rgba;
-            bgra.chunks_exact_mut(4).for_each(|pixel| pixel.swap(0, 2));
-            let image = image::RgbaImage::from_raw(picture.width, picture.height, bgra)?;
-            Some(Arc::new(RenderImage::new([image::Frame::new(image)])))
-        });
+        let [normal, hovered, pressed, disabled] = ["normal", "hovered", "pressed", "disabled"].map(|state| image(&name.replace("{}", state)));
         Some(StateImages([normal?, hovered?, pressed?, disabled?]))
     };
     let mut button = |kind: &str| -> Option<[StateImages; 3]> {
@@ -417,7 +419,59 @@ fn toolkit_controls(images: &mut std::collections::HashMap<String, sc_core::syst
     let button = [button("plain")?, button("default")?];
     let checkbox = [states("checkbox.off.{}")?, states("checkbox.on.{}")?];
     let tab_close = states("tabclose.{}");
-    Some(ToolkitControls { scale, checkbox, button, tab_close })
+    let tabs = toolkit_tabs(&mut image, colors, sizes);
+    let menus = toolkit_menus(&mut image, colors, sizes);
+    Some(ToolkitControls { scale, checkbox, button, tab_close, tabs, menus })
+}
+
+/// GTK's menus, where sc-gtkstyle drew them.
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
+fn toolkit_menus(
+    image: &mut impl FnMut(&str) -> Option<Arc<RenderImage>>,
+    colors: &std::collections::HashMap<String, u32>,
+    sizes: &std::collections::HashMap<String, f32>,
+) -> Option<gpui_kit::component::ToolkitMenus> {
+    let mut parts = |name: &str| -> Option<[Arc<RenderImage>; 3]> {
+        let [left, middle, right] = ["left", "middle", "right"].map(|part| image(&format!("{name}.{part}")));
+        Some([left?, middle?, right?])
+    };
+    let color = |name: &str| colors.get(name).map(|color| Hsla::from(rgb(*color)));
+    let size = |name: &str| sizes.get(name).map(|size| px(*size));
+    Some(gpui_kit::component::ToolkitMenus {
+        open: parts("menubar.open")?,
+        open_text: color("menubar.open")?,
+        row: parts("menu.row")?,
+        row_text: color("menu.row")?,
+        row_height: size("menu.row.height")?,
+        row_inset: size("menu.row.inset")?,
+        fill: color("menu")?,
+        border: color("menu.border")?,
+        padding: size("menu.padding")?,
+        radius: size("menu.radius")?,
+        context_radius: size("menu.context.radius")?,
+    })
+}
+
+/// GTK's notebook tabs, where sc-gtkstyle drew them.
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
+fn toolkit_tabs(
+    image: &mut impl FnMut(&str) -> Option<Arc<RenderImage>>,
+    colors: &std::collections::HashMap<String, u32>,
+    sizes: &std::collections::HashMap<String, f32>,
+) -> Option<gpui_kit::component::ToolkitTabs> {
+    let mut tab = |state: &str| -> Option<[Arc<RenderImage>; 3]> {
+        let [left, middle, right] = ["left", "middle", "right"].map(|part| image(&format!("tab.{state}.{part}")));
+        Some([left?, middle?, right?])
+    };
+    let tab = [tab("normal")?, tab("hovered")?, tab("selected")?];
+    let text = ["normal", "hovered", "selected"].map(|state| colors.get(&format!("tab.{state}")).map(|color| Hsla::from(rgb(*color))));
+    Some(gpui_kit::component::ToolkitTabs {
+        tab,
+        bar: image("tabbar")?,
+        height: px(*sizes.get("tab.height")?),
+        inset: px(*sizes.get("tab.inset")?),
+        text: [text[0]?, text[1]?, text[2]?],
+    })
 }
 
 /// macOS's look, whose tab bars are Finder's.

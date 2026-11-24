@@ -386,6 +386,13 @@ impl RenderOnce for TabBar {
             _ => None,
         };
         let shared = mac.is_some() || gnome.is_some();
+        // SparkCommander patch: GTK's notebook bar, see `ToolkitControls::tabs`: the theme's drawing.
+        let gtk = match self.variant {
+            TabVariant::Tab if mac.is_none() && !cx.has_global::<crate::NativeControls>() => {
+                cx.try_global::<crate::ToolkitControls>().and_then(|controls| controls.tabs.as_ref().map(|tabs| tabs.bar.clone()))
+            }
+            _ => None,
+        };
         let mac_segments = match self.variant {
             TabVariant::Underline if !cx.has_global::<crate::NativeControls>() => {
                 cx.try_global::<crate::MacControls>().copied()
@@ -407,6 +414,7 @@ impl RenderOnce for TabBar {
                 let fluent = cx.try_global::<crate::NativeControls>().filter(|native| native.card.is_some());
                 let fill: Background = match fluent.and_then(|native| native.command_bar) {
                     Some(fill) => fill.into(),
+                    None if gtk.is_some() => cx.theme().transparent.into(),
                     None => cx.theme().tokens.tab_bar.into(),
                 };
                 (fill, padding, px(0.))
@@ -586,9 +594,10 @@ impl RenderOnce for TabBar {
             .items_center()
             .bg(bg)
             .text_color(cx.theme().tab_foreground)
+            .when_some(gtk.clone(), |this, bar| this.child(crate::toolkit::stretched(bar).absolute().inset_0()))
             .when(
                 (self.variant == TabVariant::Underline && mac_segments.is_none())
-                    || (self.variant == TabVariant::Tab && mac.is_none()),
+                    || (self.variant == TabVariant::Tab && mac.is_none() && gtk.is_none()),
                 |this| {
                     this.child(
                         div()

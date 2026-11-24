@@ -1075,7 +1075,7 @@ mod tests {
     fn gtk_theme_colors() {
         let rgb = [("theme_bg_color", 0xcecece), ("theme_base_color", 0xfcfcfc), ("theme_text_color", 0x212121), ("theme_selected_bg_color", 0x398ee7)];
         let colors: std::collections::HashMap<String, u32> = rgb.into_iter().map(|(name, rgb)| (name.to_owned(), rgb)).collect();
-        let mut theme = crate::system::toolkit_style::Drawn { style: "Greybird".into(), dark: false, images: Default::default(), colors };
+        let mut theme = crate::system::toolkit_style::Drawn { style: "Greybird".into(), dark: false, images: Default::default(), colors, sizes: Default::default() };
         let palette = gtk(&theme).unwrap();
         assert_eq!((palette.window, palette.view, palette.text, palette.selection), (0xcecece, 0xfcfcfc, 0x212121, 0x398ee7));
         assert_eq!((palette.button, palette.selection_text, palette.dark), (0xcecece, 0xffffff, false));

@@ -718,6 +718,25 @@ impl RenderOnce for Tab {
             selected_style.borders = Edges { top: px(1.), left: px(1.), right: px(1.), bottom: px(0.) };
             selected_style.border_color = rim;
         }
+        // SparkCommander patch: GTK's notebook tabs, see `ToolkitControls::tabs`: the theme's
+        // drawing of each state under the label, in its colours.
+        let gtk = match self.variant {
+            TabVariant::Tab if breeze.is_none() && mac.is_none() && gnome.is_none() && fluent.is_none() => cx
+                .try_global::<crate::ToolkitControls>()
+                .and_then(|controls| controls.tabs.clone().map(|tabs| (controls.scale, tabs))),
+            _ => None,
+        };
+        if let Some((_, tabs)) = &gtk {
+            let transparent = cx.theme().transparent;
+            for style in [&mut normal_style, &mut hover_style, &mut disabled_style, &mut selected_style] {
+                style.bg = transparent.into();
+                style.borders = Edges::default();
+                style.border_color = transparent;
+            }
+            normal_style.fg = tabs.text[0];
+            hover_style.fg = tabs.text[1];
+            selected_style.fg = tabs.text[2];
+        }
         let tab_style = if self.disabled {
             &disabled_style
         } else if self.selected {
@@ -726,18 +745,22 @@ impl RenderOnce for Tab {
             &normal_style
         };
         let radius = match (mac, mac_segment) {
-            _ if fluent.is_some() => px(0.),
+            _ if fluent.is_some() || gtk.is_some() => px(0.),
             _ if gnome.is_some() => px(6.),
             (Some(_), _) => px(12.),
             (None, Some(_)) => px(6.),
             (None, None) => self.variant.radius(self.size, cx),
         };
         let inner_radius = self.variant.inner_radius(self.size, cx);
-        let inner_paddings = self.variant.inner_paddings(self.size);
+        let inner_paddings = match &gtk {
+            Some((_, tabs)) => Edges { left: tabs.inset, right: tabs.inset, ..Default::default() },
+            None => self.variant.inner_paddings(self.size),
+        };
         let inner_margins = self.variant.inner_margins(self.size);
         let inner_height = self.variant.inner_height(self.size);
         // Breeze's: a 3 px line over 31 px.
         let height = match (breeze, mac) {
+            _ if gtk.is_some() => gtk.as_ref().map_or(px(0.), |(_, tabs)| tabs.height),
             _ if fluent.is_some() => px(32.),
             _ if gnome.is_some() => px(30.),
             (Some(_), _) => px(34.),
@@ -940,6 +963,14 @@ impl RenderOnce for Tab {
                     None => this,
                 }
             })
+            // The open tab's drawing, or the normal one's with the hovered one's over it under the pointer.
+            .when_some(gtk.clone(), |this, (scale, tabs)| {
+                let layer = |state: usize| crate::toolkit::slices(scale, tabs.tab[state].clone()).absolute().inset_0();
+                match self.selected {
+                    true => this.child(layer(2)),
+                    false => this.child(layer(0)).child(layer(1).opacity(0.).hover(|style| style.opacity(1.))),
+                }
+            })
             .when(has_inline_inner_bg, |this| {
                 this.child(
                     div()
@@ -971,7 +1002,7 @@ impl RenderOnce for Tab {
             })
             .child(inner_element)
             // SparkCommander patch: the selected tab's accent line on top, as Breeze draws it.
-            .when(self.selected && !self.disabled && self.variant == TabVariant::Tab && mac.is_none() && fluent.is_none() && gnome.is_none(), |this| {
+            .when(self.selected && !self.disabled && self.variant == TabVariant::Tab && mac.is_none() && fluent.is_none() && gnome.is_none() && gtk.is_none(), |this| {
                 let (line, color) = breeze.map_or((px(2.), cx.theme().primary), |([_, _, line], _)| (px(3.), line));
                 this.child(div().absolute().top_0().left_0().right_0().h(line).bg(color))
             })

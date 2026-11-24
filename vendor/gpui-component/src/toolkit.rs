@@ -2,7 +2,7 @@
 use std::sync::Arc;
 
 use gpui::{
-    Bounds, Corners, Div, Global, InteractiveElement, ParentElement, Pixels, RenderImage,
+    Bounds, Corners, Div, Global, Hsla, InteractiveElement, ParentElement, Pixels, RenderImage,
     StatefulInteractiveElement, Styled, canvas, div, point, px,
 };
 
@@ -20,6 +20,47 @@ pub struct ToolkitControls {
     pub button: [[StateImages; 3]; 2],
     /// A tab's close button, where the toolkit draws one.
     pub tab_close: Option<StateImages>,
+    /// GTK's notebook tabs, where the theme draws them.
+    pub tabs: Option<ToolkitTabs>,
+    /// GTK's menus, where the theme draws them.
+    pub menus: Option<ToolkitMenus>,
+}
+
+/// GTK's menus as the theme draws them: the menu bar's open title and a
+/// highlighted row (left end, middle strip, right end) and their text; a
+/// row's height and its label's inset; the menu's fill, border and padding
+/// above and below, its corners under the menu bar and elsewhere.
+#[derive(Clone)]
+pub struct ToolkitMenus {
+    pub open: [Arc<RenderImage>; 3],
+    pub open_text: Hsla,
+    pub row: [Arc<RenderImage>; 3],
+    pub row_text: Hsla,
+    pub row_height: Pixels,
+    pub row_inset: Pixels,
+    pub fill: Hsla,
+    pub border: Hsla,
+    pub padding: Pixels,
+    pub radius: Pixels,
+    pub context_radius: Pixels,
+}
+
+/// GTK's menus and the images' scale, where the theme draws them.
+pub(crate) fn menus(cx: &gpui::App) -> Option<(f32, ToolkitMenus)> {
+    cx.try_global::<ToolkitControls>().and_then(|controls| controls.menus.clone().map(|menus| (controls.scale, menus)))
+}
+
+/// GTK's notebook tabs as the theme lays them on their bar: a tab's left end,
+/// a strip of its middle and right end, normal, hovered and the open one; a
+/// strip of the bar beyond them; the bar's height, the label's inset from the
+/// tab's edge and its colour in each state.
+#[derive(Clone)]
+pub struct ToolkitTabs {
+    pub tab: [[Arc<RenderImage>; 3]; 3],
+    pub bar: Arc<RenderImage>,
+    pub height: Pixels,
+    pub inset: Pixels,
+    pub text: [Hsla; 3],
 }
 
 /// A control's look when normal, hovered, pressed and disabled.
@@ -104,9 +145,23 @@ pub(crate) fn picture(image: Arc<RenderImage>) -> Div {
 
 /// A button's background in `state`: its ends as drawn, the middle stretched between.
 pub(crate) fn button_layer(controls: &ToolkitControls, parts: &[StateImages; 3], state: usize) -> Div {
-    let [left, middle, right] = parts.clone().map(|part| part.0[state].clone());
-    let (left_width, _) = controls.size(&left);
-    let (right_width, _) = controls.size(&right);
+    slices(controls.scale, parts.clone().map(|part| part.0[state].clone()))
+}
+
+/// A strip of an image stretched over its place.
+pub(crate) fn stretched(image: Arc<RenderImage>) -> Div {
+    // Its middle half: its edges would blend in the atlas' next image.
+    painted(move |bounds| {
+        let at = Bounds::new(point(bounds.origin.x - bounds.size.width / 2., bounds.origin.y), gpui::size(bounds.size.width * 2., bounds.size.height));
+        vec![(image, bounds, at)]
+    })
+}
+
+/// Images of a left end, a strip of the middle and a right end, `scale` to a
+/// pixel: the ends as drawn, the middle stretched between.
+pub(crate) fn slices(scale: f32, [left, middle, right]: [Arc<RenderImage>; 3]) -> Div {
+    let width = |image: &RenderImage| px(image.size(0).width.0 as f32 / scale);
+    let (left_width, right_width) = (width(&left), width(&right));
     painted(move |Bounds { origin, size }| {
         let middle_width = (size.width - left_width - right_width).max(px(0.));
         let part = |x: Pixels, width: Pixels| Bounds::new(point(origin.x + x, origin.y), gpui::size(width, size.height));

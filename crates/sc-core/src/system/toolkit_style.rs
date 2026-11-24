@@ -25,6 +25,8 @@ pub struct Drawn {
     pub images: HashMap<String, Picture>,
     /// 0xRRGGBB by name: GTK's `theme_bg_color`, …, and `button`, a push button's fill.
     pub colors: HashMap<String, u32>,
+    /// Logical pixels by name: GTK's tab bar's height (`tab.height`), a tab's label inset.
+    pub sizes: HashMap<String, f32>,
 }
 
 /// This desktop's helper; none where the app draws the controls itself.
@@ -91,7 +93,7 @@ fn run_helper(name: &str, args: &[&str]) -> io::Result<Drawn> {
 /// Lines, an image's pixels after its line, "end" last.
 fn parse(mut data: &[u8]) -> io::Result<Drawn> {
     let bad = |what: &str| io::Error::new(io::ErrorKind::InvalidData, format!("the toolkit's drawing: {what}"));
-    let mut drawn = Drawn { style: String::new(), dark: false, images: HashMap::new(), colors: HashMap::new() };
+    let mut drawn = Drawn { style: String::new(), dark: false, images: HashMap::new(), colors: HashMap::new(), sizes: HashMap::new() };
     while let Some(end) = data.iter().position(|&byte| byte == b'\n') {
         let line = std::str::from_utf8(&data[..end]).map_err(|_| bad("not text"))?;
         data = &data[end + 1..];
@@ -101,6 +103,9 @@ fn parse(mut data: &[u8]) -> io::Result<Drawn> {
             ["dark", dark] => drawn.dark = dark == "1",
             ["color", name, rgb] => {
                 drawn.colors.insert(name.to_owned(), u32::from_str_radix(rgb, 16).map_err(|_| bad(line))?);
+            }
+            ["size", name, pixels] => {
+                drawn.sizes.insert(name.to_owned(), pixels.parse().map_err(|_| bad(line))?);
             }
             ["image", name, width, height] => {
                 let (Ok(width), Ok(height)) = (width.parse::<u32>(), height.parse::<u32>()) else {
@@ -124,12 +129,13 @@ mod tests {
 
     #[test]
     fn reads_the_helpers_output() {
-        let mut data = b"sc-qtstyle 1\nstyle fusion\ndark 1\ncolor borders 1d1f2a\nimage checkbox.on.normal 2 1\n".to_vec();
+        let mut data = b"sc-qtstyle 1\nstyle fusion\ndark 1\ncolor borders 1d1f2a\nsize tab.height 28\nimage checkbox.on.normal 2 1\n".to_vec();
         data.extend_from_slice(&[1, 2, 3, 4, 10, 11, 12, 13]);
         data.extend_from_slice(b"end\n");
         let drawn = parse(&data).unwrap();
         assert_eq!((drawn.style.as_str(), drawn.dark), ("fusion", true));
         assert_eq!(drawn.colors["borders"], 0x1d1f2a);
+        assert_eq!(drawn.sizes["tab.height"], 28.);
         let picture = &drawn.images["checkbox.on.normal"];
         assert_eq!((picture.width, picture.height, picture.rgba.len()), (2, 1, 8));
         // Cut short: no "end", or fewer pixels than said.

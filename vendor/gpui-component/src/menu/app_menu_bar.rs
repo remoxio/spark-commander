@@ -350,21 +350,33 @@ impl Render for AppMenu {
         // SparkCommander patch: an open menu's name in the accent, as KDE's; Windows 11's
         // the faint fill of the item under the pointer.
         let fluent = cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some());
+        // SparkCommander patch: GTK's open title as the theme draws it, see `ToolkitControls::menus`.
+        let gtk = crate::toolkit::menus(cx);
         // SparkCommander patch: the name with its letter underlined.
         let hot = self.menu_bar.read(cx).hot(cx).into_iter().nth(self.ix);
         let theme = cx.theme();
-        let colors = ButtonCustomVariant::new(cx)
-            .color(theme.transparent)
-            .foreground(match is_open && !fluent {
-                true => theme.primary_foreground,
-                false => theme.foreground,
-            })
-            // WinUI's SubtleFillColorSecondary: the menu's own hover colour vanished on the bar.
-            .hover(if fluent { theme.foreground.opacity(0.06) } else { theme.accent })
-            .active(if fluent { theme.foreground.opacity(0.06) } else { theme.primary });
+        let colors = match &gtk {
+            Some((_, menus)) => ButtonCustomVariant::new(cx)
+                .color(theme.transparent)
+                .foreground(if is_open { menus.open_text } else { theme.foreground })
+                .hover(theme.transparent)
+                .active(theme.transparent),
+            None => ButtonCustomVariant::new(cx)
+                .color(theme.transparent)
+                .foreground(match is_open && !fluent {
+                    true => theme.primary_foreground,
+                    false => theme.foreground,
+                })
+                // WinUI's SubtleFillColorSecondary: the menu's own hover colour vanished on the bar.
+                .hover(if fluent { theme.foreground.opacity(0.06) } else { theme.accent })
+                .active(if fluent { theme.foreground.opacity(0.06) } else { theme.primary }),
+        };
         div()
             .id(self.ix)
             .relative()
+            .when_some(gtk.filter(|_| is_open), |this, (scale, menus)| {
+                this.child(crate::toolkit::slices(scale, menus.open).absolute().inset_0())
+            })
             .child(
                 Button::new("menu")
                     .small()

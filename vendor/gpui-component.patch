@@ -1782,7 +1782,7 @@ diff -ruN a/src/kbd.rs b/src/kbd.rs
  }
 diff -ruN -x .cargo-ok a/src/lib.rs b/src/lib.rs
 --- a/src/lib.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/lib.rs	2026-11-24 16:37:32.473611657 +0100
++++ b/src/lib.rs	2026-11-24 23:41:03.883654983 +0100
 @@ -20,6 +20,15 @@
  mod touch_selection;
  mod virtual_list;
@@ -1792,7 +1792,7 @@ diff -ruN -x .cargo-ok a/src/lib.rs b/src/lib.rs
 +pub use native::{DialogFrame, NativeControls, WindowClose};
 +// SparkCommander patch: see `ToolkitControls`.
 +mod toolkit;
-+pub use toolkit::{StateImages, ToolkitControls, state_layers};
++pub use toolkit::{StateImages, ToolkitControls, ToolkitMenus, ToolkitTabs, state_layers};
 +// SparkCommander patch: see `MacControls`.
 +mod mac;
 +pub use mac::{AlertIcon, MacControls};
@@ -1926,7 +1926,7 @@ diff -ruN a/src/mac.rs b/src/mac.rs
 +pub(crate) const CHECK_MARK: &[u8] = br#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path d="M2.4 6.4 4.9 8.9 9.7 3.2" fill="none" stroke="black" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>"#;
 diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 --- a/src/menu/app_menu_bar.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/app_menu_bar.rs	2026-11-23 13:55:46.979865554 +0100
++++ b/src/menu/app_menu_bar.rs	2026-11-24 23:41:03.916313180 +0100
 @@ -1,10 +1,18 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): menu-bar menus may
 +// use the window's height. Changes are marked "SparkCommander patch".
@@ -2106,7 +2106,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
                  popup_menu.update(cx, |menu, cx| {
                      menu.set_action_context(action_context.clone(), cx);
                  });
-@@ -258,7 +340,28 @@
+@@ -258,17 +340,53 @@
  impl Render for AppMenu {
      fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
          let is_open = self.is_open(cx);
@@ -2120,22 +2120,35 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 +        // SparkCommander patch: an open menu's name in the accent, as KDE's; Windows 11's
 +        // the faint fill of the item under the pointer.
 +        let fluent = cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some());
++        // SparkCommander patch: GTK's open title as the theme draws it, see `ToolkitControls::menus`.
++        let gtk = crate::toolkit::menus(cx);
 +        // SparkCommander patch: the name with its letter underlined.
 +        let hot = self.menu_bar.read(cx).hot(cx).into_iter().nth(self.ix);
 +        let theme = cx.theme();
-+        let colors = ButtonCustomVariant::new(cx)
-+            .color(theme.transparent)
-+            .foreground(match is_open && !fluent {
-+                true => theme.primary_foreground,
-+                false => theme.foreground,
-+            })
-+            // WinUI's SubtleFillColorSecondary: the menu's own hover colour vanished on the bar.
-+            .hover(if fluent { theme.foreground.opacity(0.06) } else { theme.accent })
-+            .active(if fluent { theme.foreground.opacity(0.06) } else { theme.primary });
++        let colors = match &gtk {
++            Some((_, menus)) => ButtonCustomVariant::new(cx)
++                .color(theme.transparent)
++                .foreground(if is_open { menus.open_text } else { theme.foreground })
++                .hover(theme.transparent)
++                .active(theme.transparent),
++            None => ButtonCustomVariant::new(cx)
++                .color(theme.transparent)
++                .foreground(match is_open && !fluent {
++                    true => theme.primary_foreground,
++                    false => theme.foreground,
++                })
++                // WinUI's SubtleFillColorSecondary: the menu's own hover colour vanished on the bar.
++                .hover(if fluent { theme.foreground.opacity(0.06) } else { theme.accent })
++                .active(if fluent { theme.foreground.opacity(0.06) } else { theme.primary }),
++        };
          div()
              .id(self.ix)
              .relative()
-@@ -267,8 +370,11 @@
++            .when_some(gtk.filter(|_| is_open), |this, (scale, menus)| {
++                this.child(crate::toolkit::slices(scale, menus.open).absolute().inset_0())
++            })
+             .child(
+                 Button::new("menu")
                      .small()
                      .py_0p5()
                      .compact()
@@ -2149,7 +2162,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
                      .open(is_open)
                      .on_mouse_down(
                          MouseButton::Left,
-@@ -330,6 +436,7 @@
+@@ -330,6 +448,7 @@
              TestRoot {
                  menu_bar: cx.new(|_| AppMenuBar {
                      menus: Vec::new(),
@@ -2340,19 +2353,37 @@ diff -ruN a/src/menu/dropdown_menu.rs b/src/menu/dropdown_menu.rs
      }
 diff -ruN a/src/menu/menu_item.rs b/src/menu/menu_item.rs
 --- a/src/menu/menu_item.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/menu_item.rs	2026-11-24 14:43:39.575666081 +0100
-@@ -102,6 +102,10 @@
++++ b/src/menu/menu_item.rs	2026-11-24 23:41:09.050788016 +0100
+@@ -2,7 +2,7 @@
+ use gpui::{
+     AnyElement, App, ClickEvent, ElementId, InteractiveElement, IntoElement, MouseButton,
+     ParentElement, RenderOnce, Role, SharedString, StatefulInteractiveElement as _,
+-    StyleRefinement, Styled, Window, prelude::FluentBuilder as _,
++    StyleRefinement, Styled, Window, prelude::FluentBuilder as _, px,
+ };
+ use gpui_base::TestSupportExt as _;
+ use smallvec::SmallVec;
+@@ -91,6 +91,7 @@
+ 
+ impl RenderOnce for MenuItemElement {
+     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
++        let gtk = crate::toolkit::menus(cx);
+         h_flex()
+             .id(self.id)
+             .test_support()
+@@ -102,6 +103,11 @@
              .px_2()
              .text_base()
              .text_color(cx.theme().foreground)
-+            // SparkCommander patch: the highlighted item framed in `ring`, as KDE's.
-+            .rounded(cx.theme().radius)
++            // SparkCommander patch: the highlighted item framed in `ring`, as KDE's;
++            // GTK's as the theme draws its row, see `ToolkitControls::menus`.
++            .rounded(if gtk.is_some() { px(0.) } else { cx.theme().radius })
 +            .border_1()
 +            .border_color(cx.theme().transparent)
              .relative()
              .items_center()
              .justify_between()
-@@ -110,16 +114,30 @@
+@@ -110,16 +116,40 @@
                  this.on_hover(move |hovered, window, cx| (on_hover)(hovered, window, cx))
              })
              .when(!self.disabled, |this| {
@@ -2369,21 +2400,31 @@ diff -ruN a/src/menu/menu_item.rs b/src/menu/menu_item.rs
                  // the pointer's item lit after a key moves the highlight away.
 -                this.hover(|this| {
 -                    this.bg(cx.theme().tokens.accent)
-+                this.hover(|this| match mac {
-+                    Some(mac) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
-+                    None => this
++                this.hover(|this| match (mac, &gtk) {
++                    (_, Some((_, menus))) => this.text_color(menus.row_text),
++                    (Some(mac), _) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
++                    (None, None) => this
 +                        .bg(cx.theme().tokens.accent)
                          .text_color(cx.theme().accent_foreground)
 +                        .border_color(ring),
                  })
 -                .when(self.selected, |this| {
 -                    this.bg(cx.theme().tokens.accent)
-+                .when(self.selected, |this| match mac {
-+                    Some(mac) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
-+                    None => this
++                .when(self.selected, |this| match (mac, &gtk) {
++                    (_, Some((_, menus))) => this.text_color(menus.row_text),
++                    (Some(mac), _) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
++                    (None, None) => this
 +                        .bg(cx.theme().tokens.accent)
                          .text_color(cx.theme().accent_foreground)
 +                        .border_color(ring),
++                })
++                // GTK's row under the label, shown under the pointer or the keys' highlight.
++                .when_some(gtk.clone(), |this, (scale, menus)| {
++                    let row = crate::toolkit::slices(scale, menus.row).absolute().inset_0();
++                    this.child(match self.selected {
++                        true => row,
++                        false => row.opacity(0.).hover(|style| style.opacity(1.)),
++                    })
                  })
                  .when_some(self.on_click, |this, on_click| {
                      this.on_mouse_down(MouseButton::Left, move |_, _, cx| {
@@ -2413,7 +2454,7 @@ diff -ruN a/src/menu/mod.rs b/src/menu/mod.rs
      app_menu_bar::init(cx);
 diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 --- a/src/menu/popup_menu.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/popup_menu.rs	2026-11-24 22:58:48.777792177 +0100
++++ b/src/menu/popup_menu.rs	2026-11-24 23:42:02.097388552 +0100
 @@ -1,8 +1,16 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a long menu's
 +// scrollbar shows while it scrolls. Changes are marked "SparkCommander patch".
@@ -2940,7 +2981,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn render_item(
          &self,
          ix: usize,
-@@ -1222,21 +1514,31 @@
+@@ -1222,21 +1514,38 @@
          };
  
          let selected = self.selected_index == Some(ix);
@@ -2951,15 +2992,22 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +            .map(|mac| mac.on_accent);
          const EDGE_PADDING: Pixels = px(4.);
 -        const INNER_PADDING: Pixels = px(8.);
-+        // SparkCommander patch: GNOME's rows are libadwaita's: 30 px, 12 px in, 6 px corners.
++        // SparkCommander patch: GNOME's rows are libadwaita's: 30 px, 12 px in, 6 px corners;
++        // GTK's as the theme's, see `ToolkitControls::menus`.
 +        let gnome = popover_menus(cx);
-+        let inner_padding = if gnome { px(12.) } else { px(8.) };
++        let gtk = crate::toolkit::menus(cx).map(|(_, menus)| menus);
++        let inner_padding = match &gtk {
++            Some(menus) => menus.row_inset,
++            None if gnome => px(12.),
++            None => px(8.),
++        };
  
          let is_submenu = matches!(item, PopupMenuItem::Submenu { .. });
  
          let (item_height, radius) = match self.size {
              Size::Small => (px(20.), options.radius.half()),
 +            _ if gnome => (px(30.), px(6.)),
++            _ if gtk.is_some() => (gtk.as_ref().map_or(px(26.), |menus| menus.row_height), px(0.)),
              _ => (px(26.), options.radius),
          };
  
@@ -2974,7 +3022,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              .rounded(radius)
              .items_center()
              .selected(selected)
-@@ -1267,12 +1569,16 @@
+@@ -1267,12 +1576,16 @@
              .when_some(item.a11y_label(), |this, label| this.aria_label(label));
  
          match item {
@@ -2994,7 +3042,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .border_color(cx.theme().border)
                  .disabled(true),
              PopupMenuItem::Label(label) => this.disabled(true).cursor_default().child(
-@@ -1322,6 +1628,10 @@
+@@ -1322,6 +1635,10 @@
                  let show_link_icon = *is_link && self.external_link_icon;
                  let action = action.as_ref().map(|action| action.boxed_clone());
                  let key = self.render_key_binding(action, window, cx);
@@ -3005,7 +3053,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
                  this.when(!disabled, |this| {
                      this.on_click(
-@@ -1344,7 +1654,7 @@
+@@ -1344,7 +1661,7 @@
                          .gap_3()
                          .items_center()
                          .justify_between()
@@ -3014,7 +3062,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                          .children(right_check_icon)
                          .when(show_link_icon, |this| {
                              this.child(
-@@ -1368,9 +1678,28 @@
+@@ -1368,9 +1685,28 @@
                  label,
                  menu,
                  disabled,
@@ -3044,7 +3092,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .items_start()
                  .child(
                      h_flex()
-@@ -1391,15 +1720,21 @@
+@@ -1391,15 +1727,21 @@
                                  .gap_2()
                                  .items_center()
                                  .justify_between()
@@ -3071,7 +3119,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      this.child({
                          let (anchor, left) = self.submenu_anchor;
                          let is_bottom_pos =
-@@ -1421,7 +1756,8 @@
+@@ -1421,7 +1763,8 @@
                          )
                          .with_priority(self.priority + 1)
                      })
@@ -3081,7 +3129,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          }
      }
  }
-@@ -1466,10 +1802,23 @@
+@@ -1466,10 +1809,23 @@
          let view = cx.entity().clone();
          let items_count = self.menu_items.len();
  
@@ -3109,12 +3157,13 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
          let has_left_icon = self
              .menu_items
-@@ -1477,6 +1826,13 @@
+@@ -1477,6 +1833,14 @@
              .any(|item| item.has_left_icon(self.check_side));
  
          let max_width = self.max_width();
 +        // SparkCommander patch: GNOME's submenu shown in this menu's place, its name over it.
 +        let gnome = popover_menus(cx);
++        let gtk = crate::toolkit::menus(cx).map(|(_, menus)| menus);
 +        let in_place = match self.selected_index.and_then(|ix| self.menu_items.get(ix)) {
 +            Some(PopupMenuItem::Submenu { label, menu, .. }) if gnome && self.in_place => Some((label.clone(), menu.clone())),
 +            _ => None,
@@ -3123,7 +3172,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let options = RenderOptions {
              has_left_icon,
              check_side: self.check_side,
-@@ -1495,24 +1851,87 @@
+@@ -1495,24 +1859,94 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
@@ -3134,6 +3183,12 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +            // GNOME's popovers have 12 px corners.
 +            .when(!self.embedded, |this| this.popover_style(cx))
 +            .when(gnome && !self.embedded, |this| this.rounded(px(12.)))
++            // GTK's: the theme's fill and border; square under the menu bar (a menu with letters) or as the theme's.
++            .when_some(gtk.clone().filter(|_| !self.embedded), |this, menus| {
++                this.bg(menus.fill)
++                    .shadow(crate::styled::popover_shadow(menus.border, 1.))
++                    .rounded(if self.mnemonics_on(cx) { menus.radius } else { menus.context_radius })
++            })
 +            // SparkCommander patch: Windows 11's flyout shadow, as WinUI's (Fluent's shadow16).
 +            .when(cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some()), |this| {
 +                let ink = if cx.theme().is_dark() { 0.28 } else { 0.14 };
@@ -3204,6 +3259,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 -                    .p_1()
 +                    .when(gnome, |this| this.p(px(6.)))
 +                    .when(!gnome, |this| this.p_1())
++                    .when_some(gtk.as_ref(), |this, menus| this.px_0().py(menus.padding))
                      .gap_y_0p5()
                      .min_w(rems(8.))
                      .when_some(self.min_width, |this, min_width| this.min_w(min_width))
@@ -3219,7 +3275,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1522,10 +1941,7 @@
+@@ -1522,10 +1956,7 @@
                              .map(|(ix, item)| self.render_item(ix, item, options, window, cx)),
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),
@@ -4144,7 +4200,7 @@ diff -ruN a/src/styled.rs b/src/styled.rs
  /// shadcn/ui's popup surface shadow — a hairline `ring` plus `shadow-md` — at
 diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
 --- a/src/tab/tab.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/tab/tab.rs	2026-11-24 14:56:13.916721880 +0100
++++ b/src/tab/tab.rs	2026-11-24 23:34:31.407657270 +0100
 @@ -9,6 +9,9 @@
      StatefulInteractiveElement, Styled, Window, div, px, relative,
  };
@@ -4155,7 +4211,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
  /// Tab variants.
  #[derive(Debug, Clone, Default, Copy, PartialEq, Eq, Hash)]
  pub enum TabVariant {
-@@ -634,6 +637,87 @@
+@@ -634,6 +637,106 @@
                  hover_style.borders.left = px(0.);
              }
          }
@@ -4240,28 +4296,52 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
 +            selected_style.borders = Edges { top: px(1.), left: px(1.), right: px(1.), bottom: px(0.) };
 +            selected_style.border_color = rim;
 +        }
++        // SparkCommander patch: GTK's notebook tabs, see `ToolkitControls::tabs`: the theme's
++        // drawing of each state under the label, in its colours.
++        let gtk = match self.variant {
++            TabVariant::Tab if breeze.is_none() && mac.is_none() && gnome.is_none() && fluent.is_none() => cx
++                .try_global::<crate::ToolkitControls>()
++                .and_then(|controls| controls.tabs.clone().map(|tabs| (controls.scale, tabs))),
++            _ => None,
++        };
++        if let Some((_, tabs)) = &gtk {
++            let transparent = cx.theme().transparent;
++            for style in [&mut normal_style, &mut hover_style, &mut disabled_style, &mut selected_style] {
++                style.bg = transparent.into();
++                style.borders = Edges::default();
++                style.border_color = transparent;
++            }
++            normal_style.fg = tabs.text[0];
++            hover_style.fg = tabs.text[1];
++            selected_style.fg = tabs.text[2];
++        }
          let tab_style = if self.disabled {
              &disabled_style
          } else if self.selected {
-@@ -641,12 +725,26 @@
+@@ -641,12 +744,30 @@
          } else {
              &normal_style
          };
 -        let radius = self.variant.radius(self.size, cx);
 +        let radius = match (mac, mac_segment) {
-+            _ if fluent.is_some() => px(0.),
++            _ if fluent.is_some() || gtk.is_some() => px(0.),
 +            _ if gnome.is_some() => px(6.),
 +            (Some(_), _) => px(12.),
 +            (None, Some(_)) => px(6.),
 +            (None, None) => self.variant.radius(self.size, cx),
 +        };
          let inner_radius = self.variant.inner_radius(self.size, cx);
-         let inner_paddings = self.variant.inner_paddings(self.size);
+-        let inner_paddings = self.variant.inner_paddings(self.size);
++        let inner_paddings = match &gtk {
++            Some((_, tabs)) => Edges { left: tabs.inset, right: tabs.inset, ..Default::default() },
++            None => self.variant.inner_paddings(self.size),
++        };
          let inner_margins = self.variant.inner_margins(self.size);
          let inner_height = self.variant.inner_height(self.size);
 -        let height = self.variant.height(self.size);
 +        // Breeze's: a 3 px line over 31 px.
 +        let height = match (breeze, mac) {
++            _ if gtk.is_some() => gtk.as_ref().map_or(px(0.), |(_, tabs)| tabs.height),
 +            _ if fluent.is_some() => px(32.),
 +            _ if gnome.is_some() => px(30.),
 +            (Some(_), _) => px(34.),
@@ -4272,7 +4352,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
          let aria_label = self.a11y_label();
  
          let segmented_indicator_active =
-@@ -700,6 +798,10 @@
+@@ -700,6 +821,10 @@
          let fg_to = tab_style.fg;
          // Icon-only tabs are fixed-size and exempt from `max_width`.
          let max_width = self.max_width.filter(|_| self.icon.is_none());
@@ -4283,7 +4363,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
  
          let inner_content = h_flex()
              .flex_1()
-@@ -712,9 +814,9 @@
+@@ -712,9 +837,9 @@
              .margins(inner_margins)
              // Normally the label decides the tab width, so it never shrinks. With
              // `max_width` it is the one part that gives way.
@@ -4296,7 +4376,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
              })
              .map(|this| match self.icon {
                  Some(icon) => this
-@@ -727,17 +829,17 @@
+@@ -727,17 +852,17 @@
                      })),
                  None => this
                      .paddings(inner_paddings)
@@ -4317,7 +4397,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
                          (None, _) => this,
                      })
                      .children(self.children),
-@@ -791,9 +893,10 @@
+@@ -791,9 +916,10 @@
              .flex()
              // Wrapping would move the overflow onto a clipped second line instead
              // of letting the label shrink, so a capped tab lays out on one line.
@@ -4331,7 +4411,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
              })
              .gap_1()
              .items_center()
-@@ -806,6 +909,8 @@
+@@ -806,6 +932,8 @@
                  _ => this.text_sm(),
              })
              .rounded(radius)
@@ -4340,7 +4420,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
              .when(!self.selected && !self.disabled, |this| {
                  this.text_color(normal_style.fg)
                      .bg(normal_style.bg)
-@@ -822,14 +927,18 @@
+@@ -822,14 +950,26 @@
                  if self.selected || self.disabled {
                      return this;
                  }
@@ -4358,22 +4438,30 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
 +                    Some(_) => this.rounded_t(px(8.)),
 +                    None => this,
 +                }
++            })
++            // The open tab's drawing, or the normal one's with the hovered one's over it under the pointer.
++            .when_some(gtk.clone(), |this, (scale, tabs)| {
++                let layer = |state: usize| crate::toolkit::slices(scale, tabs.tab[state].clone()).absolute().inset_0();
++                match self.selected {
++                    true => this.child(layer(2)),
++                    false => this.child(layer(0)).child(layer(1).opacity(0.).hover(|style| style.opacity(1.))),
++                }
              })
              .when(has_inline_inner_bg, |this| {
                  this.child(
-@@ -861,6 +970,11 @@
+@@ -861,6 +1001,11 @@
                  )
              })
              .child(inner_element)
 +            // SparkCommander patch: the selected tab's accent line on top, as Breeze draws it.
-+            .when(self.selected && !self.disabled && self.variant == TabVariant::Tab && mac.is_none() && fluent.is_none() && gnome.is_none(), |this| {
++            .when(self.selected && !self.disabled && self.variant == TabVariant::Tab && mac.is_none() && fluent.is_none() && gnome.is_none() && gtk.is_none(), |this| {
 +                let (line, color) = breeze.map_or((px(2.), cx.theme().primary), |([_, _, line], _)| (px(3.), line));
 +                this.child(div().absolute().top_0().left_0().right_0().h(line).bg(color))
 +            })
              .when_some(self.suffix, |this, suffix| {
                  this.child(
                      div()
-@@ -868,6 +982,15 @@
+@@ -868,6 +1013,15 @@
                          .child(suffix),
                  )
              })
@@ -4391,7 +4479,7 @@ diff -ruN a/src/tab/tab.rs b/src/tab/tab.rs
              })
 diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
 --- a/src/tab/tab_bar.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/tab/tab_bar.rs	2026-11-24 14:55:52.735118288 +0100
++++ b/src/tab/tab_bar.rs	2026-11-24 23:34:21.556214037 +0100
 @@ -1,3 +1,6 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): the segmented
 +// indicator uses the active tab colour. Changes are marked "SparkCommander patch".
@@ -4409,7 +4497,7 @@ diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
                          .rounded(inner_radius)
                          .shadow(raised_shadow()),
                  ),
-@@ -365,10 +369,47 @@
+@@ -365,10 +369,55 @@
              Size::Large => px(16.),
              _ => px(12.),
          };
@@ -4430,6 +4518,13 @@ diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
 +            _ => None,
 +        };
 +        let shared = mac.is_some() || gnome.is_some();
++        // SparkCommander patch: GTK's notebook bar, see `ToolkitControls::tabs`: the theme's drawing.
++        let gtk = match self.variant {
++            TabVariant::Tab if mac.is_none() && !cx.has_global::<crate::NativeControls>() => {
++                cx.try_global::<crate::ToolkitControls>().and_then(|controls| controls.tabs.as_ref().map(|tabs| tabs.bar.clone()))
++            }
++            _ => None,
++        };
 +        let mac_segments = match self.variant {
 +            TabVariant::Underline if !cx.has_global::<crate::NativeControls>() => {
 +                cx.try_global::<crate::MacControls>().copied()
@@ -4453,13 +4548,14 @@ diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
 +                let fluent = cx.try_global::<crate::NativeControls>().filter(|native| native.card.is_some());
 +                let fill: Background = match fluent.and_then(|native| native.command_bar) {
 +                    Some(fill) => fill.into(),
++                    None if gtk.is_some() => cx.theme().transparent.into(),
 +                    None => cx.theme().tokens.tab_bar.into(),
 +                };
 +                (fill, padding, px(0.))
              }
              TabVariant::Outline => {
                  let padding = Edges::all(px(0.));
-@@ -408,7 +449,7 @@
+@@ -408,7 +457,7 @@
          let has_indicator = matches!(
              self.variant,
              TabVariant::Segmented | TabVariant::Pill | TabVariant::Underline
@@ -4468,7 +4564,7 @@ diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
          let num_tabs = self.children.len();
  
          // Bounds tracking for tab indicator animation.
-@@ -450,7 +491,10 @@
+@@ -450,7 +499,10 @@
          reveal.advance(window, cx);
  
          let padding_x = paddings.left;
@@ -4480,7 +4576,7 @@ diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
          let indicator_epoch = indicator.as_ref().map(|(_, epoch)| *epoch).unwrap_or(0);
          let mut indicator_element = indicator.map(|(el, _)| el);
          let indicator_ready = indicator_element.is_some();
-@@ -466,6 +510,7 @@
+@@ -466,6 +518,7 @@
          for (ix, child) in self.children.into_iter().enumerate() {
              item_metas.push((child.label.clone(), child.icon.clone(), child.disabled));
              let tab_bar_prefix = child.tab_bar_prefix.unwrap_or(true);
@@ -4488,7 +4584,7 @@ diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
              let mut tab = child
                  .ix(ix)
                  .tab_bar_prefix(tab_bar_prefix)
-@@ -510,6 +555,8 @@
+@@ -510,6 +563,8 @@
                  // only logical tabs occupy those indices.
                  div()
                      .flex_shrink_0()
@@ -4497,17 +4593,19 @@ diff -ruN a/src/tab/tab_bar.rs b/src/tab/tab_bar.rs
                      .map(|mut this| {
                          this.style().flex_grow = flex_grow;
                          this.style().flex_basis = flex_basis;
-@@ -540,7 +587,8 @@
+@@ -539,8 +594,10 @@
+             .items_center()
              .bg(bg)
              .text_color(cx.theme().tab_foreground)
++            .when_some(gtk.clone(), |this, bar| this.child(crate::toolkit::stretched(bar).absolute().inset_0()))
              .when(
 -                self.variant == TabVariant::Underline || self.variant == TabVariant::Tab,
 +                (self.variant == TabVariant::Underline && mac_segments.is_none())
-+                    || (self.variant == TabVariant::Tab && mac.is_none()),
++                    || (self.variant == TabVariant::Tab && mac.is_none() && gtk.is_none()),
                  |this| {
                      this.child(
                          div()
-@@ -555,6 +603,8 @@
+@@ -555,6 +612,8 @@
                  },
              )
              .rounded(self.variant.tab_bar_radius(self.size, cx))
@@ -5441,13 +5539,13 @@ diff -ruN -x .cargo-ok a/src/title_bar.rs b/src/title_bar.rs
              .id("window-controls")
 diff -ruN a/src/toolkit.rs b/src/toolkit.rs
 --- a/src/toolkit.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/toolkit.rs	2026-11-17 17:18:36.180262298 +0100
-@@ -0,0 +1,135 @@
++++ b/src/toolkit.rs	1970-01-01 01:00:00.000000000 +0100
+@@ -0,0 +1,190 @@
 +// SparkCommander patch: this file is new.
 +use std::sync::Arc;
 +
 +use gpui::{
-+    Bounds, Corners, Div, Global, InteractiveElement, ParentElement, Pixels, RenderImage,
++    Bounds, Corners, Div, Global, Hsla, InteractiveElement, ParentElement, Pixels, RenderImage,
 +    StatefulInteractiveElement, Styled, canvas, div, point, px,
 +};
 +
@@ -5465,6 +5563,47 @@ diff -ruN a/src/toolkit.rs b/src/toolkit.rs
 +    pub button: [[StateImages; 3]; 2],
 +    /// A tab's close button, where the toolkit draws one.
 +    pub tab_close: Option<StateImages>,
++    /// GTK's notebook tabs, where the theme draws them.
++    pub tabs: Option<ToolkitTabs>,
++    /// GTK's menus, where the theme draws them.
++    pub menus: Option<ToolkitMenus>,
++}
++
++/// GTK's menus as the theme draws them: the menu bar's open title and a
++/// highlighted row (left end, middle strip, right end) and their text; a
++/// row's height and its label's inset; the menu's fill, border and padding
++/// above and below, its corners under the menu bar and elsewhere.
++#[derive(Clone)]
++pub struct ToolkitMenus {
++    pub open: [Arc<RenderImage>; 3],
++    pub open_text: Hsla,
++    pub row: [Arc<RenderImage>; 3],
++    pub row_text: Hsla,
++    pub row_height: Pixels,
++    pub row_inset: Pixels,
++    pub fill: Hsla,
++    pub border: Hsla,
++    pub padding: Pixels,
++    pub radius: Pixels,
++    pub context_radius: Pixels,
++}
++
++/// GTK's menus and the images' scale, where the theme draws them.
++pub(crate) fn menus(cx: &gpui::App) -> Option<(f32, ToolkitMenus)> {
++    cx.try_global::<ToolkitControls>().and_then(|controls| controls.menus.clone().map(|menus| (controls.scale, menus)))
++}
++
++/// GTK's notebook tabs as the theme lays them on their bar: a tab's left end,
++/// a strip of its middle and right end, normal, hovered and the open one; a
++/// strip of the bar beyond them; the bar's height, the label's inset from the
++/// tab's edge and its colour in each state.
++#[derive(Clone)]
++pub struct ToolkitTabs {
++    pub tab: [[Arc<RenderImage>; 3]; 3],
++    pub bar: Arc<RenderImage>,
++    pub height: Pixels,
++    pub inset: Pixels,
++    pub text: [Hsla; 3],
 +}
 +
 +/// A control's look when normal, hovered, pressed and disabled.
@@ -5549,9 +5688,23 @@ diff -ruN a/src/toolkit.rs b/src/toolkit.rs
 +
 +/// A button's background in `state`: its ends as drawn, the middle stretched between.
 +pub(crate) fn button_layer(controls: &ToolkitControls, parts: &[StateImages; 3], state: usize) -> Div {
-+    let [left, middle, right] = parts.clone().map(|part| part.0[state].clone());
-+    let (left_width, _) = controls.size(&left);
-+    let (right_width, _) = controls.size(&right);
++    slices(controls.scale, parts.clone().map(|part| part.0[state].clone()))
++}
++
++/// A strip of an image stretched over its place.
++pub(crate) fn stretched(image: Arc<RenderImage>) -> Div {
++    // Its middle half: its edges would blend in the atlas' next image.
++    painted(move |bounds| {
++        let at = Bounds::new(point(bounds.origin.x - bounds.size.width / 2., bounds.origin.y), gpui::size(bounds.size.width * 2., bounds.size.height));
++        vec![(image, bounds, at)]
++    })
++}
++
++/// Images of a left end, a strip of the middle and a right end, `scale` to a
++/// pixel: the ends as drawn, the middle stretched between.
++pub(crate) fn slices(scale: f32, [left, middle, right]: [Arc<RenderImage>; 3]) -> Div {
++    let width = |image: &RenderImage| px(image.size(0).width.0 as f32 / scale);
++    let (left_width, right_width) = (width(&left), width(&right));
 +    painted(move |Bounds { origin, size }| {
 +        let middle_width = (size.width - left_width - right_width).max(px(0.));
 +        let part = |x: Pixels, width: Pixels| Bounds::new(point(origin.x + x, origin.y), gpui::size(width, size.height));

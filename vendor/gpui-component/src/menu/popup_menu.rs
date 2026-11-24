@@ -1520,15 +1520,22 @@ impl PopupMenu {
             .filter(|_| selected && !cx.has_global::<crate::NativeControls>())
             .map(|mac| mac.on_accent);
         const EDGE_PADDING: Pixels = px(4.);
-        // SparkCommander patch: GNOME's rows are libadwaita's: 30 px, 12 px in, 6 px corners.
+        // SparkCommander patch: GNOME's rows are libadwaita's: 30 px, 12 px in, 6 px corners;
+        // GTK's as the theme's, see `ToolkitControls::menus`.
         let gnome = popover_menus(cx);
-        let inner_padding = if gnome { px(12.) } else { px(8.) };
+        let gtk = crate::toolkit::menus(cx).map(|(_, menus)| menus);
+        let inner_padding = match &gtk {
+            Some(menus) => menus.row_inset,
+            None if gnome => px(12.),
+            None => px(8.),
+        };
 
         let is_submenu = matches!(item, PopupMenuItem::Submenu { .. });
 
         let (item_height, radius) = match self.size {
             Size::Small => (px(20.), options.radius.half()),
             _ if gnome => (px(30.), px(6.)),
+            _ if gtk.is_some() => (gtk.as_ref().map_or(px(26.), |menus| menus.row_height), px(0.)),
             _ => (px(26.), options.radius),
         };
 
@@ -1828,6 +1835,7 @@ impl Render for PopupMenu {
         let max_width = self.max_width();
         // SparkCommander patch: GNOME's submenu shown in this menu's place, its name over it.
         let gnome = popover_menus(cx);
+        let gtk = crate::toolkit::menus(cx).map(|(_, menus)| menus);
         let in_place = match self.selected_index.and_then(|ix| self.menu_items.get(ix)) {
             Some(PopupMenuItem::Submenu { label, menu, .. }) if gnome && self.in_place => Some((label.clone(), menu.clone())),
             _ => None,
@@ -1857,6 +1865,12 @@ impl Render for PopupMenu {
             // GNOME's popovers have 12 px corners.
             .when(!self.embedded, |this| this.popover_style(cx))
             .when(gnome && !self.embedded, |this| this.rounded(px(12.)))
+            // GTK's: the theme's fill and border; square under the menu bar (a menu with letters) or as the theme's.
+            .when_some(gtk.clone().filter(|_| !self.embedded), |this, menus| {
+                this.bg(menus.fill)
+                    .shadow(crate::styled::popover_shadow(menus.border, 1.))
+                    .rounded(if self.mnemonics_on(cx) { menus.radius } else { menus.context_radius })
+            })
             // SparkCommander patch: Windows 11's flyout shadow, as WinUI's (Fluent's shadow16).
             .when(cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some()), |this| {
                 let ink = if cx.theme().is_dark() { 0.28 } else { 0.14 };
@@ -1925,6 +1939,7 @@ impl Render for PopupMenu {
                     .id("items")
                     .when(gnome, |this| this.p(px(6.)))
                     .when(!gnome, |this| this.p_1())
+                    .when_some(gtk.as_ref(), |this, menus| this.px_0().py(menus.padding))
                     .gap_y_0p5()
                     .min_w(rems(8.))
                     .when_some(self.min_width, |this, min_width| this.min_w(min_width))

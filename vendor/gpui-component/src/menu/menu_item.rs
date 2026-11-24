@@ -2,7 +2,7 @@ use crate::{ActiveTheme, Disableable, StyledExt, h_flex};
 use gpui::{
     AnyElement, App, ClickEvent, ElementId, InteractiveElement, IntoElement, MouseButton,
     ParentElement, RenderOnce, Role, SharedString, StatefulInteractiveElement as _,
-    StyleRefinement, Styled, Window, prelude::FluentBuilder as _,
+    StyleRefinement, Styled, Window, prelude::FluentBuilder as _, px,
 };
 use gpui_base::TestSupportExt as _;
 use smallvec::SmallVec;
@@ -91,6 +91,7 @@ impl ParentElement for MenuItemElement {
 
 impl RenderOnce for MenuItemElement {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        let gtk = crate::toolkit::menus(cx);
         h_flex()
             .id(self.id)
             .test_support()
@@ -102,8 +103,9 @@ impl RenderOnce for MenuItemElement {
             .px_2()
             .text_base()
             .text_color(cx.theme().foreground)
-            // SparkCommander patch: the highlighted item framed in `ring`, as KDE's.
-            .rounded(cx.theme().radius)
+            // SparkCommander patch: the highlighted item framed in `ring`, as KDE's;
+            // GTK's as the theme draws its row, see `ToolkitControls::menus`.
+            .rounded(if gtk.is_some() { px(0.) } else { cx.theme().radius })
             .border_1()
             .border_color(cx.theme().transparent)
             .relative()
@@ -125,19 +127,29 @@ impl RenderOnce for MenuItemElement {
                 // Not `group_hover` on the item's own group: GPUI styles an
                 // element before registering its group, and that fallback keeps
                 // the pointer's item lit after a key moves the highlight away.
-                this.hover(|this| match mac {
-                    Some(mac) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
-                    None => this
+                this.hover(|this| match (mac, &gtk) {
+                    (_, Some((_, menus))) => this.text_color(menus.row_text),
+                    (Some(mac), _) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
+                    (None, None) => this
                         .bg(cx.theme().tokens.accent)
                         .text_color(cx.theme().accent_foreground)
                         .border_color(ring),
                 })
-                .when(self.selected, |this| match mac {
-                    Some(mac) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
-                    None => this
+                .when(self.selected, |this| match (mac, &gtk) {
+                    (_, Some((_, menus))) => this.text_color(menus.row_text),
+                    (Some(mac), _) => this.bg(mac.accent).text_color(mac.on_accent).border_color(ring),
+                    (None, None) => this
                         .bg(cx.theme().tokens.accent)
                         .text_color(cx.theme().accent_foreground)
                         .border_color(ring),
+                })
+                // GTK's row under the label, shown under the pointer or the keys' highlight.
+                .when_some(gtk.clone(), |this, (scale, menus)| {
+                    let row = crate::toolkit::slices(scale, menus.row).absolute().inset_0();
+                    this.child(match self.selected {
+                        true => row,
+                        false => row.opacity(0.).hover(|style| style.opacity(1.)),
+                    })
                 })
                 .when_some(self.on_click, |this, on_click| {
                     this.on_mouse_down(MouseButton::Left, move |_, _, cx| {
