@@ -2410,7 +2410,7 @@ diff -ruN a/src/menu/mod.rs b/src/menu/mod.rs
      app_menu_bar::init(cx);
 diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 --- a/src/menu/popup_menu.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/popup_menu.rs	2026-11-24 16:16:32.840690151 +0100
++++ b/src/menu/popup_menu.rs	2026-11-24 22:49:55.939946554 +0100
 @@ -1,8 +1,16 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a long menu's
 +// scrollbar shows while it scrolls. Changes are marked "SparkCommander patch".
@@ -2916,7 +2916,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn render_item(
          &self,
          ix: usize,
-@@ -1222,13 +1507,21 @@
+@@ -1222,21 +1507,31 @@
          };
  
          let selected = self.selected_index == Some(ix);
@@ -2939,7 +2939,9 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              _ => (px(26.), options.radius),
          };
  
-@@ -1236,7 +1529,7 @@
+         let this = MenuItemElement::new(ix)
++            // SparkCommander patch: a row keeps its height; a list taller than the room scrolls.
++            .flex_shrink_0()
              .relative()
              .text_sm()
              .py_0()
@@ -2948,7 +2950,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              .rounded(radius)
              .items_center()
              .selected(selected)
-@@ -1267,12 +1560,16 @@
+@@ -1267,12 +1562,16 @@
              .when_some(item.a11y_label(), |this, label| this.aria_label(label));
  
          match item {
@@ -2968,7 +2970,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .border_color(cx.theme().border)
                  .disabled(true),
              PopupMenuItem::Label(label) => this.disabled(true).cursor_default().child(
-@@ -1322,6 +1619,10 @@
+@@ -1322,6 +1621,10 @@
                  let show_link_icon = *is_link && self.external_link_icon;
                  let action = action.as_ref().map(|action| action.boxed_clone());
                  let key = self.render_key_binding(action, window, cx);
@@ -2979,7 +2981,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
                  this.when(!disabled, |this| {
                      this.on_click(
-@@ -1344,7 +1645,7 @@
+@@ -1344,7 +1647,7 @@
                          .gap_3()
                          .items_center()
                          .justify_between()
@@ -2988,7 +2990,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                          .children(right_check_icon)
                          .when(show_link_icon, |this| {
                              this.child(
-@@ -1368,9 +1669,28 @@
+@@ -1368,9 +1671,28 @@
                  label,
                  menu,
                  disabled,
@@ -3018,7 +3020,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .items_start()
                  .child(
                      h_flex()
-@@ -1391,15 +1711,21 @@
+@@ -1391,15 +1713,21 @@
                                  .gap_2()
                                  .items_center()
                                  .justify_between()
@@ -3045,7 +3047,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      this.child({
                          let (anchor, left) = self.submenu_anchor;
                          let is_bottom_pos =
-@@ -1421,7 +1747,8 @@
+@@ -1421,7 +1749,8 @@
                          )
                          .with_priority(self.priority + 1)
                      })
@@ -3055,7 +3057,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          }
      }
  }
-@@ -1466,10 +1793,23 @@
+@@ -1466,10 +1795,23 @@
          let view = cx.entity().clone();
          let items_count = self.menu_items.len();
  
@@ -3083,7 +3085,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
          let has_left_icon = self
              .menu_items
-@@ -1477,6 +1817,13 @@
+@@ -1477,6 +1819,13 @@
              .any(|item| item.has_left_icon(self.check_side));
  
          let max_width = self.max_width();
@@ -3097,7 +3099,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let options = RenderOptions {
              has_left_icon,
              check_side: self.check_side,
-@@ -1495,24 +1842,74 @@
+@@ -1495,24 +1844,79 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
@@ -3124,8 +3126,13 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +                let view = view.clone();
 +                // Its own submenu in its place: that one's header alone.
 +                let deeper = menu.read(cx).in_place;
-+                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken.
-+                let room = window.viewport_size().height - self.bounds.origin.y - px(36. + 12. + 8.);
++                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken;
++                // the window's own frame (GNOME's shadow) too, as the menu is kept inside it.
++                let frame = match window.window_decorations() {
++                    gpui::Decorations::Client { tiling } if !tiling.bottom => window.client_inset().unwrap_or_default(),
++                    _ => px(0.),
++                };
++                let room = window.viewport_size().height - frame - self.bounds.origin.y - px(36. + 12. + 8.);
 +                if room > px(0.) {
 +                    menu.update(cx, |menu, _| menu.max_height = Some(room));
 +                }
@@ -3180,7 +3187,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1522,10 +1919,7 @@
+@@ -1522,10 +1926,7 @@
                              .map(|(ix, item)| self.render_item(ix, item, options, window, cx)),
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),

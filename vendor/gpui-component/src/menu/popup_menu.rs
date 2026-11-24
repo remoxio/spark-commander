@@ -1526,6 +1526,8 @@ impl PopupMenu {
         };
 
         let this = MenuItemElement::new(ix)
+            // SparkCommander patch: a row keeps its height; a list taller than the room scrolls.
+            .flex_shrink_0()
             .relative()
             .text_sm()
             .py_0()
@@ -1863,8 +1865,13 @@ impl Render for PopupMenu {
                 let view = view.clone();
                 // Its own submenu in its place: that one's header alone.
                 let deeper = menu.read(cx).in_place;
-                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken.
-                let room = window.viewport_size().height - self.bounds.origin.y - px(36. + 12. + 8.);
+                // As tall as the window leaves under this menu's top, the header (36 px) and padding (12) taken;
+                // the window's own frame (GNOME's shadow) too, as the menu is kept inside it.
+                let frame = match window.window_decorations() {
+                    gpui::Decorations::Client { tiling } if !tiling.bottom => window.client_inset().unwrap_or_default(),
+                    _ => px(0.),
+                };
+                let room = window.viewport_size().height - frame - self.bounds.origin.y - px(36. + 12. + 8.);
                 if room > px(0.) {
                     menu.update(cx, |menu, _| menu.max_height = Some(room));
                 }

@@ -130,7 +130,7 @@ pub(crate) fn show<V: Render>(
     size: Size<Pixels>,
     window: &mut Window,
     cx: &mut App,
-    build: impl FnOnce(Option<Main>, &mut Window, &mut App) -> Entity<V>,
+    build: impl FnOnce(Option<Main>, &mut Window, &mut App) -> Entity<V> + 'static,
     ok: impl Fn(&Entity<V>, &mut Window, &mut App) -> bool + 'static,
 ) {
     if separate() {
@@ -238,7 +238,7 @@ pub(crate) fn open<V: Render>(
     size: Size<Pixels>,
     parent: &mut Window,
     cx: &mut App,
-    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
+    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>) + 'static,
 ) {
     open_window(title, size, true, false, parent, cx, build)
 }
@@ -249,7 +249,7 @@ fn open_alert<V: Render>(
     size: Size<Pixels>,
     parent: &mut Window,
     cx: &mut App,
-    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
+    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>) + 'static,
 ) {
     open_window(title, size, true, true, parent, cx, build)
 }
@@ -260,12 +260,25 @@ pub(crate) fn open_headed<V: Render>(
     size: Size<Pixels>,
     parent: &mut Window,
     cx: &mut App,
-    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
+    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>) + 'static,
 ) {
     open_window(title, size, false, false, parent, cx, build)
 }
 
 fn open_window<V: Render>(
+    title: String,
+    size: Size<Pixels>,
+    heading: bool,
+    alert: bool,
+    parent: &mut Window,
+    cx: &mut App,
+    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>) + 'static,
+) {
+    // GPUI draws a new window at once: after the opener's turn, so its first frame may read the opener.
+    parent.defer(cx, move |parent, cx| open_now(title, size, heading, alert, parent, cx, build));
+}
+
+fn open_now<V: Render>(
     title: String,
     size: Size<Pixels>,
     heading: bool,
