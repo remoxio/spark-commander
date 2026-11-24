@@ -130,7 +130,8 @@ pub fn system(dark: bool) -> Palette {
             let palette = match gtk_theme() {
                 Some(theme) if theme.dark == dark => theme,
                 Some(theme) => Palette { selection: theme.selection, selection_text: theme.selection_text, ..adwaita(dark) },
-                None => Palette { selection: gnome_accent(interface_setting("accent-color").as_deref()), ..adwaita(dark) },
+                // GNOME: libadwaita's own (`sc-adwstyle`), else its colours as of 1.6.
+                None => libadwaita(dark).unwrap_or_else(|| Palette { selection: gnome_accent(interface_setting("accent-color").as_deref()), ..adwaita(dark) }),
             };
             Palette { font: desktop_font(), font_size: None, ..palette }
         }
@@ -170,6 +171,36 @@ fn gtk(theme: &crate::system::toolkit_style::Drawn) -> Option<Palette> {
         selection: color("theme_selected_bg_color")?,
         selection_text: color("theme_selected_fg_color").unwrap_or(0xffffff),
         marked: color("error_color").unwrap_or(0xe01b24),
+        font: None,
+        font_size: None,
+    })
+}
+
+/// A libadwaita colour as GNOME's apps draw it, light or dark (`popover_bg_color`, …); none off GNOME or without `sc-adwstyle`.
+pub fn adwaita_color(dark: bool, name: &str) -> Option<u32> {
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+    return crate::system::toolkit_style::adwaita_colors()?.colors.get(&format!("{}.{name}", if dark { "dark" } else { "light" })).copied();
+    #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
+    None
+}
+
+/// GNOME's palette from libadwaita's colours: the sidebar's in the bars, a
+/// button a tenth of the text, borders and dim text as libadwaita mixes them.
+fn libadwaita(dark: bool) -> Option<Palette> {
+    let color = |name: &str| adwaita_color(dark, name);
+    let (window, view, text) = (color("window_bg_color")?, color("view_bg_color")?, color("window_fg_color")?);
+    Some(Palette {
+        dark,
+        window,
+        bar: color("sidebar_bg_color").unwrap_or(window),
+        button: mix(window, text, 0.1),
+        view,
+        text,
+        dim: mix(view, color("view_fg_color").unwrap_or(text), 0.55),
+        border: color("borders").unwrap_or(mix(window, text, 0.15)),
+        selection: color("accent_bg_color")?,
+        selection_text: color("accent_fg_color").unwrap_or(0xffffff),
+        marked: color("destructive_color").or(color("error_color")).unwrap_or(0xe01b24),
         font: None,
         font_size: None,
     })
@@ -683,7 +714,20 @@ pub fn header_bar() -> Option<HeaderBar> {
             return None;
         }
         let theme = interface_setting("gtk-theme").unwrap_or_default();
-        Some(header_bar_of(&theme))
+        let mut bar = header_bar_of(&theme);
+        // libadwaita's own colours and window corners, where they can be read.
+        let colors = |dark| Some([adwaita_color(dark, "headerbar_bg_color")?, adwaita_color(dark, "headerbar_backdrop_color")?]);
+        if let Some(light) = colors(false) {
+            bar.light = light;
+        }
+        if let Some(dark) = colors(true) {
+            bar.dark = dark;
+        }
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+        if let Some(radius) = crate::system::adwaita::window_radius() {
+            bar.radius = radius;
+        }
+        Some(bar)
     };
     *BAR.get_or_init(find)
 }

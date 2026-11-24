@@ -13,6 +13,7 @@ packaging/linux/package.sh
 | `sparkcommander` (the app), `scmd` (in the terminal), `sview` and `sedit` (scmd's viewer and editor alone: links to `scmd`) | `cargo build --release`, or `BIN=<folder>` with them built elsewhere (another distribution's glibc, in its container) |
 | `sc-qtstyle` | `crates/sc-qtstyle/build.sh` (needs Qt 6's development files): on KDE the user's Qt style draws the controls; without it, the built-in Breeze look |
 | `sc-gtkstyle` | `crates/sc-gtkstyle/build.sh` (needs GTK 3's development files): on Xfce, MATE and Cinnamon the GTK 3 theme draws the controls |
+| `sc-adwstyle` | `crates/sc-adwstyle/build.sh` (needs libadwaita's development files): on GNOME libadwaita's own colours, as its apps get them (Ubuntu's Yaru, high contrast, the accent); without it, libadwaita 1.6's as built in |
 | `7zip/` | `vendor/7zip`, with its license |
 | `pdfium/` | `vendor/pdfium`, with its licenses |
 | `rclone/` | `vendor/rclone` (built from source; needs Go), with its license |
@@ -32,7 +33,9 @@ libmpv and `sc-gtkstyle` build with. Built there, the programs run on newer
 distributions too. Check a build with `objdump -T <file> | grep -o
 'GLIBC_[0-9.]*' | sort -V | tail -1` (2.31 at most). `sc-qtstyle` needs Qt
 6, which 20.04 lacks: `Dockerfile.qt` (24.04) builds it, for Plasma 6, whose
-distributions all have glibc 2.39 or later:
+distributions all have glibc 2.39 or later; `sc-adwstyle` too (libadwaita,
+which 20.04 lacks): it asks for glibc 2.34 and libadwaita 1.0's calls only, so
+it runs from Ubuntu 22.04 and Debian 12 on:
 
 ```sh
 docker build -t sparkcommander-build packaging/linux

@@ -1,7 +1,9 @@
-# sc-qtstyle only: Ubuntu 20.04 has no Qt 6. It draws with the user's Qt 6
-# style, which only Plasma 6 has, on distributions with glibc 2.39 or later.
+# sc-qtstyle and sc-adwstyle: Ubuntu 20.04 has no Qt 6 or libadwaita. They
+# ask the user's Qt 6 style (only Plasma 6 has it, glibc 2.39 or later) and
+# GNOME's libadwaita (glibc 2.34 and libadwaita 1.0 or later).
 #   docker build -t sparkcommander-qt -f packaging/linux/Dockerfile.qt packaging/linux
 #   docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/src" -w /src sparkcommander-qt crates/sc-qtstyle/build.sh <BIN>
+#   docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/src" -w /src sparkcommander-qt crates/sc-adwstyle/build.sh <BIN>
 FROM ubuntu:24.04
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    g++ pkg-config qt6-base-dev
+    g++ gcc pkg-config qt6-base-dev libadwaita-1-dev

@@ -22,6 +22,22 @@ pub fn window_buttons() -> Option<WindowButtons> {
     *LOOK.get_or_init(|| buttons_of(&stylesheet()?))
 }
 
+/// The installed libadwaita's windows' corners (12 px in 1.5, 15 in later ones); none without it.
+pub fn window_radius() -> Option<f32> {
+    static RADIUS: OnceLock<Option<f32>> = OnceLock::new();
+    *RADIUS.get_or_init(|| radius_of(&stylesheet()?))
+}
+
+/// `window.csd`'s border-radius, a `var(--name)` taken from `:root`.
+fn radius_of(css: &str) -> Option<f32> {
+    let value = declarations(css, "window.csd").into_iter().rev().find(|(name, _)| name == "border-radius")?.1;
+    let value = match value.strip_prefix("var(").and_then(|rest| rest.strip_suffix(')')) {
+        Some(variable) => declarations(css, ":root").into_iter().rev().find(|(name, _)| name == variable.trim())?.1,
+        None => value,
+    };
+    value.strip_suffix("px")?.trim().parse().ok()
+}
+
 /// The stylesheet in the library: 1.5's base.css, later ones' gtk.css.
 fn stylesheet() -> Option<String> {
     let library = std::fs::read(library()?).ok()?;
@@ -191,6 +207,13 @@ mod tests {
         assert_eq!(buttons_of("windowcontrols > button { padding: 5px; }"), None);
     }
 
+    #[test]
+    fn window_radius_from_both_stylesheets() {
+        assert_eq!(radius_of("window.csd { margin: 0px; border-radius: 12px; outline: 1px solid red; }"), Some(12.));
+        let new = ":root { --window-radius: 15px; } window.csd { border-radius: var(--window-radius); } window.csd.tiled { --window-radius: 0px; }";
+        assert_eq!(radius_of(new), Some(15.));
+    }
+
     /// The installed libadwaita, where there is one (the test machine's).
     #[test]
     fn installed_library_read() {
@@ -199,5 +222,6 @@ mod tests {
         }
         let look = window_buttons().expect("libadwaita's window buttons");
         assert!(look.fill[0] > 0. && look.fill[1] >= look.fill[0] && look.padding > 0.);
+        assert!(window_radius().is_some_and(|radius| radius > 0.));
     }
 }

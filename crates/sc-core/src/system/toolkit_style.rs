@@ -1,7 +1,8 @@
 //! The desktop's toolkit draws the controls into images the GUI shows: on
 //! KDE the user's Qt style (System Settings' Application Style), through
 //! `sc-qtstyle`; on Xfce, MATE and Cinnamon their GTK 3 theme, through
-//! `sc-gtkstyle`, which also says the GTK theme's colours; both beside the app.
+//! `sc-gtkstyle`, which also says the GTK theme's colours; on GNOME libadwaita's
+//! colours through `sc-adwstyle`; all beside the app.
 
 use std::collections::HashMap;
 use std::io;
@@ -57,8 +58,20 @@ pub fn gtk_colors() -> Option<&'static Drawn> {
     COLORS.get_or_init(ask).as_ref()
 }
 
+/// libadwaita's colours on GNOME, light and dark (`light.window_bg_color`, …),
+/// as its apps get them (Yaru, high contrast, the accent); asked once, some 150 ms.
+pub fn adwaita_colors() -> Option<&'static Drawn> {
+    static COLORS: OnceLock<Option<Drawn>> = OnceLock::new();
+    let ask = || crate::system::theme::on_gnome().then(|| run_helper("sc-adwstyle", &["colors"]).ok()).flatten();
+    COLORS.get_or_init(ask).as_ref()
+}
+
 fn run(args: &[&str]) -> io::Result<Drawn> {
     let name = helper().ok_or_else(|| io::Error::new(io::ErrorKind::Unsupported, "no toolkit to draw the controls"))?;
+    run_helper(name, args)
+}
+
+fn run_helper(name: &str, args: &[&str]) -> io::Result<Drawn> {
     let helper = std::env::current_exe()?.with_file_name(name);
     let output = Command::new(&helper).args(args).stdin(Stdio::null()).stderr(Stdio::null()).output();
     // Cargo builds it only where the toolkit's development files are.

@@ -39,7 +39,7 @@ fn main() {
     .unwrap();
 }
 
-/// Linux: sc-qtstyle and sc-gtkstyle beside the app, where it looks for them,
+/// Linux: sc-qtstyle, sc-gtkstyle and sc-adwstyle beside the app, where it looks for them,
 /// when their toolkit's development files are here; not when cross-building.
 fn style_helpers(manifest: &str) {
     let os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
@@ -51,7 +51,7 @@ fn style_helpers(manifest: &str) {
     let Some(beside) = Path::new(&out).ancestors().nth(3) else {
         return;
     };
-    for (name, library) in [("sc-qtstyle", "Qt6Widgets"), ("sc-gtkstyle", "gtk+-3.0")] {
+    for (name, library) in [("sc-qtstyle", "Qt6Widgets"), ("sc-gtkstyle", "gtk+-3.0"), ("sc-adwstyle", "libadwaita-1")] {
         let dir = Path::new(manifest).join("..").join(name);
         println!("cargo:rerun-if-changed={}", dir.display());
         let found = Command::new("pkg-config").args(["--exists", library]).status().is_ok_and(|status| status.success());

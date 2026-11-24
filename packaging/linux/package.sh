@@ -33,9 +33,10 @@ cp "$BIN/sparkcommander" "$BIN/scmd" "$DIR/"
 # scmd's viewer and editor alone, as mc's mcview and mcedit are mc by other names.
 ln -s scmd "$DIR/sview"
 ln -s scmd "$DIR/sedit"
-# The desktop's look through its toolkit, KDE's Qt style and the GTK 3 theme
-# of Xfce, MATE and Cinnamon: built with the oldest Qt 6 and GTK 3 the release is for.
-for helper in sc-qtstyle:Qt6Widgets sc-gtkstyle:gtk+-3.0; do
+# The desktop's look through its toolkit, KDE's Qt style, the GTK 3 theme
+# of Xfce, MATE and Cinnamon, GNOME's libadwaita: built with the oldest Qt 6,
+# GTK 3 and libadwaita the release is for.
+for helper in sc-qtstyle:Qt6Widgets sc-gtkstyle:gtk+-3.0 sc-adwstyle:libadwaita-1; do
     name=${helper%%:*}
     if [ -e "$BIN/$name" ]; then
         cp "$BIN/$name" "$DIR/"

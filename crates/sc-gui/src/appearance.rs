@@ -61,7 +61,8 @@ pub fn apply(palette: &Palette, cx: &mut App) -> PanelColors {
         Some(ControlStyle::Fluent) => (menu.popup, menu.hover) = if palette.dark { (0x2c2c2c, 0x383838) } else { (0xf9f9f9, 0xf0f0f0) },
         // libadwaita's popovers (popover_bg_color) and its rows' hover, a tenth of the text.
         Some(ControlStyle::Adwaita) => {
-            menu.popup = if palette.dark { 0x36363a } else { 0xffffff };
+            let popover = sc_core::system::theme::adwaita_color(palette.dark, "popover_bg_color");
+            menu.popup = popover.unwrap_or(if palette.dark { 0x36363a } else { 0xffffff });
             menu.hover = sc_core::system::theme::mix(menu.popup, palette.text, 0.1);
         }
         _ => {}
