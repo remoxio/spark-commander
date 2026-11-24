@@ -487,6 +487,8 @@ impl SettingsDialog {
         let mac = cx.try_global::<MacControls>().copied();
         // Windows 11: a navigation pane, unframed; the selection a faint row with the accent's pill.
         let fluent = fluent();
+        // GNOME: libadwaita's navigation sidebar, the selection a tenth of the text, as Builder's preferences.
+        let gnome = sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita);
         let subtle = if theme.mode.is_dark() { hsla(0., 0., 1., 0.06) } else { hsla(0., 0., 0., 0.05) };
         let (pill, rail) = (theme.primary, theme.muted);
         v_flex()
@@ -521,6 +523,7 @@ impl SettingsDialog {
                         None if fluent => el
                             .bg(subtle)
                             .child(div().absolute().left_0().top(px(9.)).w(px(3.)).h(px(16.)).rounded(px(2.)).bg(pill)),
+                        None if gnome => el.bg(theme.foreground.opacity(0.1)),
                         None => el.bg(theme.primary).text_color(theme.primary_foreground),
                     })
                     .on_click(cx.listener(move |this, _, _, cx| {

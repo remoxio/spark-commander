@@ -979,7 +979,7 @@ fn mac(dark: bool) -> Palette {
 }
 
 /// `share` of the way from `from` to `to`.
-fn mix(from: u32, to: u32, share: f32) -> u32 {
+pub fn mix(from: u32, to: u32, share: f32) -> u32 {
     let channel = |shift: u32| {
         let (a, b) = ((from >> shift & 0xff) as f32, (to >> shift & 0xff) as f32);
         ((a + (b - a) * share.clamp(0., 1.)).round() as u32) << shift

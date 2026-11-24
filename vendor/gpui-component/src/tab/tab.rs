@@ -685,6 +685,21 @@ impl RenderOnce for Tab {
             selected_style.borders = Edges::all(px(0.5));
             selected_style.border_color = mac.tab_rim;
         }
+        // SparkCommander patch: GNOME's (AdwTabBar's), see `NativeControls::tab_pills`.
+        let gnome = match self.variant {
+            TabVariant::Tab if breeze.is_none() => native.and_then(|native| native.tab_pills),
+            _ => None,
+        };
+        if let Some((selected, hover)) = gnome {
+            let transparent = cx.theme().transparent;
+            for style in [&mut normal_style, &mut hover_style, &mut disabled_style, &mut selected_style] {
+                style.bg = transparent.into();
+                style.borders = Edges::default();
+                style.border_color = transparent;
+            }
+            hover_style.bg = hover.into();
+            selected_style.bg = selected.into();
+        }
         // SparkCommander patch: WinUI's TabView, see `NativeControls::card`: the
         // selected tab a card in the content's colour, the others flat between dividers.
         let fluent = match self.variant {
@@ -712,6 +727,7 @@ impl RenderOnce for Tab {
         };
         let radius = match (mac, mac_segment) {
             _ if fluent.is_some() => px(0.),
+            _ if gnome.is_some() => px(6.),
             (Some(_), _) => px(12.),
             (None, Some(_)) => px(6.),
             (None, None) => self.variant.radius(self.size, cx),
@@ -723,6 +739,7 @@ impl RenderOnce for Tab {
         // Breeze's: a 3 px line over 31 px.
         let height = match (breeze, mac) {
             _ if fluent.is_some() => px(32.),
+            _ if gnome.is_some() => px(30.),
             (Some(_), _) => px(34.),
             (None, Some(_)) => px(24.),
             (None, None) if mac_segment.is_some() => px(24.),
@@ -784,7 +801,7 @@ impl RenderOnce for Tab {
         // SparkCommander patch: macOS's tabs share the bar's width, so a long
         // label is cut short as a capped one, not widening its tab past the bar;
         // down to `MAC_TAB_MIN`, as Finder's, and then the bar scrolls.
-        let gives_way = max_width.is_some() || mac.is_some() && self.icon.is_none();
+        let gives_way = max_width.is_some() || (mac.is_some() || gnome.is_some()) && self.icon.is_none();
 
         let inner_content = h_flex()
             .flex_1()
@@ -954,7 +971,7 @@ impl RenderOnce for Tab {
             })
             .child(inner_element)
             // SparkCommander patch: the selected tab's accent line on top, as Breeze draws it.
-            .when(self.selected && !self.disabled && self.variant == TabVariant::Tab && mac.is_none() && fluent.is_none(), |this| {
+            .when(self.selected && !self.disabled && self.variant == TabVariant::Tab && mac.is_none() && fluent.is_none() && gnome.is_none(), |this| {
                 let (line, color) = breeze.map_or((px(2.), cx.theme().primary), |([_, _, line], _)| (px(3.), line));
                 this.child(div().absolute().top_0().left_0().right_0().h(line).bg(color))
             })
@@ -969,6 +986,10 @@ impl RenderOnce for Tab {
             .when_some(fluent.filter(|_| !self.selected), |this, (_, rim)| {
                 let divider = if cx.theme().mode.is_dark() { gpui::hsla(0., 0., 1., 0.08) } else { rim };
                 this.child(div().absolute().right_0().top(px(8.)).w(px(1.)).h(px(16.)).bg(divider))
+            })
+            // shortcut: GNOME's line also beside the selected and hovered tab, where AdwTabBar hides it.
+            .when(gnome.is_some() && !self.selected, |this| {
+                this.child(div().absolute().right_0().top(px(7.)).w(px(1.)).h(px(16.)).bg(cx.theme().border))
             })
             .when_some(self.on_click.clone(), |this, on_click| {
                 this.on_click(move |event, window, cx| on_click(event, window, cx))

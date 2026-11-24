@@ -4,7 +4,8 @@
 // past it and show no scrollbar; `with_menu_items` is public; a submenu may
 // run an action of its own when clicked; app menus' items take icons from a
 // `MenuIcons` global; icons are 16 px; app menus' items have letters to press
-// (underlined), from a `MenuMnemonics` global. Changes are marked "SparkCommander patch".
+// (underlined), from a `MenuMnemonics` global; GNOME's menus (`NativeControls::popover_menus`)
+// open a submenu in their place, in libadwaita's sizes. Changes are marked "SparkCommander patch".
 
 use crate::ThemeStyled as _;
 use crate::actions::{Cancel, Confirm, SelectDown, SelectUp};
@@ -24,6 +25,11 @@ use gpui_base::TestSupportExt as _;
 use std::rc::Rc;
 
 const CONTEXT: &str = "PopupMenu";
+
+/// SparkCommander patch: GNOME's menus, see `NativeControls::popover_menus`.
+fn popover_menus(cx: &App) -> bool {
+    cx.try_global::<crate::NativeControls>().is_some_and(|native| native.popover_menus)
+}
 
 /// SparkCommander patch: the icon of an app menu's action, as the app chooses.
 pub struct MenuIcons(pub Rc<dyn Fn(&dyn Action) -> Option<Icon>>);
@@ -377,6 +383,11 @@ pub struct PopupMenu {
     mnemonics: bool,
     hot: Vec<(SharedString, Option<usize>)>,
 
+    /// SparkCommander patch: GNOME's: the selected submenu shown in this menu's
+    /// place; this one drawn so inside its parent, without a frame of its own.
+    in_place: bool,
+    embedded: bool,
+
     _subscriptions: Vec<Subscription>,
 }
 
@@ -402,6 +413,8 @@ impl PopupMenu {
             priority: gpui_base::POPUP_PRIORITY,
             mnemonics: false,
             hot: Vec::new(),
+            in_place: false,
+            embedded: false,
             _subscriptions: vec![],
         }
     }
@@ -894,9 +907,10 @@ impl PopupMenu {
                 }
                 // SparkCommander patch: a submenu whose first item is its own name runs that
                 // when clicked, and lists the items after it (and a separator).
+                // GNOME's opens on a click, so lists that item too.
                 OwnedMenuItem::Submenu(submenu) => {
                     let own = match submenu.items.first() {
-                        Some(OwnedMenuItem::Action { name, action, disabled: false, .. }) if *name == submenu.name => Some(action.boxed_clone()),
+                        Some(OwnedMenuItem::Action { name, action, disabled: false, .. }) if *name == submenu.name && !popover_menus(cx) => Some(action.boxed_clone()),
                         _ => None,
                     };
                     let mut items = submenu.items.clone();
@@ -984,6 +998,10 @@ impl PopupMenu {
                     }) => {
                         self.dispatch_confirm_action(action, window, cx);
                         self.dismiss(&Cancel, window, cx)
+                    }
+                    // SparkCommander patch: GNOME's submenu opens in the menu's place.
+                    Some(PopupMenuItem::Submenu { .. }) if popover_menus(cx) => {
+                        self._select_submenu(window, cx);
                     }
                     _ => {}
                 }
@@ -1164,6 +1182,13 @@ impl PopupMenu {
     }
 
     fn select_left(&mut self, _: &SelectLeft, window: &mut Window, cx: &mut Context<Self>) {
+        // SparkCommander patch: GNOME's submenu goes back to its parent's items.
+        if popover_menus(cx) {
+            if !self.back_to_parent(window, cx) && self.parent_menu.is_none() {
+                cx.propagate();
+            }
+            return;
+        }
         let handled = if matches!(self.submenu_anchor.0, Anchor::TopLeft | Anchor::BottomLeft) {
             self._unselect_submenu(window, cx)
         } else {
@@ -1185,6 +1210,12 @@ impl PopupMenu {
     }
 
     fn select_right(&mut self, _: &SelectRight, window: &mut Window, cx: &mut Context<Self>) {
+        if popover_menus(cx) {
+            if !self._select_submenu(window, cx) && self.parent_menu.is_none() {
+                cx.propagate();
+            }
+            return;
+        }
         let handled = if matches!(self.submenu_anchor.0, Anchor::TopLeft | Anchor::BottomLeft) {
             self._select_submenu(window, cx)
         } else {
@@ -1207,9 +1238,19 @@ impl PopupMenu {
 
     fn _select_submenu(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
         if let Some(active_submenu) = self.active_submenu() {
+            // SparkCommander patch: GNOME's in this menu's place, its first item
+            // highlighted only when opened by a key, as GTK's.
+            let gnome = popover_menus(cx);
+            if gnome {
+                self.in_place = true;
+                active_submenu.update(cx, |view, _| view.embedded = true);
+            }
+            let first = !gnome || window.last_input_was_keyboard();
             // Focus the submenu, so that can be handle the action.
             active_submenu.update(cx, |view, cx| {
-                view.set_selected_index(0, cx);
+                if first {
+                    view.set_selected_index(0, cx);
+                }
                 view.focus_handle.focus(window, cx);
             });
             cx.notify();
@@ -1229,6 +1270,23 @@ impl PopupMenu {
         }
 
         return false;
+    }
+
+    /// SparkCommander patch: GNOME's: from this submenu, shown in its parent's
+    /// place, back to the parent's items, its own item still highlighted.
+    fn back_to_parent(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        let Some(parent) = self.parent_menu.as_ref().and_then(|parent| parent.upgrade()) else {
+            return false;
+        };
+        self.selected_index = None;
+        parent.update(cx, |view, cx| view.close_in_place(window, cx));
+        true
+    }
+
+    fn close_in_place(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.in_place = false;
+        self.focus_handle.focus(window, cx);
+        cx.notify();
     }
 
     fn _focus_parent_menu(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -1268,6 +1326,7 @@ impl PopupMenu {
     /// The submenu is closed together with its parent, same as macOS menus.
     fn dismiss(&mut self, _: &Cancel, window: &mut Window, cx: &mut Context<Self>) {
         self.selected_index = None;
+        self.in_place = false;
         cx.emit(DismissEvent);
 
         // Focus back to the previous focused handle, unless the item's click
@@ -1442,12 +1501,15 @@ impl PopupMenu {
             .filter(|_| selected && !cx.has_global::<crate::NativeControls>())
             .map(|mac| mac.on_accent);
         const EDGE_PADDING: Pixels = px(4.);
-        const INNER_PADDING: Pixels = px(8.);
+        // SparkCommander patch: GNOME's rows are libadwaita's: 30 px, 12 px in, 6 px corners.
+        let gnome = popover_menus(cx);
+        let inner_padding = if gnome { px(12.) } else { px(8.) };
 
         let is_submenu = matches!(item, PopupMenuItem::Submenu { .. });
 
         let (item_height, radius) = match self.size {
             Size::Small => (px(20.), options.radius.half()),
+            _ if gnome => (px(30.), px(6.)),
             _ => (px(26.), options.radius),
         };
 
@@ -1455,7 +1517,7 @@ impl PopupMenu {
             .relative()
             .text_sm()
             .py_0()
-            .px(INNER_PADDING)
+            .px(inner_padding)
             .rounded(radius)
             .items_center()
             .selected(selected)
@@ -1486,11 +1548,12 @@ impl PopupMenu {
             .when_some(item.a11y_label(), |this, label| this.aria_label(label));
 
         match item {
+            // GNOME's 6 px above and below, as wide as the rows.
             PopupMenuItem::Separator => this
                 .h_auto()
                 .p_0()
-                .my_0p5()
-                .mx_neg_1()
+                .when(gnome, |this| this.my_1())
+                .when(!gnome, |this| this.my_0p5().mx_neg_1())
                 // SparkCommander patch: without the item's frame, which drew a second line over it.
                 .border_0()
                 .rounded_none()
@@ -1604,9 +1667,17 @@ impl PopupMenu {
                 this
                 .selected(selected)
                 .disabled(*disabled)
-                // SparkCommander patch: clicked, it runs its own action, its key shown.
-                .when(action.is_some() && !disabled, |this| {
+                // SparkCommander patch: clicked, it runs its own action, its key shown;
+                // GNOME's opens in the menu's place.
+                .when(action.is_some() && !disabled && !gnome, |this| {
                     this.on_click(cx.listener(move |this, _, window, cx| this.on_click(ix, window, cx)))
+                })
+                .when(gnome && !disabled, |this| {
+                    this.on_click(cx.listener(move |this, _, window, cx| {
+                        cx.stop_propagation();
+                        this.selected_index = Some(ix);
+                        this._select_submenu(window, cx);
+                    }))
                 })
                 .items_start()
                 .child(
@@ -1642,7 +1713,7 @@ impl PopupMenu {
                                 ),
                         ),
                 )
-                .when(selected, |this| {
+                .when(selected && !gnome, |this| {
                     this.child({
                         let (anchor, left) = self.submenu_anchor;
                         let is_bottom_pos =
@@ -1734,6 +1805,13 @@ impl Render for PopupMenu {
             .any(|item| item.has_left_icon(self.check_side));
 
         let max_width = self.max_width();
+        // SparkCommander patch: GNOME's submenu shown in this menu's place, its name over it.
+        let gnome = popover_menus(cx);
+        let in_place = match self.selected_index.and_then(|ix| self.menu_items.get(ix)) {
+            Some(PopupMenuItem::Submenu { label, menu, .. }) if gnome && self.in_place => Some((label.clone(), menu.clone())),
+            _ => None,
+        };
+        let showing_submenu = in_place.is_some();
         let options = RenderOptions {
             has_left_icon,
             check_side: self.check_side,
@@ -1754,7 +1832,10 @@ impl Render for PopupMenu {
             .on_action(cx.listener(Self::dismiss))
             .when(!self.hot.is_empty(), |this| this.on_key_down(cx.listener(Self::on_letter)))
             .on_mouse_down_out(cx.listener(Self::on_mouse_down_out))
-            .popover_style(cx)
+            // SparkCommander patch: inside its parent, GNOME's submenu has no frame of its own;
+            // GNOME's popovers have 12 px corners.
+            .when(!self.embedded, |this| this.popover_style(cx))
+            .when(gnome && !self.embedded, |this| this.rounded(px(12.)))
             // SparkCommander patch: Windows 11's flyout shadow, as WinUI's (Fluent's shadow16).
             .when(cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some()), |this| {
                 let ink = if cx.theme().is_dark() { 0.28 } else { 0.14 };
@@ -1766,10 +1847,45 @@ impl Render for PopupMenu {
             .text_color(cx.theme().popover_foreground)
             .relative()
             .occlude()
-            .child(
+            .when_some(in_place, |this, (label, menu)| {
+                let view = view.clone();
+                // Its own submenu in its place: that one's header alone.
+                let deeper = menu.read(cx).in_place;
+                let back = h_flex()
+                    .id("submenu-back")
+                    .relative()
+                    .h(px(30.))
+                    .mx(px(6.))
+                    .mt(px(6.))
+                    // The name clear of the arrow on both sides, centred.
+                    .px(px(32.))
+                    .rounded(px(6.))
+                    .justify_center()
+                    .items_center()
+                    .text_sm()
+                    .font_weight(gpui::FontWeight::BOLD)
+                    .hover(|this| this.bg(cx.theme().tokens.accent))
+                    .child(
+                        div()
+                            .absolute()
+                            .left(px(12.))
+                            .child(Icon::new(IconName::ChevronLeft).xsmall().text_color(cx.theme().muted_foreground)),
+                    )
+                    .child(label)
+                    .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                    .on_click(cx.listener(|this, _, window, cx| this.close_in_place(window, cx)));
+                this.child(
+                    v_flex()
+                        .when(!deeper, |this| this.child(back))
+                        .child(menu)
+                        .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),
+                )
+            })
+            .when(!showing_submenu, |this| this.child(
                 v_flex()
                     .id("items")
-                    .p_1()
+                    .when(gnome, |this| this.p(px(6.)))
+                    .when(!gnome, |this| this.p_1())
                     .gap_y_0p5()
                     .min_w(rems(8.))
                     .when_some(self.min_width, |this, min_width| this.min_w(min_width))
@@ -1786,7 +1902,7 @@ impl Render for PopupMenu {
                             .map(|(ix, item)| self.render_item(ix, item, options, window, cx)),
                     )
                     .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),
-            )
+            ))
     }
 }
 

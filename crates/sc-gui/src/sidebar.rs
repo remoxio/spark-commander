@@ -3,7 +3,9 @@
 //! this computer's folders as a tree that follows the active panel, the
 //! servers by protocol, and Places: bookmarks, drives and devices.
 
+use std::cell::Cell;
 use std::collections::HashMap;
+use std::rc::Rc;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
@@ -12,7 +14,7 @@ use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::menu::{ContextMenuExt, DropdownMenu, PopupMenu, PopupMenuItem};
 use gpui_kit::component::notification::Notification;
 use gpui_kit::component::scroll::Scrollbar;
-use gpui_kit::component::{ActiveTheme, Disableable, Icon, IconName, MacControls, Side, Sizable, StyledExt, TitleBar, WindowExt, h_flex, v_flex};
+use gpui_kit::component::{ActiveTheme, Disableable, Icon, IconName, InteractiveElementExt as _, MacControls, Side, Sizable, StyledExt, TitleBar, WindowExt, h_flex, v_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::*;
 use sc_core::remote::connections::{self, Connection, Connections};
@@ -99,12 +101,15 @@ fn section_at(which: SidebarTab) -> f32 {
     sections().iter().position(|section| section.0 == which).unwrap_or(0) as f32
 }
 
-/// The sections' row of icons: its track, the open one's pill and icon, their corners.
+/// The sections' row of icons: its track, the open one's pill and icon, the
+/// others' icons, their height and corners.
 #[derive(Clone, Copy)]
 struct TabsLook {
     track: Hsla,
     pill: Hsla,
     on_pill: Hsla,
+    idle: Hsla,
+    height: Pixels,
     radius: Pixels,
 }
 
@@ -435,7 +440,7 @@ impl Commander {
         self.sidebar.selected = Some(Picked::Folder(name));
     }
 
-    pub(crate) fn render_sidebar(&mut self, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(crate) fn render_sidebar(&mut self, window: &mut Window, cx: &mut Context<Self>) -> Option<AnyElement> {
         let tab = self.sidebar.tab.or(self.sidebar.closing)?;
         if tab == SidebarTab::Tree {
             self.follow_active();
@@ -449,26 +454,54 @@ impl Commander {
         let sections = match horizontal {
             true => {
                 let theme = cx.theme();
-                let look = TabsLook { track: theme.muted, pill: theme.primary, on_pill: theme.primary_foreground, radius: theme.radius };
+                // GNOME's as Builder's: flat toggle buttons, the open one a tenth of the text, a line under them.
+                let gnome = sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita);
+                let look = match gnome {
+                    true => TabsLook {
+                        track: gpui_kit::transparent_black(),
+                        pill: theme.foreground.opacity(0.1),
+                        on_pill: theme.foreground,
+                        idle: theme.foreground,
+                        height: px(34.),
+                        radius: px(6.),
+                    },
+                    false => TabsLook {
+                        track: theme.muted,
+                        pill: theme.primary,
+                        on_pill: theme.primary_foreground,
+                        idle: theme.muted_foreground,
+                        height: px(28.),
+                        radius: theme.radius,
+                    },
+                };
+                let tabs = self.render_section_tabs(tab, look, cx);
+                let tabs = match gnome {
+                    true => div().flex_none().p(px(6.)).border_b_1().border_color(cx.theme().border).child(tabs),
+                    false => div().flex_none().mx_2().mt_2().child(tabs),
+                };
                 v_flex()
                     .flex_1()
                     .min_w_0()
-                    .child(self.render_section_tabs(tab, look, cx).mx_2().mt_2())
+                    .child(tabs)
                     .child(v_flex().flex_1().min_h_0().pt_2().pb_1().child(self.render_open_section(tab, cx)))
             }
             false => self.render_accordion(tab, false, cx),
         };
+        // GNOME: as high as the window, the title bar beside it, as Files' and Builder's.
+        let title = self.menus_behind_button(window).then(|| sidebar_title(window, cx));
+        let (top_left, _) = gpui_kit::component::top_corners(window, cx);
         let theme = cx.theme();
         let width = self.sidebar.width;
         let drawer = h_flex()
             .h_full()
             .w(px(width))
             .bg(background)
+            .when(title.is_some(), |el| el.rounded_tl(top_left))
             .border_r_1()
             // Windows: the menu bar has no line under it.
             .when(cfg!(windows), |el| el.border_t_1())
             .border_color(theme.border)
-            .child(sections.h_full());
+            .child(v_flex().size_full().children(title).child(sections.w_full().flex_1().min_h_0()));
         // Sliding, its edge narrows or widens; the drawer is clipped, not reflowed.
         let sidebar = div()
             .relative()
@@ -565,7 +598,7 @@ impl Commander {
     /// The sections as a row of icons, as Xcode's navigators, the open one's on a pill.
     fn render_section_tabs(&mut self, tab: SidebarTab, look: TabsLook, cx: &mut Context<Self>) -> Div {
         let theme = cx.theme();
-        let (muted, hover, progress) = (theme.muted_foreground, theme.foreground.opacity(0.06), theme.progress_bar);
+        let (hover, progress) = (theme.foreground.opacity(0.06), theme.progress_bar);
         let sections = sections();
         let summary = self.operations_summary();
         let count = sections.len() as f32;
@@ -601,14 +634,14 @@ impl Commander {
                 .cursor_pointer()
                 .map(|el| match open {
                     true => el.text_color(look.on_pill),
-                    false => el.text_color(muted).hover(|style| style.bg(hover)),
+                    false => el.text_color(look.idle).hover(|style| style.bg(hover)),
                 })
                 .child(Icon::new(icon).size(px(15.)))
                 .children(line)
                 .tooltip(move |window, cx| gpui_kit::component::tooltip::Tooltip::new(tip.clone()).build(window, cx))
                 .on_click(cx.listener(move |this, _, _, cx| this.open_section(which, cx)))
         });
-        h_flex().relative().flex_none().h(px(28.)).rounded(look.radius).bg(look.track).child(pill).children(icons)
+        h_flex().relative().flex_none().h(look.height).rounded(look.radius).bg(look.track).child(pill).children(icons)
     }
 
     /// The open section's content; switched to, it comes in from the side of its icon.
@@ -666,7 +699,7 @@ impl Commander {
             .child(self.sidebar_toggle());
         let sections = match horizontal {
             true => {
-                let look = TabsLook { track: mac.tab_track, pill: mac.accent, on_pill: mac.on_accent, radius: px(14.) };
+                let look = TabsLook { track: mac.tab_track, pill: mac.accent, on_pill: mac.on_accent, idle: cx.theme().muted_foreground, height: px(28.), radius: px(14.) };
                 v_flex()
                     .flex_1()
                     .min_h_0()
@@ -1702,6 +1735,32 @@ impl Commander {
         let connected = self.connected_to(&address);
         row.context_menu(move |menu, _, _| server_menu(menu, commander.clone(), address.clone(), name.clone(), saved, connected))
     }
+}
+
+/// GNOME: the sidebar's top, as tall as the title bar beside it, with the app's
+/// name; it moves the window, maximizes it and gives its menu as the title bar does.
+fn sidebar_title(window: &mut Window, cx: &mut App) -> AnyElement {
+    let height = sc_core::system::theme::header_bar().map_or(gpui_kit::component::TITLE_BAR_HEIGHT, |header| px(header.height));
+    let pressed = window.use_keyed_state("sidebar-title-pressed", cx, |_, _| Rc::new(Cell::new(false))).read(cx).clone();
+    let (down, up) = (pressed.clone(), pressed.clone());
+    h_flex()
+        .id("sidebar-title")
+        .flex_none()
+        .h(height)
+        .px_3()
+        .justify_center()
+        .child(div().min_w_0().truncate().font_weight(FontWeight::BOLD).child("Spark Commander"))
+        .on_double_click(|_, window, _| window.zoom_window())
+        .on_mouse_down(MouseButton::Left, move |_, _, _| down.set(true))
+        .on_mouse_up(MouseButton::Left, move |_, _, _| up.set(false))
+        // Moved while pressed here, not a click: as the title bar's.
+        .on_mouse_move(move |event, window, _| {
+            if pressed.replace(false) && event.pressed_button == Some(MouseButton::Left) {
+                window.start_window_move();
+            }
+        })
+        .on_mouse_down(MouseButton::Right, |event, window, _| window.show_window_menu(event.position))
+        .into_any_element()
 }
 
 /// `path` with `~` for the home folder.

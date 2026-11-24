@@ -379,6 +379,13 @@ impl RenderOnce for TabBar {
         };
         // And `Underline` tabs as a tab view's: a segmented control, the
         // selected segment in the accent.
+        // SparkCommander patch: GNOME's (AdwTabBar's), see `NativeControls::tab_pills`:
+        // tabs of equal width too, 4 px in from the bar's edges.
+        let gnome = match self.variant {
+            TabVariant::Tab => cx.try_global::<crate::NativeControls>().and_then(|native| native.tab_pills),
+            _ => None,
+        };
+        let shared = mac.is_some() || gnome.is_some();
         let mac_segments = match self.variant {
             TabVariant::Underline if !cx.has_global::<crate::NativeControls>() => {
                 cx.try_global::<crate::MacControls>().copied()
@@ -395,7 +402,7 @@ impl RenderOnce for TabBar {
                 (track.into(), Edges::all(px(2.)), px(0.))
             }
             TabVariant::Tab => {
-                let padding = Edges::all(px(0.));
+                let padding = Edges::all(px(if gnome.is_some() { 4. } else { 0. }));
                 // SparkCommander patch: WinUI's TabView, its strip darker than the selected tab.
                 let fluent = cx.try_global::<crate::NativeControls>().filter(|native| native.card.is_some());
                 let fill: Background = match fluent.and_then(|native| native.command_bar) {
@@ -503,7 +510,7 @@ impl RenderOnce for TabBar {
         for (ix, child) in self.children.into_iter().enumerate() {
             item_metas.push((child.label.clone(), child.icon.clone(), child.disabled));
             let tab_bar_prefix = child.tab_bar_prefix.unwrap_or(true);
-            let child = if mac.is_some() { child.flex_1() } else { child };
+            let child = if shared { child.flex_1() } else { child };
             let mut tab = child
                 .ix(ix)
                 .tab_bar_prefix(tab_bar_prefix)
@@ -549,7 +556,7 @@ impl RenderOnce for TabBar {
                 div()
                     .flex_shrink_0()
                     // SparkCommander patch: macOS's tabs, a share of the bar however long their label.
-                    .when(mac.is_some(), |this| this.min_w(super::tab::MAC_TAB_MIN))
+                    .when(shared, |this| this.min_w(super::tab::MAC_TAB_MIN))
                     .map(|mut this| {
                         this.style().flex_grow = flex_grow;
                         this.style().flex_basis = flex_basis;

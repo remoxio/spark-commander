@@ -8,6 +8,7 @@ use gpui_kit::component::notification::Notification;
 use gpui_kit::component::tab::{Tab, TabBar};
 use gpui_kit::component::{ActiveTheme, IconName, Sizable, ToolkitControls, WindowExt, state_layers, v_flex};
 use gpui_kit::*;
+use gpui_kit::prelude::FluentBuilder as _;
 use sc_core::menu::Command;
 use sc_core::session::TerminalState;
 use sc_core::t;
@@ -245,6 +246,8 @@ impl Commander {
     /// The tabs and a new one's +.
     fn render_terminal_tabs(&self, cx: &mut Context<Self>) -> impl IntoElement + use<> {
         let mac = crate::appearance::mac_tabs(cx).is_some();
+        let gnome = sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita);
+        let current = self.terminal_tab;
         let tabs = self.terminals.iter().enumerate().map(|(ix, tab)| {
             let view = tab.view.read(cx);
             let name = match (&view.title, &tab.dir) {
@@ -271,6 +274,7 @@ impl Commander {
                     .on_click(clicked)
                     .into_any_element(),
                 None if mac => Button::new(("terminal-close", ix)).ghost().xsmall().icon(IconName::Close).rounded(px(8.)).on_click(clicked).into_any_element(),
+                None if gnome => Button::new(("terminal-close", ix)).ghost().xsmall().icon(IconName::Close).rounded_full().on_click(clicked).into_any_element(),
                 None => Button::new(("terminal-close", ix)).ghost().xsmall().label("×").on_click(clicked).into_any_element(),
             };
             // macOS: at the left and only under the pointer, as Finder's, the name still centred.
@@ -280,6 +284,12 @@ impl Commander {
                     .label(name)
                     .prefix(div().ml_1().invisible().group_hover(TAB, |style| style.visible()).child(close))
                     .suffix(div().mr_1().w(px(20.))),
+                // GNOME's at the right, on the selected tab and under the pointer, as AdwTabBar's, the name centred.
+                false if gnome => Tab::new()
+                    .group(TAB)
+                    .label(name)
+                    .prefix(div().ml_1().w(px(20.)))
+                    .suffix(div().mr_1().when(ix != current, |el| el.invisible().group_hover(TAB, |style| style.visible())).child(close)),
                 false => Tab::new().label(name).suffix(close),
             }
         });

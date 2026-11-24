@@ -69,8 +69,9 @@ pub enum SidebarButton {
 }
 
 impl Default for SidebarLayout {
+    /// macOS's and GNOME's as their apps' (Finder's, Builder's).
     fn default() -> Self {
-        match cfg!(target_os = "macos") {
+        match cfg!(target_os = "macos") || crate::system::theme::on_gnome() {
             true => SidebarLayout::Horizontal,
             false => SidebarLayout::Vertical,
         }

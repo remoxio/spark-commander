@@ -54,6 +54,14 @@ pub struct NativeControls {
     pub command_bar: Option<Hsla>,
     /// A dialog's title bar as the desktop's windows have it.
     pub dialog_frame: Option<DialogFrame>,
+    /// GNOME's: a drop-down menu centred under its button with an arrow at it,
+    /// a submenu opened in its place under a header to go back, libadwaita's
+    /// rows (30 px, 6 px corners and padding, an unframed faint highlight).
+    pub popover_menus: bool,
+    /// GNOME's tabs (AdwTabBar's): sharing the bar's width, unframed, the
+    /// selected one rounded in the first fill, the hovered one in the second,
+    /// a line between the others.
+    pub tab_pills: Option<(Hsla, Hsla)>,
 }
 
 /// The desktop's window title bar, for dialogs: its height, its fill and text

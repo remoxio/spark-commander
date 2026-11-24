@@ -117,8 +117,8 @@ impl RenderOnce for MenuItemElement {
                 // SparkCommander patch: macOS's highlight is AppKit's, see `MacControls`:
                 // the accent, the text white, unframed.
                 let mac = cx.try_global::<crate::MacControls>().copied().filter(|_| !cx.has_global::<crate::NativeControls>());
-                // Windows 11's highlight is unframed.
-                let ring = match cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some()) || mac.is_some() {
+                // Windows 11's and GNOME's highlight is unframed.
+                let ring = match cx.try_global::<crate::NativeControls>().is_some_and(|native| native.card.is_some() || native.popover_menus) || mac.is_some() {
                     true => cx.theme().transparent,
                     false => cx.theme().ring,
                 };

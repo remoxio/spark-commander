@@ -110,11 +110,19 @@ where
         let menu_state =
             window.use_keyed_state(self.id.clone(), cx, |_, _| DropdownMenuState::default());
 
+        // SparkCommander patch: GNOME's popover is centred under its button, an arrow at it.
+        let gnome = cx.try_global::<crate::NativeControls>().is_some_and(|native| native.popover_menus);
+        let anchor = match self.anchor {
+            Anchor::TopLeft | Anchor::TopRight if gnome => Anchor::TopCenter,
+            Anchor::BottomLeft | Anchor::BottomRight if gnome => Anchor::BottomCenter,
+            anchor => anchor,
+        };
         Popover::new(SharedString::from(format!("popover:{}", self.id)))
             .appearance(false)
             .overlay_closable(false)
             .trigger(self.trigger)
-            .anchor(self.anchor)
+            .anchor(anchor)
+            .arrow(gnome)
             .when_some(self.on_open_change, |this, callback| {
                 this.on_open_change(move |open, window, cx| callback(open, window, cx))
             })

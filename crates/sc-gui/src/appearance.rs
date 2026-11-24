@@ -57,8 +57,14 @@ pub fn apply(palette: &Palette, cx: &mut App) -> PanelColors {
     let list = palette.list();
     let mut menu = palette.menu();
     // Windows 11's menus: the item under the pointer a faint fill, unframed (see `MenuItemElement`).
-    if sc_core::system::theme::control_style() == Some(ControlStyle::Fluent) {
-        (menu.popup, menu.hover) = if palette.dark { (0x2c2c2c, 0x383838) } else { (0xf9f9f9, 0xf0f0f0) };
+    match sc_core::system::theme::control_style() {
+        Some(ControlStyle::Fluent) => (menu.popup, menu.hover) = if palette.dark { (0x2c2c2c, 0x383838) } else { (0xf9f9f9, 0xf0f0f0) },
+        // libadwaita's popovers (popover_bg_color) and its rows' hover, a tenth of the text.
+        Some(ControlStyle::Adwaita) => {
+            menu.popup = if palette.dark { 0x36363a } else { 0xffffff };
+            menu.hover = sc_core::system::theme::mix(menu.popup, palette.text, 0.1);
+        }
+        _ => {}
     }
     KitTheme::change(mode, None, cx);
     let font = palette.font.clone().filter(|font| installed(font, cx));
@@ -158,6 +164,8 @@ pub fn apply(palette: &Palette, cx: &mut App) -> PanelColors {
         cursor_text: filled.then(|| color(palette.selection_text)),
         // AppKit's sidebar selection: faint white or black over the blur.
         sidebar_selection: match (filled, palette.dark) {
+            // libadwaita's navigation sidebar: a tenth of the text, as Builder's and Files'.
+            (false, _) if sc_core::system::theme::control_style() == Some(ControlStyle::Adwaita) => color(palette.text).opacity(0.1),
             (false, _) => color(list.selected_row),
             (true, true) => hsla(0., 0., 1., 0.12),
             (true, false) => hsla(0., 0., 0., 0.1),
@@ -294,6 +302,9 @@ fn native_controls(style: ControlStyle, colors: &ControlColors, dialog_frame: Di
         }),
         command_bar: (style == ControlStyle::Fluent).then(|| hsla(0., 0., 0., if dark { 0.15 } else { 0.03 })),
         dialog_frame: Some(dialog_frame),
+        popover_menus: style == ControlStyle::Adwaita,
+        // libadwaita's tab: selected a tenth of the text, hovered 7%.
+        tab_pills: (style == ControlStyle::Adwaita).then(|| (color(colors.button_text).opacity(0.1), color(colors.button_text).opacity(0.07))),
     }
 }
 

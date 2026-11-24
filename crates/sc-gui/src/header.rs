@@ -44,6 +44,9 @@ impl Commander {
         }
         // No title beside the toolbar, as GNOME's Files has none beside its buttons; without one, the title.
         let bar = title_bar(if toolbar.is_some() { "" } else { "Spark Commander" }, window, cx)?;
+        // Beside the sidebar, which has the window's corner and the app's name.
+        let beside = self.sidebar.drawn();
+        let bar = if beside { bar.rounded_tl(px(0.)) } else { bar };
         let focus = self.focus.clone();
         let menu = Button::new("app-menu")
             .ghost()

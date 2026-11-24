@@ -3004,8 +3004,9 @@ impl Render for Commander {
         // In the title bar where there is one, as GNOME's apps; else over the panels.
         let mut toolbar = self.render_toolbar(window, cx);
         let header = self.render_header(&mut toolbar, window, cx);
-        // macOS: the title bar beside the sidebar, which runs the window's height.
-        let (header, beside) = match cfg!(target_os = "macos") {
+        // macOS, and GNOME with the sidebar shown: the title bar beside the sidebar, which runs the window's height.
+        let beside_sidebar = cfg!(target_os = "macos") || self.menus_behind_button(window) && self.sidebar.drawn();
+        let (header, beside) = match beside_sidebar {
             true => (None, header),
             false => (header, None),
         };
@@ -3071,7 +3072,7 @@ impl Render for Commander {
                             this.drag_sidebar(event.bounds, event.event.position.x, cx)
                         },
                     ))
-                    .children(self.render_sidebar(cx))
+                    .children(self.render_sidebar(window, cx))
                     .child(main),
             )
     }

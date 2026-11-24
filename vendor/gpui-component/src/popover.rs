@@ -1,3 +1,5 @@
+// Modified for Spark Commander (Apache-2.0, section 4b): GNOME's popover arrow is 10 px
+// deep and outlined. Changes are marked "SparkCommander patch".
 use gpui::{
     Anchor, Animation, AnimationExt as _, AnyElement, App, Bounds, Context, Div, ElementId,
     FocusHandle, InteractiveElement as _, IntoElement, MouseButton, ParentElement, PathBuilder,
@@ -317,10 +319,12 @@ impl Popover {
 impl RenderOnce for Popover {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let anchor = self.anchor;
-        let arrow_size = if self.arrow {
-            window.rem_size() * 0.375
-        } else {
-            px(0.)
+        // SparkCommander patch: GNOME's arrow is 10 px deep, outlined as its menu.
+        let gnome = cx.try_global::<crate::NativeControls>().is_some_and(|native| native.popover_menus);
+        let arrow_size = match (self.arrow, gnome) {
+            (true, true) => px(10.),
+            (true, false) => window.rem_size() * 0.375,
+            (false, _) => px(0.),
         };
         let offset = self.offset.unwrap_or(window.rem_size() * 0.25) + arrow_size;
         let resolved = Rc::new(Cell::new(None));
@@ -385,7 +389,7 @@ impl RenderOnce for Popover {
                                         arrow_join_bounds(points, side, px(1.)),
                                         background,
                                     ));
-                                    if appearance {
+                                    if appearance || gnome {
                                         let mut outline = PathBuilder::stroke(px(1.));
                                         outline.move_to(points[0]);
                                         outline.line_to(points[1]);
