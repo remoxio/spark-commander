@@ -681,17 +681,19 @@ impl X11WindowState {
 
                 // We set the modal state for dialog windows, so that the window manager
                 // can handle it appropriately (e.g., prevent interaction with the parent window
-                // while the dialog is open).
-                check_reply(
-                    || "X11 ChangeProperty32 setting modal state for dialog window failed.",
-                    xcb.change_property32(
-                        xproto::PropMode::REPLACE,
-                        x_window,
-                        atoms._NET_WM_STATE,
-                        xproto::AtomEnum::ATOM,
-                        &[atoms._NET_WM_STATE_MODAL],
-                    ),
-                )?;
+                // while the dialog is open). SparkCommander patch: not for GNOME Shell.
+                if crate::linux::modal_for_compositor() {
+                    check_reply(
+                        || "X11 ChangeProperty32 setting modal state for dialog window failed.",
+                        xcb.change_property32(
+                            xproto::PropMode::REPLACE,
+                            x_window,
+                            atoms._NET_WM_STATE,
+                            xproto::AtomEnum::ATOM,
+                            &[atoms._NET_WM_STATE_MODAL],
+                        ),
+                    )?;
+                }
             }
 
             check_reply(

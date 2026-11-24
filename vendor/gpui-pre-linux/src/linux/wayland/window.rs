@@ -276,7 +276,10 @@ impl WaylandSurfaceState {
         let dialog = if params.kind == WindowKind::Dialog {
             let dialog = globals.dialog.as_ref().map(|dialog| {
                 let xdg_dialog = dialog.get_xdg_dialog(&toplevel, &globals.qh, ());
-                xdg_dialog.set_modal();
+                // SparkCommander patch: not modal for GNOME Shell, see `modal_for_compositor`.
+                if crate::linux::modal_for_compositor() {
+                    xdg_dialog.set_modal();
+                }
                 xdg_dialog
             });
 

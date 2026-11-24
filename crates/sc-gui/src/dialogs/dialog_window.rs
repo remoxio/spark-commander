@@ -210,6 +210,12 @@ fn open_window<V: Render>(
 ) {
     let main = Main::of(parent);
     let bounds = parent.bounds();
+    // GNOME: its own frame's shadow around the page, 20 px a side (GPUI Kit's), so the page keeps its size.
+    let page = size.width;
+    let size = match sc_core::settings::menu_button() {
+        true => size + gpui_kit::size(px(40.), px(40.)),
+        false => size,
+    };
     // shortcut: the window opens at the guessed height and is centred at that; GPUI cannot open one hidden till it is laid out.
     let origin = bounds.center() - point(size.width / 2., size.height / 2.);
     let over = crate::Over::at(WindowBounds::Windowed(Bounds { origin, size }), parent, cx);
@@ -218,6 +224,8 @@ fn open_window<V: Render>(
         is_resizable: false,
         // Windows: it minimizes the app (`native_dialog`).
         is_minimizable: cfg!(windows),
+        // GNOME: its own frame, without a title bar, as libadwaita's dialogs; elsewhere the desktop's.
+        window_decorations: sc_core::settings::menu_button().then_some(WindowDecorations::Client),
         // Linux: the desktop's own title bar untitled, the title a heading in the window.
         ..crate::over_main_window(if cfg!(target_os = "linux") { String::new() } else { title.clone() }, over, cx)
     };
@@ -240,7 +248,7 @@ fn open_window<V: Render>(
         if window.focused(cx).is_none() {
             window.focus(&focus, cx);
         }
-        cx.new(|_| DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: size.width, focus })
+        cx.new(|_| DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: page, focus })
     });
     match opened {
         Ok((handle, _)) => {
@@ -331,7 +339,11 @@ impl Render for DialogWindow {
         let viewport = window.viewport_size();
         let wanted = self.height.get().min(self.most);
         let off = |a: Pixels, b: Pixels| (a - b).abs() > px(1.);
-        if wanted > px(0.) && (off(wanted, viewport.height) || cfg!(windows) && off(self.width, viewport.width)) {
+        // Its own frame's shadow around the page (GNOME's): the window that much larger.
+        let pad = gpui_kit::component::window_paddings(window);
+        let (frame_w, frame_h) = (pad.left + pad.right, pad.top + pad.bottom);
+        let own = frame_w > px(0.);
+        if wanted > px(0.) && (off(wanted + frame_h, viewport.height) || (cfg!(windows) || own) && off(self.width + frame_w, viewport.width)) {
             // Windows: centred over its owner again, after this frame (its messages come at once); elsewhere the system places it.
             #[cfg(windows)]
             if let Some(hwnd) = hwnd(window) {
@@ -340,13 +352,16 @@ impl Render for DialogWindow {
                 cx.foreground_executor().spawn(async move { sc_core::system::theme::fit_dialog(hwnd, width, height) }).detach();
             }
             #[cfg(not(windows))]
-            window.resize(size(viewport.width, wanted));
+            window.resize(size(if own { self.width + frame_w } else { viewport.width }, wanted + frame_h));
         }
         let theme = cx.theme().clone();
         let height = self.height.clone();
-        // GNOME's on Wayland: the app draws the frame, untitled, as libadwaita's dialogs.
+        // GNOME: no title bar, as libadwaita's dialogs; another desktop drawing none on Wayland: an untitled one.
         #[cfg(not(windows))]
-        let header = crate::header::title_bar(SharedString::default(), window, cx);
+        let header = match sc_core::settings::menu_button() {
+            true => None,
+            false => crate::header::title_bar(SharedString::default(), window, cx),
+        };
         #[cfg(windows)]
         let header = Some(caption(self.title.clone(), false, px(8.), window, cx));
         // The title heads the content, as the kit's in-window dialogs.

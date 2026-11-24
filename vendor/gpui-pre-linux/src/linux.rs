@@ -1,4 +1,5 @@
-// Modified for SparkCommander (Apache-2.0, section 4b): files on the clipboard.
+// Modified for SparkCommander (Apache-2.0, section 4b): files on the clipboard; dialog
+// windows not modal to GNOME Shell.
 // Changes are marked "SparkCommander patch".
 
 // SparkCommander patch: files on the clipboard.
@@ -57,4 +58,13 @@ pub fn current_platform(headless: bool) -> Rc<dyn gpui::Platform> {
 /// display server. Set another initial mode with [`gpui::Application::with_windowing`].
 pub fn linux_platform(allowed_modes: WindowingModes) -> Rc<dyn gpui::Platform> {
     Rc::new(LinuxPlatform::new(allowed_modes))
+}
+
+/// SparkCommander patch: whether a dialog window is marked modal for the
+/// compositor. GNOME Shell attaches a modal one under its parent's title bar
+/// and darkens the parent to 70%, which GNOME's own apps' dialogs do not; the
+/// parent's input is blocked here all the same (`is_blocked`).
+#[cfg(any(feature = "wayland", feature = "x11"))]
+pub(crate) fn modal_for_compositor() -> bool {
+    !std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default().split(':').any(|desktop| desktop == "GNOME")
 }

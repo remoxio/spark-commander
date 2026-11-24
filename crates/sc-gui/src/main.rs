@@ -3202,11 +3202,16 @@ pub(crate) fn quick_or_later<T: Send + 'static>(work: impl FnOnce() -> T + Send 
 
 /// The viewer's and editor's windows: where the main one is. Wayland lets
 /// no app place its windows; as the main window's child, the compositor
-/// centres it over the main window.
+/// centres it over the main window. On GNOME they draw their own frame, as
+/// the main one: the same shadow around it, so the main one's bounds are theirs.
 pub(crate) fn over_main_window(title: String, over: Over, cx: &App) -> WindowOptions {
     WindowOptions {
         window_bounds: Some(over.bounds),
         display_id: over.display,
+        window_decorations: Some(match settings::menu_button() {
+            true => WindowDecorations::Client,
+            false => WindowDecorations::Server,
+        }),
         kind: match cx.compositor_name() {
             "Wayland" => WindowKind::Floating,
             _ => WindowKind::Normal,
