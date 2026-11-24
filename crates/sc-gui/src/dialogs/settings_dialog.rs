@@ -954,6 +954,8 @@ impl SettingsDialog {
         let rows: Vec<_> = rows.collect();
         let place = t!("settings.toolbar.place");
         let (styles, names): (Vec<ToolbarStyle>, Vec<String>) = crate::toolbar_styles().into_iter().unzip();
+        // GNOME: none to choose, icons alone.
+        let offered = !styles.is_empty();
         let style = RadioGroup::horizontal("toolbar-style")
             .children(names)
             .selected_index(styles.iter().position(|style| *style == self.draft.toolbar_style).or(Some(0)))
@@ -964,7 +966,7 @@ impl SettingsDialog {
         GroupBox::new().outline().title(t!("settings.toolbar.title")).child(
             v_flex()
                 .gap_2()
-                .child(style)
+                .when(offered, |el| el.child(style))
                 .child(div().whitespace_normal().text_color(cx.theme().muted_foreground).child(place))
                 .children(rows),
         )

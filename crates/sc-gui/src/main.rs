@@ -1643,7 +1643,9 @@ impl Commander {
         }
         let mac = cfg!(target_os = "macos");
         // Text only: macOS's (Finder's) alone.
+        // GNOME's header bar: icons alone, as its apps' (`toolbar_styles` offers no other).
         let style = match self.settings.toolbar_style {
+            _ if settings::menu_button() => settings::ToolbarStyle::Icons,
             settings::ToolbarStyle::Text if !mac => settings::ToolbarStyle::Icons,
             style => style,
         };
@@ -3128,8 +3130,12 @@ impl ToolbarFit {
 }
 
 /// What the toolbar's buttons can show, each with its name; text only on macOS, as Finder's.
+/// None on GNOME: icons alone, as its apps' header bars (a choice made elsewhere is kept).
 pub(crate) fn toolbar_styles() -> Vec<(settings::ToolbarStyle, String)> {
     use settings::ToolbarStyle::*;
+    if settings::menu_button() {
+        return Vec::new();
+    }
     let mut styles = vec![(Icons, sc_core::t!("settings.toolbar.icons")), (IconsAndText, sc_core::t!("settings.toolbar.icons_text"))];
     if cfg!(target_os = "macos") {
         styles.push((Text, sc_core::t!("settings.toolbar.text")));
@@ -3145,6 +3151,7 @@ pub(crate) fn toolbar_menu(commander: WeakEntity<Commander>) -> impl Fn(PopupMen
         let styles = toolbar_styles();
         // A style not offered here (text only, set on macOS) shows as icons only, the default.
         let current = current.map(|current| if styles.iter().any(|(style, _)| *style == current) { current } else { settings::ToolbarStyle::Icons });
+        let offered = !styles.is_empty();
         let menu = styles
             .into_iter()
             .fold(menu, |menu, (style, label)| {
@@ -3157,7 +3164,7 @@ pub(crate) fn toolbar_menu(commander: WeakEntity<Commander>) -> impl Fn(PopupMen
                     });
                 }))
             })
-            .separator();
+            .when(offered, |menu| menu.separator());
         let commander = commander.clone();
         let item = PopupMenuItem::new(sc_core::t!("toolbar.customize")).when_some(menus::menu_icon(Command::Settings), |item, icon| item.icon(Icon::new(icon)));
         menu.item(item.on_click(move |_, window, cx| {
