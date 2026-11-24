@@ -219,8 +219,12 @@ impl minimap::Source for EditorMap {
     }
 }
 
-/// The editor's menus, each built as it opens.
 fn menu_bar(this: WeakEntity<TextEditor>, cx: &mut App) -> Entity<AppMenuBar> {
+    AppMenuBar::built(menus(this), cx)
+}
+
+/// The editor's menus, each built as it opens.
+fn menus(this: WeakEntity<TextEditor>) -> Vec<(SharedString, MenuBuilder)> {
     let menus = MENUS.map(|name| {
         let this = this.clone();
         let build: MenuBuilder = Rc::new(move |menu, _, cx| match this.upgrade() {
@@ -236,7 +240,7 @@ fn menu_bar(this: WeakEntity<TextEditor>, cx: &mut App) -> Entity<AppMenuBar> {
         });
         (menu_name(name).into(), build)
     });
-    AppMenuBar::built(menus.into(), cx)
+    menus.into()
 }
 
 impl TextEditor {
@@ -790,12 +794,18 @@ impl Render for TextEditor {
             crate::menus::show(window, menus.into(), cx);
         }
         let this = cx.weak_entity();
+        let behind = crate::header::menus_behind_button(window);
         // Its close button asks about changes, as the desktop's would.
         let title = title(&self.path, self.edited || self.unsent);
         // Windows: its close asks `on_window_should_close`.
         let header = match cfg!(windows) {
             true => crate::header::window_bar(title, window, cx),
             false => crate::header::title_bar(title, window, cx).map(|bar| {
+                // GNOME: the menus behind ☰ in the title bar, as GNOME's apps have them.
+                let bar = match behind {
+                    true => crate::header::menu_button(bar, menus(this.clone())),
+                    false => bar,
+                };
                 bar.on_close_window(move |_, window, cx| {
                     if this.update(cx, |this, cx| this.may_close(window, cx)).unwrap_or(true) {
                         window.remove_window();
@@ -889,7 +899,7 @@ impl Render for TextEditor {
             .on_action(cx.listener(|this, SetLanguage(chosen): &SetLanguage, _, cx| this.set_language(*chosen, cx)))
             .on_action(|_: &ToggleMinimap, _, cx| crate::toggle_minimap(cx))
             // macOS shows the menus on the system's menu bar.
-            .when(!cfg!(target_os = "macos"), |el| {
+            .when(!cfg!(target_os = "macos") && !behind, |el| {
                 let bar = self.menu_bar.clone();
                 el.on_key_down(move |event, window, cx| crate::menus::alt_letter(&bar, event, window, cx))
                     .child(div().px_1().border_b_1().border_color(theme.border).child(self.menu_bar.clone()))

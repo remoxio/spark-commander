@@ -377,8 +377,12 @@ impl Drop for Viewer {
 /// The minimap's view of the rows.
 const MENUS: [&str; 4] = ["File", "Edit", "Options", "Encoding"];
 
-/// File, Edit, Options and Encoding, as Lister's; each built as it opens.
 fn menu_bar(viewer: WeakEntity<Viewer>, cx: &mut App) -> Entity<AppMenuBar> {
+    AppMenuBar::built(menus(viewer), cx)
+}
+
+/// File, Edit, Options and Encoding, as Lister's; each built as it opens.
+fn menus(viewer: WeakEntity<Viewer>) -> Vec<(SharedString, MenuBuilder)> {
     let menus = MENUS.map(|name| {
         let viewer = viewer.clone();
         let build: MenuBuilder = Rc::new(move |menu, _, cx| match viewer.upgrade() {
@@ -390,7 +394,7 @@ fn menu_bar(viewer: WeakEntity<Viewer>, cx: &mut App) -> Entity<AppMenuBar> {
         });
         (menu_title(name).into(), build)
     });
-    AppMenuBar::built(menus.into(), cx)
+    menus.into()
 }
 
 /// A menu's name as shown; `MENUS` keeps the English to tell them apart.
@@ -1876,7 +1880,12 @@ impl Render for Viewer {
             Mode::Markdown | Mode::Book => Some(self.markdown_minimap.clone()),
             _ => Some(self.minimap.clone()),
         };
-        let header = (!self.quick).then(|| crate::header::window_bar(title(self.shown.path()), window, cx)).flatten();
+        // GNOME: the menus behind ☰ in the title bar, as GNOME's apps have them.
+        let behind = !self.quick && crate::header::menus_behind_button(window);
+        let header = match behind {
+            true => crate::header::title_bar(title(self.shown.path()), window, cx).map(|bar| crate::header::menu_button(bar, menus(cx.weak_entity())).into_any_element()),
+            false => (!self.quick).then(|| crate::header::window_bar(title(self.shown.path()), window, cx)).flatten(),
+        };
         let theme = cx.theme();
         v_flex()
             .key_context(CONTEXT)
@@ -2038,7 +2047,7 @@ impl Render for Viewer {
                 }
             }))
             // macOS shows the menus on the system's menu bar.
-            .when(!self.quick && !cfg!(target_os = "macos"), |el| {
+            .when(!self.quick && !cfg!(target_os = "macos") && !behind, |el| {
                 let bar = self.menu_bar.clone();
                 el.on_key_down(move |event, window, cx| crate::menus::alt_letter(&bar, event, window, cx)).child(
                     div()

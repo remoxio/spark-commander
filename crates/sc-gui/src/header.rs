@@ -5,7 +5,7 @@
 
 use gpui_kit::assets::IconName as Lucide;
 use gpui_kit::component::button::{Button, ButtonVariants};
-use gpui_kit::component::menu::{ContextMenuExt, DropdownMenu};
+use gpui_kit::component::menu::{ContextMenuExt, DropdownMenu, MenuBuilder};
 use gpui_kit::component::{ActiveTheme, GlobalState, Icon, Sizable, TitleBar, WindowButtonPictures, WindowCornerRadius, h_flex, top_corners};
 use gpui_kit::*;
 
@@ -25,7 +25,7 @@ impl Commander {
 
     /// Whether the menus are behind the ☰ button, not in a bar.
     pub(crate) fn menus_behind_button(&self, window: &Window) -> bool {
-        sc_core::settings::menu_button() && own_frame(window)
+        menus_behind_button(window)
     }
 
     /// The title bar, where the window draws its own frame; the toolbar taken
@@ -213,6 +213,24 @@ pub(crate) fn round_corners(cx: &mut App) {
     if let Some(header) = sc_core::system::theme::header_bar() {
         cx.set_global(WindowCornerRadius(px(header.radius)));
     }
+}
+
+/// Whether a window's menus are behind the ☰ button, not in a bar: GNOME's, where it draws its own frame.
+pub(crate) fn menus_behind_button(window: &Window) -> bool {
+    sc_core::settings::menu_button() && own_frame(window)
+}
+
+/// A window's own menus (the viewer's, the editor's) behind a ☰ button at the title bar's right.
+pub(crate) fn menu_button(bar: TitleBar, menus: Vec<(SharedString, MenuBuilder)>) -> TitleBar {
+    let menu = Button::new("window-menu").ghost().small().icon(Icon::new(Lucide::Menu)).dropdown_menu_with_anchor(Anchor::TopRight, move |menu, window, cx| {
+        menus.iter().fold(menu, |menu, (name, build)| {
+            let build = build.clone();
+            menu.submenu(name.clone(), window, cx, move |menu, window, cx| build(menu, window, cx))
+        })
+    });
+    // A press on the button must not start moving the window.
+    let menu = div().on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation()).child(menu);
+    bar.child(h_flex().w_full().px_1().justify_end().child(menu))
 }
 
 fn own_frame(window: &Window) -> bool {
