@@ -2,6 +2,7 @@
 //! Its saved password: the eye shows it once the master password is typed
 //! again, the trash can deletes it.
 
+use crate::dialogs::Role;
 use std::rc::Rc;
 
 use gpui_kit::component::button::{Button, ButtonVariants};
@@ -303,19 +304,18 @@ impl Render for EditConnection {
             .child(field(path_label, path))
             .when(self.scheme == Scheme::S3, |el| el.child(field(t!("connections.field.region"), &self.region)))
             .child(
-                crate::dialogs::footer(cx)
-                    .children(crate::dialogs::ok_cancel(
-                        Button::new("connection-ok")
-                            .primary()
-                            .label(t!("button.save"))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                        Button::new("connection-cancel")
-                            .outline()
-                            .label(t!("remote.dialog.cancel"))
-                            .min_w(px(80.))
-                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("connection-ok")
+                        .primary()
+                        .label(t!("button.save"))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx)))),
+                    (Role::Dismiss, Button::new("connection-cancel")
+                        .outline()
+                        .label(t!("remote.dialog.cancel"))
+                        .min_w(px(80.))
+                        .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                ]),
             )
     }
 }

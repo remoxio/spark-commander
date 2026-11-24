@@ -3012,6 +3012,9 @@ impl Render for Commander {
         };
         // The terminal paints its own background, which the desktop may show through.
         let background = cx.theme().background;
+        // A frame of its own round at the foot (GNOME's): the foot's corners round as it.
+        let (foot_left, foot_right) = gpui_kit::component::bottom_corners(window, cx);
+        let sidebar_drawn = self.sidebar.drawn();
         let main = v_flex()
             .flex_1()
             .min_w_0()
@@ -3027,6 +3030,8 @@ impl Render for Commander {
                         true => self.sidebar.chrome(self.colors.window),
                         false => background,
                     })
+                    .rounded_br(foot_right)
+                    .when(!sidebar_drawn, |el| el.rounded_bl(foot_left))
                     .children(self.render_transfers(cx))
                     .child(self.render_command_line(cx))
                     .child(self.render_button_bar(cx)),

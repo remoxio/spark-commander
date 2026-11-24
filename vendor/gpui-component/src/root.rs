@@ -463,11 +463,14 @@ impl gpui_base::RootPlugin for WindowState {
         use gpui::Refineable as _;
         // SparkCommander patch: rounded as the frame, see `WindowCornerRadius`.
         let (top_left, top_right) = crate::top_corners(window, cx);
+        let (bottom_left, bottom_right) = crate::bottom_corners(window, cx);
         let style = gpui::StyleRefinement::default()
             .font_family(cx.theme().font_family.clone())
             .text_color(cx.theme().foreground)
             .rounded_tl(top_left)
-            .rounded_tr(top_right);
+            .rounded_tr(top_right)
+            .rounded_bl(bottom_left)
+            .rounded_br(bottom_right);
         // SparkCommander patch: the theme's fallback families, see `Theme::font_fallbacks`.
         let mut style = style;
         style.text.font_fallbacks = cx.theme().font_fallbacks.clone();
@@ -518,7 +521,16 @@ impl RenderOnce for WindowStateLayers {
         // SparkCommander patch: see `Veil`; rounded as the frame.
         let veil = cx.try_global::<Veil>().filter(|veil| veil.windows.contains(&window.window_handle())).map(|veil| {
             let (top_left, top_right) = crate::top_corners(window, cx);
-            div().absolute().inset_0().rounded_tl(top_left).rounded_tr(top_right).bg(gpui::hsla(0., 0., 0., veil.opacity)).occlude()
+            let (bottom_left, bottom_right) = crate::bottom_corners(window, cx);
+            div()
+                .absolute()
+                .inset_0()
+                .rounded_tl(top_left)
+                .rounded_tr(top_right)
+                .rounded_bl(bottom_left)
+                .rounded_br(bottom_right)
+                .bg(gpui::hsla(0., 0., 0., veil.opacity))
+                .occlude()
         });
         div()
             .absolute()

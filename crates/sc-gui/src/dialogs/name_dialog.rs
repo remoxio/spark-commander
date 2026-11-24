@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+use crate::dialogs::Role;
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::input::{Input, InputState};
 use gpui_kit::component::v_flex;
@@ -59,22 +60,21 @@ impl Render for NameDialog {
                     .child(Input::new(&self.input)),
             )
             .child(
-                crate::dialogs::footer(cx)
-                    .children(crate::dialogs::ok_cancel(
-                        Button::new("name-ok")
-                            .primary()
-                            .label(self.ok.clone())
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                this.finish(window, cx);
-                                crate::dialogs::dialog_window::close(window, cx);
-                            })),
-                        Button::new("name-cancel")
-                            .outline()
-                            .label(sc_core::t!("name_dialog.cancel"))
-                            .min_w(px(80.))
-                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("name-ok")
+                        .primary()
+                        .label(self.ok.clone())
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.finish(window, cx);
+                            crate::dialogs::dialog_window::close(window, cx);
+                        }))),
+                    (Role::Dismiss, Button::new("name-cancel")
+                        .outline()
+                        .label(sc_core::t!("name_dialog.cancel"))
+                        .min_w(px(80.))
+                        .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                ]),
             )
     }
 }

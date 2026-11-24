@@ -1,6 +1,7 @@
 //! Associate With and Internal Associations: by file mask, the programs
 //! Enter, F3 and F4 run. Kept in the settings.
 
+use crate::dialogs::Role;
 use std::rc::Rc;
 
 use gpui_kit::component::button::{Button, ButtonVariants};
@@ -256,23 +257,22 @@ impl Render for EditAssociation {
                     .child(div().flex_1().child(Input::new(input).small()))
             }))
             .child(
-                crate::dialogs::footer(cx)
-                    .children(crate::dialogs::ok_cancel(
-                        Button::new("assoc-ok")
-                            .primary()
-                            .label(sc_core::t!("associations.ok"))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                if this.finish(window, cx) {
-                                    crate::dialogs::dialog_window::close(window, cx);
-                                }
-                            })),
-                        Button::new("assoc-cancel")
-                            .outline()
-                            .label(sc_core::t!("associations.cancel"))
-                            .min_w(px(80.))
-                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("assoc-ok")
+                        .primary()
+                        .label(sc_core::t!("associations.ok"))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            if this.finish(window, cx) {
+                                crate::dialogs::dialog_window::close(window, cx);
+                            }
+                        }))),
+                    (Role::Dismiss, Button::new("assoc-cancel")
+                        .outline()
+                        .label(sc_core::t!("associations.cancel"))
+                        .min_w(px(80.))
+                        .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                ]),
             )
     }
 }

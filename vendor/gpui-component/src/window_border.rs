@@ -39,6 +39,17 @@ pub fn top_corners(window: &Window, cx: &App) -> (Pixels, Pixels) {
     (round(tiling.left), round(tiling.right))
 }
 
+/// SparkCommander patch: the bottom-left and bottom-right radius, as `top_corners`
+/// (GNOME's windows are round all round); a window's bottom-most parts round theirs.
+pub fn bottom_corners(window: &Window, cx: &App) -> (Pixels, Pixels) {
+    let Decorations::Client { tiling } = window.window_decorations() else {
+        return (px(0.0), px(0.0));
+    };
+    let radius = cx.try_global::<WindowCornerRadius>().map_or(BORDER_RADIUS, |radius| radius.0);
+    let round = |tiled: bool| if tiling.bottom || tiled { px(0.0) } else { radius };
+    (round(tiling.left), round(tiling.right))
+}
+
 /// Create a new window border.
 pub fn window_border() -> WindowBorder {
     WindowBorder::new()
@@ -174,6 +185,7 @@ impl RenderOnce for WindowBorder {
         let window_size = window.window_bounds().get_bounds().size;
         let is_window_active = window.is_window_active();
         let (top_left, top_right) = top_corners(window, cx);
+        let (bottom_left, bottom_right) = bottom_corners(window, cx);
         let border_color = if cx.theme().is_dark() {
             Hsla {
                 h: 0.,
@@ -198,6 +210,8 @@ impl RenderOnce for WindowBorder {
             .overflow_hidden()
             .rounded_tr(top_right)
             .rounded_tl(top_left)
+            .rounded_br(bottom_right)
+            .rounded_bl(bottom_left)
             .when(!tiling.top, |div| div.pt(visual_shadow))
             .when(!tiling.bottom, |div| div.pb(visual_shadow))
             .when(!tiling.left, |div| div.pl(visual_shadow))
@@ -228,6 +242,8 @@ impl RenderOnce for WindowBorder {
                     .overflow_hidden()
                     .rounded_tr(top_right)
                     .rounded_tl(top_left)
+                    .rounded_br(bottom_right)
+                    .rounded_bl(bottom_left)
                     .border_color(border_color)
                     .when(!tiling.top, |div| div.border_t(BORDER_SIZE))
                     .when(!tiling.bottom, |div| div.border_b(BORDER_SIZE))

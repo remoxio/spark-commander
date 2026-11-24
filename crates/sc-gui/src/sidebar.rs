@@ -490,6 +490,7 @@ impl Commander {
         // GNOME: as high as the window, the title bar beside it, as Files' and Builder's.
         let title = self.menus_behind_button(window).then(|| sidebar_title(window, cx));
         let (top_left, _) = gpui_kit::component::top_corners(window, cx);
+        let (bottom_left, _) = gpui_kit::component::bottom_corners(window, cx);
         let theme = cx.theme();
         let width = self.sidebar.width;
         let drawer = h_flex()
@@ -497,6 +498,7 @@ impl Commander {
             .w(px(width))
             .bg(background)
             .when(title.is_some(), |el| el.rounded_tl(top_left))
+            .rounded_bl(bottom_left)
             .border_r_1()
             // Windows: the menu bar has no line under it.
             .when(cfg!(windows), |el| el.border_t_1())

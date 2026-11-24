@@ -329,7 +329,7 @@ impl Render for Offer {
             .text_sm()
             .child(div().whitespace_normal().child(self.text.clone()))
             .child(
-                crate::dialogs::footer(cx).children(crate::dialogs::ordered([
+                crate::dialogs::responses(cx, [
                     (Role::Main, Button::new("offer-yes").primary().label(t!("addons.offer.yes")).on_click(cx.listener(|this, _, window, cx| {
                         let commander = this.commander.clone();
                         this.answer(window, cx, move |window, cx| {
@@ -352,7 +352,7 @@ impl Render for Offer {
                             go_on(window, cx);
                         });
                     }))),
-                ])),
+                ]),
             )
     }
 }

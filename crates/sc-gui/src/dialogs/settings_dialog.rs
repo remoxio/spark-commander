@@ -915,6 +915,7 @@ impl SettingsDialog {
     }
 
     /// The toolbar's buttons in order: each replaced, moved or removed; more added.
+    /// The toolbar's buttons in a box; what adds to them is under it (`render_toolbar_adding`).
     fn render_toolbar(&self, cx: &mut Context<Self>) -> GroupBox {
         let shown = self.draft.toolbar.0.clone();
         let this = cx.weak_entity();
@@ -951,19 +952,6 @@ impl SettingsDialog {
                 })))
         });
         let rows: Vec<_> = rows.collect();
-        let buttons = h_flex()
-            .gap_2()
-            .child(Button::new("toolbar-add").outline().label(t!("settings.toolbar.add")).dropdown_menu(choices(this.clone(), shown.clone(), None)))
-            .child(Button::new("toolbar-add-separator").outline().label(t!("settings.toolbar.add_separator")).on_click(cx.listener(|this, _, _, cx| {
-                this.draft.toolbar.0.push(ToolbarItem::Separator);
-                cx.notify();
-            })))
-            .child(Button::new("toolbar-default").outline().label(t!("settings.toolbar.restore_default")).disabled(self.draft.toolbar == Default::default()).on_click(cx.listener(
-                |this, _, _, cx| {
-                    this.draft.toolbar = Default::default();
-                    cx.notify();
-                },
-            )));
         let place = t!("settings.toolbar.place");
         let (styles, names): (Vec<ToolbarStyle>, Vec<String>) = crate::toolbar_styles().into_iter().unzip();
         let style = RadioGroup::horizontal("toolbar-style")
@@ -978,9 +966,27 @@ impl SettingsDialog {
                 .gap_2()
                 .child(style)
                 .child(div().whitespace_normal().text_color(cx.theme().muted_foreground).child(place))
-                .children(rows)
-                .child(buttons),
+                .children(rows),
         )
+    }
+
+    /// Adding to the toolbar, or its default back: under the list, always in sight.
+    fn render_toolbar_adding(&self, cx: &mut Context<Self>) -> impl IntoElement {
+        let shown = self.draft.toolbar.0.clone();
+        let this = cx.weak_entity();
+        h_flex()
+            .gap_2()
+            .child(Button::new("toolbar-add").outline().label(t!("settings.toolbar.add")).dropdown_menu(choices(this.clone(), shown.clone(), None)))
+            .child(Button::new("toolbar-add-separator").outline().label(t!("settings.toolbar.add_separator")).on_click(cx.listener(|this, _, _, cx| {
+                this.draft.toolbar.0.push(ToolbarItem::Separator);
+                cx.notify();
+            })))
+            .child(Button::new("toolbar-default").outline().label(t!("settings.toolbar.restore_default")).disabled(self.draft.toolbar == Default::default()).on_click(cx.listener(
+                |this, _, _, cx| {
+                    this.draft.toolbar = Default::default();
+                    cx.notify();
+                },
+            )))
     }
 
     /// How many passwords are saved and whether a master password is set, at
@@ -1325,6 +1331,7 @@ impl SettingsDialog {
                     .overflow_y_scrollbar()
                     .children(content),
             )
+            .when(title == "Toolbar", |page| page.child(self.render_toolbar_adding(cx)))
     }
 }
 

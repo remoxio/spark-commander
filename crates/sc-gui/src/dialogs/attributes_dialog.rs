@@ -1,6 +1,7 @@
 //! Change Attributes: the permission bits of the chosen entries, each on,
 //! off or mixed; only the bits clicked change. Runs in the queue.
 
+use crate::dialogs::Role;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -269,23 +270,22 @@ impl Render for AttributesDialog {
                 )
             })
             .child(
-                crate::dialogs::footer(cx)
-                    .children(crate::dialogs::ok_cancel(
-                        Button::new("attr-ok")
-                            .primary()
-                            .label(sc_core::t!("button.change"))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                if this.finish(window, cx) {
-                                    crate::dialogs::dialog_window::close(window, cx);
-                                }
-                            })),
-                        Button::new("attr-cancel")
-                            .outline()
-                            .label(sc_core::t!("attributes.cancel"))
-                            .min_w(px(80.))
-                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("attr-ok")
+                        .primary()
+                        .label(sc_core::t!("button.change"))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            if this.finish(window, cx) {
+                                crate::dialogs::dialog_window::close(window, cx);
+                            }
+                        }))),
+                    (Role::Dismiss, Button::new("attr-cancel")
+                        .outline()
+                        .label(sc_core::t!("attributes.cancel"))
+                        .min_w(px(80.))
+                        .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                ]),
             )
     }
 }

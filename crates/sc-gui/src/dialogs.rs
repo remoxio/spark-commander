@@ -18,9 +18,10 @@ pub mod rename_dialog;
 pub mod settings_dialog;
 pub mod tools_dialog;
 
-use gpui_kit::component::{ActiveTheme, NativeControls, WindowClose, h_flex};
+use gpui_kit::component::button::{Button, ButtonCustomVariant, ButtonVariant, ButtonVariants as _};
+use gpui_kit::component::{ActiveTheme, NativeControls, WindowClose, WindowCornerRadius, h_flex};
 use gpui_kit::prelude::FluentBuilder;
-use gpui_kit::{App, Div, Styled, px};
+use gpui_kit::{AnyElement, AnyWindowHandle, App, Div, FontWeight, Global, IntoElement, ParentElement, Styled, canvas, px};
 use sc_core::system::theme::{ButtonOrder, button_order};
 
 /// A dialog button's part, for the desktop's order of them.
@@ -70,6 +71,64 @@ fn arrange<T>(order: ButtonOrder, mut buttons: Vec<(Role, T)>) -> Vec<T> {
 pub(crate) fn ok_cancel<T>(ok: T, cancel: T) -> Vec<T> {
     ordered([(Role::Main, ok), (Role::Dismiss, cancel)])
 }
+
+/// A dialog's answers: Cancel, the main action (OK, Copy, Save), or Close alone.
+/// On GNOME as libadwaita's alert: a row out to the dialog's edges under a line,
+/// equal parts, flat and bold, Cancel first and the main one last, its label in the
+/// accent, a dangerous one's red; the dialog then dims the window it was opened
+/// over, as an alert (`Responding`). Elsewhere the footer, in this desktop's order.
+pub(crate) fn responses(cx: &App, buttons: impl IntoIterator<Item = (Role, Button)>) -> AnyElement {
+    let mut buttons: Vec<(Role, Button)> = buttons.into_iter().collect();
+    if sc_core::system::theme::control_style() != Some(sc_core::system::theme::ControlStyle::Adwaita) {
+        return footer(cx).children(ordered(buttons)).into_any_element();
+    }
+    buttons.sort_by_key(|(role, _)| match role {
+        Role::Dismiss => 0,
+        Role::Main => 2,
+        _ => 1,
+    });
+    let theme = cx.theme();
+    let (line, hover) = (theme.border, theme.foreground.opacity(0.05));
+    let corner = cx.try_global::<WindowCornerRadius>().map_or(px(0.), |radius| radius.0);
+    let last = buttons.len().saturating_sub(1);
+    let row = buttons.into_iter().enumerate().map(|(ix, (_, button))| {
+        let color = match button.variant() {
+            ButtonVariant::Primary => theme.primary,
+            ButtonVariant::Danger => theme.danger,
+            _ => theme.foreground,
+        };
+        let look = ButtonCustomVariant::new(cx).color(theme.transparent).foreground(color).hover(hover).active(hover.opacity(0.1));
+        button
+            .with_variant(ButtonVariant::Custom(look))
+            .flex_1()
+            .h(px(46.))
+            .rounded(px(0.))
+            .font_weight(FontWeight::BOLD)
+            .when(ix == 0, |button| button.rounded_bl(corner))
+            .when(ix == last, |button| button.rounded_br(corner))
+            .when(ix > 0, |button| button.border_l_1().border_color(line))
+    });
+    // Drawn, it marks its dialog window as answering, which then dims its owner.
+    let mark = canvas(
+        |_, window, cx| {
+            let handle = window.window_handle();
+            let marked = &mut cx.default_global::<Responding>().0;
+            if !marked.contains(&handle) {
+                marked.push(handle);
+                window.refresh();
+            }
+        },
+        |_, _, _, _| {},
+    );
+    // Out to the dialog's edges, over its page's 16 px padding.
+    h_flex().relative().mt_4().mx(px(-16.)).mb(px(-16.)).border_t_1().border_color(line).children(row).child(mark.absolute().size_0()).into_any_element()
+}
+
+/// The dialog windows showing `responses` (some may be closed since).
+#[derive(Default)]
+pub(crate) struct Responding(pub(crate) Vec<AnyWindowHandle>);
+
+impl Global for Responding {}
 
 /// A dialog's button row; Windows' in a band across its foot, as WinUI's ContentDialog.
 pub(crate) fn footer(cx: &App) -> Div {

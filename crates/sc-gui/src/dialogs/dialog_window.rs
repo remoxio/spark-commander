@@ -177,6 +177,18 @@ struct DialogWindow {
     focus: FocusHandle,
     /// A question: on GNOME as libadwaita's alert.
     alert: bool,
+    /// The window it asks over, and whether it dims it (an alert, a page with
+    /// `responses`, on GNOME); its own window.
+    asked: AnyWindowHandle,
+    veiled: Rc<Cell<bool>>,
+    own: AnyWindowHandle,
+}
+
+/// The veil over `window` on, as an alert's (black at 30%).
+fn veil(window: AnyWindowHandle, cx: &mut App) {
+    let veil = cx.default_global::<gpui_kit::component::Veil>();
+    veil.opacity = 0.3;
+    veil.windows.push(window);
 }
 
 /// The veil of an alert over `window` off (another alert may keep one).
@@ -292,10 +304,9 @@ fn open_window<V: Render>(
     // GNOME: an alert dims the window it asks over, as libadwaita's (black at 30%); other dialogs do not.
     let veils = alert && adwaita();
     let asked = parent.window_handle();
+    let veiled = Rc::new(Cell::new(veils));
     if veils {
-        let veil = cx.default_global::<gpui_kit::component::Veil>();
-        veil.opacity = 0.3;
-        veil.windows.push(asked);
+        veil(asked, cx);
         parent.refresh();
     }
     let opened = gpui_kit::open_window(options, cx, |window, cx| {
@@ -311,12 +322,20 @@ fn open_window<V: Render>(
         if window.focused(cx).is_none() {
             window.focus(&focus, cx);
         }
+        let own = window.window_handle();
         cx.new(|cx| {
             // Closed (its window gone), the veil goes.
-            if veils {
-                cx.on_release(move |_, cx| unveil(asked, cx)).detach();
-            }
-            DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: page, focus, alert }
+            let gone = veiled.clone();
+            cx.on_release(move |_, cx| {
+                if gone.get() {
+                    unveil(asked, cx);
+                }
+                if cx.has_global::<crate::dialogs::Responding>() {
+                    cx.global_mut::<crate::dialogs::Responding>().0.retain(|window| *window != own);
+                }
+            })
+            .detach();
+            DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: page, focus, alert, asked, veiled: veiled.clone(), own }
         })
     });
     match opened {
@@ -329,7 +348,7 @@ fn open_window<V: Render>(
             opened.push(handle);
         }
         Err(err) => {
-            if veils {
+            if veiled.get() {
                 unveil(asked, cx);
                 parent.refresh();
             }
@@ -435,6 +454,15 @@ impl Render for DialogWindow {
         }
         let theme = cx.theme().clone();
         let height = self.height.clone();
+        // Its page answering as an alert (`responses`, GNOME's): its owner dimmed as for an alert.
+        if !self.veiled.get() && cx.try_global::<crate::dialogs::Responding>().is_some_and(|marked| marked.0.contains(&self.own)) {
+            self.veiled.set(true);
+            veil(self.asked, cx);
+            let asked = self.asked;
+            cx.defer(move |cx| {
+                let _ = asked.update(cx, |_, window, _| window.refresh());
+            });
+        }
         // GNOME: no title bar, as libadwaita's dialogs; another desktop drawing none on Wayland: an untitled one.
         #[cfg(not(windows))]
         let header = match sc_core::settings::menu_button() {
@@ -469,7 +497,7 @@ impl Render for DialogWindow {
                     .on_click(|_, window, _| window.remove_window())
             });
             let ok = button.on_click(cx.listener(|this, _, window, cx| this.confirm(window, cx)));
-            crate::dialogs::footer(cx).children(crate::dialogs::ordered(std::iter::once((Role::Main, ok)).chain(cancel.map(|cancel| (Role::Dismiss, cancel)))))
+            crate::dialogs::responses(cx, std::iter::once((Role::Main, ok)).chain(cancel.map(|cancel| (Role::Dismiss, cancel))))
         });
         let page = v_flex()
             .relative()
@@ -493,10 +521,17 @@ impl Render for DialogWindow {
                 .absolute()
                 .inset_0(),
             );
+        // Its own frame (GNOME's) without a title bar: the page round as the window.
+        let (top_left, top_right) = gpui_kit::component::top_corners(window, cx);
+        let (bottom_left, bottom_right) = gpui_kit::component::bottom_corners(window, cx);
         div()
             .key_context(CONTEXT)
             .track_focus(&self.focus)
             .size_full()
+            .rounded_tl(top_left)
+            .rounded_tr(top_right)
+            .rounded_bl(bottom_left)
+            .rounded_br(bottom_right)
             .bg(theme.background)
             .text_color(theme.foreground)
             .on_action(cx.listener(|this, _: &Confirm, window, cx| this.confirm(window, cx)))

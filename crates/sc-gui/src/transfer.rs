@@ -793,22 +793,21 @@ impl Render for TransferDialog {
             .child(destination)
             .child(exists)
             .child(
-                crate::dialogs::footer(cx)
-                    .children(crate::dialogs::ok_cancel(
-                        Button::new("transfer-ok")
-                            .primary()
-                            .label(verb(shown.kind))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                this.finish(window, cx);
-                                this.close(window, cx);
-                            })),
-                        Button::new("transfer-cancel")
-                            .outline()
-                            .label(sc_core::t!("transfer.cancel"))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| this.close(window, cx))),
-                    )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("transfer-ok")
+                        .primary()
+                        .label(verb(shown.kind))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.finish(window, cx);
+                            this.close(window, cx);
+                        }))),
+                    (Role::Dismiss, Button::new("transfer-cancel")
+                        .outline()
+                        .label(sc_core::t!("transfer.cancel"))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| this.close(window, cx)))),
+                ]),
             )
     }
 }

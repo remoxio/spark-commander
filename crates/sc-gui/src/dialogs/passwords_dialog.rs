@@ -1,6 +1,7 @@
 //! The saved passwords' master password (sc_core's secrets): set or changed
 //! in Settings › Passwords, typed to unlock them on another computer.
 
+use crate::dialogs::Role;
 use std::rc::Rc;
 use std::time::Duration;
 
@@ -186,14 +187,14 @@ impl Render for MasterDialog {
             .children(self.again.as_ref().map(|again| field(t!("passwords.field.again"), again)))
             .children(self.problem.clone().map(|problem| div().whitespace_normal().text_color(theme.danger).child(problem)))
             .child(
-                crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
-                    Button::new("master-ok")
-                        .primary()
-                        .label(if self.working { t!("passwords.working") } else { self.ok.clone() })
-                        .min_w(px(80.))
-                        .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                    Button::new("master-cancel").outline().label(t!("passwords.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("master-ok")
+                    .primary()
+                    .label(if self.working { t!("passwords.working") } else { self.ok.clone() })
+                    .min_w(px(80.))
+                    .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx)))),
+                    (Role::Dismiss, Button::new("master-cancel").outline().label(t!("passwords.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                ]),
             )
     }
 }

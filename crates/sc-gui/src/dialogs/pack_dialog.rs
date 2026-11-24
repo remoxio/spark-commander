@@ -1,6 +1,7 @@
 //! Pack (Alt+F5), Unpack Specific Files (Alt+F9) and Test Archives
 //! (Alt+Shift+F9): their dialogs; the work runs in the queue.
 
+use crate::dialogs::Role;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
@@ -190,22 +191,22 @@ pub(crate) fn buttons<V: 'static>(
     cx: &mut Context<V>,
     finish: fn(&mut V, &mut Window, &mut Context<V>) -> bool,
 ) -> impl IntoElement {
-    crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
-        Button::new((id, 0usize))
-            .primary()
-            .label(ok)
-            .min_w(px(80.))
-            .on_click(cx.listener(move |this, _, window, cx| {
-                if finish(this, window, cx) {
-                    crate::dialogs::dialog_window::close(window, cx);
-                }
-            })),
-        Button::new((id, 1usize))
-            .outline()
-            .label(sc_core::t!("pack.cancel"))
-            .min_w(px(80.))
-            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-    ))
+    crate::dialogs::responses(cx, [
+        (Role::Main, Button::new((id, 0usize))
+        .primary()
+        .label(ok)
+        .min_w(px(80.))
+        .on_click(cx.listener(move |this, _, window, cx| {
+            if finish(this, window, cx) {
+                crate::dialogs::dialog_window::close(window, cx);
+            }
+        }))),
+        (Role::Dismiss, Button::new((id, 1usize))
+        .outline()
+        .label(sc_core::t!("pack.cancel"))
+        .min_w(px(80.))
+        .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+    ])
 }
 
 pub(crate) fn check<V: 'static>(

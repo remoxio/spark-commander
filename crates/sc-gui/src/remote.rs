@@ -376,19 +376,18 @@ impl Render for LoginDialog {
                     })),
             )
             .child(
-                crate::dialogs::footer(cx)
-                    .children(crate::dialogs::ok_cancel(
-                        Button::new("login-ok")
-                            .primary()
-                            .label(t!("button.connect"))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                        Button::new("login-cancel")
-                            .outline()
-                            .label(t!("remote.dialog.cancel"))
-                            .min_w(px(80.))
-                            .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                    )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("login-ok")
+                        .primary()
+                        .label(t!("button.connect"))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx)))),
+                    (Role::Dismiss, Button::new("login-cancel")
+                        .outline()
+                        .label(t!("remote.dialog.cancel"))
+                        .min_w(px(80.))
+                        .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                ]),
             )
     }
 }
@@ -545,11 +544,11 @@ impl Render for HostKeyDialog {
             .text_sm()
             .child(div().whitespace_normal().child(self.text.clone()))
             .child(
-                crate::dialogs::footer(cx).children(crate::dialogs::ordered([
+                crate::dialogs::responses(cx, [
                     (Role::Main, button("Connect and remember", t!("remote.unknown_host.remember"), Reply::Trust { remember: true }).primary()),
                     (Role::Other, button("Connect once", t!("remote.unknown_host.once"), Reply::Trust { remember: false }).outline()),
                     (Role::Dismiss, button("Cancel", t!("remote.dialog.cancel"), Reply::Cancel).outline()),
-                ])),
+                ]),
             )
     }
 }
@@ -599,22 +598,21 @@ impl Render for SecretDialog {
                 )
             })
             .child(
-                crate::dialogs::footer(cx)
-                    .children(crate::dialogs::ok_cancel(
-                        Button::new("secret-ok")
-                            .primary()
-                            .label(t!("button.connect"))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                        Button::new("secret-cancel")
-                            .outline()
-                            .label(t!("remote.dialog.cancel"))
-                            .min_w(px(80.))
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                this.answer.borrow_mut().send(Reply::Cancel);
-                                crate::dialogs::dialog_window::close(window, cx);
-                            })),
-                    )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("secret-ok")
+                        .primary()
+                        .label(t!("button.connect"))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| this.finish(window, cx)))),
+                    (Role::Dismiss, Button::new("secret-cancel")
+                        .outline()
+                        .label(t!("remote.dialog.cancel"))
+                        .min_w(px(80.))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.answer.borrow_mut().send(Reply::Cancel);
+                            crate::dialogs::dialog_window::close(window, cx);
+                        }))),
+                ]),
             )
     }
 }

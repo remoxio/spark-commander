@@ -338,7 +338,9 @@ impl Button {
         self
     }
 
-    pub(crate) fn variant(&self) -> ButtonVariant {
+    /// SparkCommander patch: public, so a made button can be drawn otherwise in its
+    /// colour (GNOME's dialog answers, a row of flat labels).
+    pub fn variant(&self) -> ButtonVariant {
         self.variant
     }
 

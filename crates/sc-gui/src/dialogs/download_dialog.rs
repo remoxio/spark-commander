@@ -1,6 +1,7 @@
 //! Files › Download from Link: an HTTP(S) or FTP(S) link's file into the
 //! active panel's folder, this computer's only.
 
+use crate::dialogs::Role;
 use std::path::PathBuf;
 use std::rc::Rc;
 
@@ -132,10 +133,10 @@ impl Render for DownloadDialog {
             .child(div().whitespace_normal().text_color(theme.muted_foreground).child(sc_core::t!("download.into", folder = self.dir.display())))
             .children(self.problem.clone().map(|problem| div().whitespace_normal().text_color(theme.danger).child(problem)))
             .child(
-                crate::dialogs::footer(cx).children(crate::dialogs::ok_cancel(
-                    Button::new("download-ok").primary().label(ok).min_w(px(80.)).on_click(cx.listener(|this, _, window, cx| this.finish(window, cx))),
-                    Button::new("download-cancel").outline().label(sc_core::t!("download.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx)),
-                )),
+                crate::dialogs::responses(cx, [
+                    (Role::Main, Button::new("download-ok").primary().label(ok).min_w(px(80.)).on_click(cx.listener(|this, _, window, cx| this.finish(window, cx)))),
+                    (Role::Dismiss, Button::new("download-cancel").outline().label(sc_core::t!("download.cancel")).min_w(px(80.)).on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx))),
+                ]),
             )
     }
 }
