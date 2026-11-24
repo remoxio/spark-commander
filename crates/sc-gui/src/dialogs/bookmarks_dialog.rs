@@ -137,7 +137,7 @@ impl Render for BookmarksDialog {
                     .cursor_pointer()
                     .when(selected == Some(ix), |el| el.bg(theme.list_active))
                     .when(selected != Some(ix), |el| el.hover(|style| style.bg(theme.list_hover)))
-                    .child(img(format!("material/{icon}")).size(px(16.)).flex_none())
+                    .child(img(crate::material_icon(icon, dark)).size(px(16.)).flex_none())
                     .child(div().flex_none().max_w(relative(0.4)).truncate().child(name.clone()))
                     .child(div().flex_1().min_w_0().truncate().text_xs().text_color(if selected == Some(ix) { theme.foreground.opacity(0.7) } else { muted }).child(crate::sidebar::tilde(path, home.as_deref())))
                     .on_click(cx.listener(move |this, _, _, cx| {

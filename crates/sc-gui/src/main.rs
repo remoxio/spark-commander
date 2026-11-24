@@ -92,16 +92,76 @@ impl AssetSource for AppAssets {
         if let Some(bytes) = ExtraIcons.load(path)? {
             return Ok(Some(bytes));
         }
-        let Some(name) = path.strip_prefix("material/") else {
-            return gpui_kit::assets::Assets.load(path);
+        let (name, dark) = match (path.strip_prefix("material/"), path.strip_prefix("material-dark/")) {
+            (Some(name), _) => (name, false),
+            (_, Some(name)) => (name, true),
+            _ => return gpui_kit::assets::Assets.load(path),
         };
-        let found = MATERIAL_ICONS.binary_search_by_key(&name, |(name, _)| name);
-        Ok(found.ok().map(|ix| Cow::Borrowed(MATERIAL_ICONS[ix].1)))
+        let Ok(ix) = MATERIAL_ICONS.binary_search_by_key(&name, |(name, _)| name) else {
+            return Ok(None);
+        };
+        let svg = MATERIAL_ICONS[ix].1;
+        Ok(Some(match dark {
+            true => Cow::Owned(for_dark(std::str::from_utf8(svg)?).into_bytes()),
+            false => Cow::Borrowed(svg),
+        }))
     }
 
     fn list(&self, path: &str) -> Result<Vec<SharedString>> {
         gpui_kit::assets::Assets.list(path)
     }
+}
+
+/// A Material file icon's asset: on a dark theme its colours lightened where they would not show (`for_dark`).
+pub(crate) fn material_icon(icon: &str, dark: bool) -> String {
+    match dark {
+        true => format!("material-dark/{icon}"),
+        false => format!("material/{icon}"),
+    }
+}
+
+/// A Material icon for a dark ground: a colour under 4.5:1 on VS Code's dark grey
+/// (#1e1e1e, the theme's own ground) lighter until it is not, hue and saturation kept;
+/// its dark blues (Word's) vanish on a near-black panel.
+fn for_dark(svg: &str) -> String {
+    const GROUND: f32 = 0.0130;
+    let luminance = |c: Rgba| {
+        let lin = |v: f32| if v <= 0.04045 { v / 12.92 } else { ((v + 0.055) / 1.055).powf(2.4) };
+        0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b)
+    };
+    let shows = |c: Rgba| (luminance(c) + 0.05) / (GROUND + 0.05) >= 4.5;
+    let lighter = |hex: &str| {
+        let full: String = match hex.len() {
+            3 => hex.chars().flat_map(|c| [c, c]).collect(),
+            _ => hex.to_owned(),
+        };
+        let mut colour = rgb(u32::from_str_radix(&full, 16).ok()?);
+        let mut hsl = Hsla::from(colour);
+        while !shows(colour) && hsl.l < 0.95 {
+            hsl.l += 0.01;
+            colour = hsl.to_rgb();
+        }
+        let byte = |v: f32| (v * 255.).round() as u8;
+        Some(format!("{:02x}{:02x}{:02x}", byte(colour.r), byte(colour.g), byte(colour.b)))
+    };
+    // Its colours are all `="#rrggbb"` or `="#rgb"` (fill, stroke, stop-color); `url(#a)` is none.
+    let mut out = String::with_capacity(svg.len());
+    let mut rest = svg;
+    while let Some(at) = rest.find("=\"#") {
+        let (before, after) = rest.split_at(at + 3);
+        out.push_str(before);
+        let hex = after.split('"').next().unwrap_or_default();
+        let colour = matches!(hex.len(), 3 | 6) && hex.chars().all(|c| c.is_ascii_hexdigit());
+        match colour.then(|| lighter(hex)).flatten() {
+            Some(new) => {
+                out.push_str(&new);
+                rest = &after[hex.len()..];
+            }
+            None => rest = after,
+        }
+    }
+    out.push_str(rest);
+    out
 }
 
 const CONTEXT: &str = "Commander";
@@ -3324,6 +3384,17 @@ mod tests {
         assert_eq!(shown("/home/me/"), [("/", "/"), ("home", "/home"), ("me", "/home/me")]);
         assert_eq!(shown("sftp://me@host/home"), [("sftp://me@host/", "sftp://me@host/"), ("home", "sftp://me@host/home")]);
         assert_eq!(shown(r"\\nas\share\docs"), [(r"\\nas\share\", r"\\nas\share\"), ("docs", r"\\nas\share\docs")]);
+    }
+
+    #[test]
+    fn dark_icons_lightened() {
+        let word = r##"<path fill="#01579b" d="M6 2"/><path fill="url(#a)" stop-color="#ffca28" stroke="#000"/>"##;
+        let out = super::for_dark(word);
+        // Word's blue lighter, as bright as it must be; the yellow as it was; black grey; the reference kept.
+        assert!(!out.contains("#01579b") && out.contains("fill=\"#0") && out.contains("url(#a)"), "{out}");
+        assert!(out.contains("stop-color=\"#ffca28\"") && !out.contains("stroke=\"#000\""), "{out}");
+        let svg = super::MATERIAL_ICONS.iter().find(|(name, _)| *name == "word.svg").expect("Word's icon").1;
+        assert!(super::for_dark(std::str::from_utf8(svg).unwrap()).starts_with("<svg"));
     }
 
     #[test]

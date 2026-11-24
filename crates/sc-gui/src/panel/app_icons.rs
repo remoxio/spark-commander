@@ -50,8 +50,9 @@ impl Commander {
             }
         }
         let folder = entry.is_dir && !entry.is_app();
-        let icon = icons::material().icon(&entry.display_name(), folder, !cx.theme().mode.is_dark());
-        img(format!("material/{icon}")).size(size).flex_none().into_any_element()
+        let dark = cx.theme().mode.is_dark();
+        let icon = icons::material().icon(&entry.display_name(), folder, !dark);
+        img(crate::material_icon(icon, dark)).size(size).flex_none().into_any_element()
     }
 
     /// The entry's own icon once made; the first ask starts making it.

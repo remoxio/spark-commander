@@ -743,7 +743,7 @@ impl Commander {
             (0, false) => "folder-home.svg",
             _ => icons::material().icon(row.name, true, light),
         };
-        let icon = img(format!("material/{icon}")).size(px(16.)).flex_none();
+        let icon = img(crate::material_icon(icon, !light)).size(px(16.)).flex_none();
         let path = row.path.to_owned();
         let toggled = path.clone();
         let chevron = match row.expanded {
@@ -1179,7 +1179,7 @@ impl Commander {
                         .cursor_pointer()
                         .when(selected, |el| selected_row(el, &self.colors, cx))
                         .when(!selected, |el| el.hover(|style| style.bg(theme.foreground.opacity(0.06))))
-                        .child(img(format!("material/{icon}")).size(px(16.)).flex_none())
+                        .child(img(crate::material_icon(icon, theme.mode.is_dark())).size(px(16.)).flex_none())
                         .child(div().flex_1().min_w_0().truncate().child(name.clone()))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             this.open_device(&opened, Some(path.clone()), window, cx)
@@ -1247,7 +1247,7 @@ impl Commander {
                     .cursor_pointer()
                     .when(selected, |el| selected_row(el, &self.colors, cx))
                     .when(!selected, |el| el.hover(|style| style.bg(theme.foreground.opacity(0.06))))
-                    .child(img(format!("material/{icon}")).size(px(16.)).flex_none())
+                    .child(img(crate::material_icon(icon, theme.mode.is_dark())).size(px(16.)).flex_none())
                     .child(div().flex_none().max_w(relative(0.6)).truncate().child(name))
                     .child(div().flex_1().min_w_0().truncate().text_xs().text_color(secondary(selected, cx)).children(parent))
                     .on_click(cx.listener(move |this, _, window, cx| this.open_folder(opened.clone(), window, cx)))

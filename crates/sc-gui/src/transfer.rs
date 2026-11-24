@@ -743,7 +743,7 @@ impl Render for TransferDialog {
         let icon = match &shown.one {
             Some((name, folder)) => {
                 let icon = sc_core::icons::material().icon(name, *folder, !theme.mode.is_dark());
-                img(format!("material/{icon}")).size(px(28.)).into_any_element()
+                img(crate::material_icon(icon, theme.mode.is_dark())).size(px(28.)).into_any_element()
             }
             None => Icon::new(gpui_kit::assets::IconName::Files).size(px(24.)).text_color(muted).into_any_element(),
         };
