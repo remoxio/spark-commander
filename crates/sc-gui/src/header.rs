@@ -190,6 +190,11 @@ pub(crate) fn title_bar(title: impl Into<SharedString>, window: &Window, cx: &mu
     {
         let pictures = pictures.clone().map(|path| path.to_string_lossy().into_owned().into());
         cx.set_global(WindowButtonPictures(pictures));
+        // Their fill as GNOME's apps draw it: the installed libadwaita's stylesheet, else none.
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+        if let Some(look) = sc_core::system::adwaita::window_buttons() {
+            cx.set_global(gpui_kit::component::WindowButtonLook { fill: look.fill, radius: look.radius.map(px), padding: px(look.padding) });
+        }
     }
     let title = div().min_w_0().truncate().font_weight(FontWeight::BOLD).child(title.into());
     let title = div().absolute().inset_0().px(px(140.)).flex().items_center().justify_center().child(title);

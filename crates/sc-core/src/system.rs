@@ -1,6 +1,8 @@
 //! What the system and the desktop give: their look, disks, menus, clipboard,
 //! shells and administrator rights.
 
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
+pub mod adwaita;
 pub mod clipboard;
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
 pub mod desktop;

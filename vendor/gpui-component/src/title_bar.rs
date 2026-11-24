@@ -114,6 +114,18 @@ pub struct WindowButtonPictures(pub [SharedString; 4]);
 
 impl gpui::Global for WindowButtonPictures {}
 
+/// SparkCommander patch: the pictures' fill, as libadwaita draws it (the app reads
+/// its stylesheet): a share of the text's colour normal, hovered and pressed, the
+/// corners' radius (none: round), the padding round the 16 px picture.
+#[derive(Clone, Copy)]
+pub struct WindowButtonLook {
+    pub fill: [f32; 3],
+    pub radius: Option<Pixels>,
+    pub padding: Pixels,
+}
+
+impl gpui::Global for WindowButtonLook {}
+
 // The Windows control buttons have a fixed width of 35px.
 //
 // We don't need implementation the click event for the control buttons.
@@ -222,6 +234,7 @@ impl RenderOnce for ControlIcon {
         let active_bg = self.active_bg(cx);
         let icon = self.clone();
         let picture = self.picture(cx);
+        let look = cx.try_global::<WindowButtonLook>().copied().filter(|_| picture.is_some());
         let fg = cx.theme().foreground;
         let on_close_window = match &self {
             ControlIcon::Close { on_close_window } => on_close_window.clone(),
@@ -238,6 +251,8 @@ impl RenderOnce for ControlIcon {
             .items_center()
             .text_color(fg)
             .map(|this| match picture.is_some() {
+                // SparkCommander patch: libadwaita's, the fill on the picture (`WindowButtonLook`).
+                true if look.is_some() => this.size(px(24.)).mx(px(5.)).group("window-button"),
                 // SparkCommander patch: GTK's, a round button shaded under the pointer.
                 true => this
                     .size(px(24.))
@@ -274,9 +289,28 @@ impl RenderOnce for ControlIcon {
                     }
                 })
             })
-            .map(|this| match picture {
-                Some(path) => this.child(svg().external_path(path).size_4().text_color(fg)),
-                None => this.child(Icon::new(self.icon()).small()),
+            .map(|this| match (picture, look) {
+                (Some(path), Some(look)) => {
+                    let [normal, hover, pressed] = look.fill;
+                    let fill = div()
+                        .id("fill")
+                        .flex_none()
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .p(look.padding)
+                        .map(|fill| match look.radius {
+                            Some(radius) => fill.rounded(radius),
+                            None => fill.rounded_full(),
+                        })
+                        .bg(fg.opacity(normal))
+                        .group_hover("window-button", |style| style.bg(fg.opacity(hover)))
+                        .group_active("window-button", |style| style.bg(fg.opacity(pressed)))
+                        .child(svg().external_path(path).size_4().text_color(fg));
+                    this.child(fill)
+                }
+                (Some(path), None) => this.child(svg().external_path(path).size_4().text_color(fg)),
+                (None, _) => this.child(Icon::new(self.icon()).small()),
             })
     }
 }
