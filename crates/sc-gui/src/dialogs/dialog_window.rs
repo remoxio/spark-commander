@@ -415,14 +415,14 @@ pub(crate) fn caption(title: SharedString, maximize: bool, lead: Pixels, window:
     #[cfg(windows)]
     let drag = drag.on_mouse_down(MouseButton::Right, |_, window, cx| {
         cx.stop_propagation();
-        system_menu(window, cx);
+        system_menu(window, false, cx);
     });
     let icon = cx.try_global::<AlertIcon>().map(|icon| {
         let icon = div().id("caption-icon").flex_none().child(img(icon.0.clone()).size(px(16.)));
         #[cfg(windows)]
         let icon = icon.on_mouse_down(MouseButton::Left, |_, window, cx| {
             cx.stop_propagation();
-            system_menu(window, cx);
+            system_menu(window, true, cx);
         });
         icon
     });
@@ -442,11 +442,13 @@ pub(crate) fn caption(title: SharedString, maximize: bool, lead: Pixels, window:
         .child(close.child(glyph("\u{E8BB}")))
 }
 
-/// Windows: the window's menu, once this event is over: its own loop would run inside GPUI's.
+/// Windows: the window's menu, at the pointer or under the caption's left end (as
+/// Alt+Space), once this event is over: its own loop would run inside GPUI's.
 #[cfg(windows)]
-fn system_menu(window: &Window, cx: &mut App) {
+fn system_menu(window: &Window, below_caption: bool, cx: &mut App) {
     if let Some(hwnd) = hwnd(window) {
-        cx.spawn(async move |_| sc_core::system::theme::system_menu(hwnd, None)).detach();
+        let below = below_caption.then(|| (32. * window.scale_factor()).round() as i32);
+        cx.spawn(async move |_| sc_core::system::theme::system_menu(hwnd, below)).detach();
     }
 }
 
