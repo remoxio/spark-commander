@@ -2454,7 +2454,7 @@ diff -ruN a/src/menu/mod.rs b/src/menu/mod.rs
      app_menu_bar::init(cx);
 diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 --- a/src/menu/popup_menu.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/popup_menu.rs	2026-11-24 23:42:02.097388552 +0100
++++ b/src/menu/popup_menu.rs	2026-11-24 23:52:01.965226701 +0100
 @@ -1,8 +1,16 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a long menu's
 +// scrollbar shows while it scrolls. Changes are marked "SparkCommander patch".
@@ -3172,7 +3172,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let options = RenderOptions {
              has_left_icon,
              check_side: self.check_side,
-@@ -1495,24 +1859,94 @@
+@@ -1495,24 +1859,98 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
@@ -3257,10 +3257,15 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  v_flex()
                      .id("items")
 -                    .p_1()
+-                    .gap_y_0p5()
 +                    .when(gnome, |this| this.p(px(6.)))
 +                    .when(!gnome, |this| this.p_1())
 +                    .when_some(gtk.as_ref(), |this, menus| this.px_0().py(menus.padding))
-                     .gap_y_0p5()
++                    // GTK's rows touch, as the theme's.
++                    .map(|this| match gtk {
++                        Some(_) => this.gap_y_0(),
++                        None => this.gap_y_0p5(),
++                    })
                      .min_w(rems(8.))
                      .when_some(self.min_width, |this, min_width| this.min_w(min_width))
                      .max_w(max_width)
@@ -3275,7 +3280,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1522,10 +1956,7 @@
+@@ -1522,10 +1960,7 @@
                              .map(|(ix, item)| self.render_item(ix, item, options, window, cx)),
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),

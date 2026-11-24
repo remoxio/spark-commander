@@ -1940,7 +1940,11 @@ impl Render for PopupMenu {
                     .when(gnome, |this| this.p(px(6.)))
                     .when(!gnome, |this| this.p_1())
                     .when_some(gtk.as_ref(), |this, menus| this.px_0().py(menus.padding))
-                    .gap_y_0p5()
+                    // GTK's rows touch, as the theme's.
+                    .map(|this| match gtk {
+                        Some(_) => this.gap_y_0(),
+                        None => this.gap_y_0p5(),
+                    })
                     .min_w(rems(8.))
                     .when_some(self.min_width, |this, min_width| this.min_w(min_width))
                     .max_w(max_width)
