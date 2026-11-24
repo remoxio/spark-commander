@@ -286,19 +286,13 @@ impl Commander {
 
     /// The active panel shows `path`, leaving its server for it; an error names `path`.
     pub(crate) fn open_folder(&mut self, path: PathBuf, window: &mut Window, cx: &mut Context<Self>) {
-        let side = &mut self.panels[self.active];
-        let remote = side.tabs.current().remote().is_some();
-        let before = side.tabs.current().spot();
-        let went = side.tabs.navigate(|panel| match remote {
-            true => panel.disconnect(path.clone()),
-            false => panel.go_to_folder(path.clone()),
-        });
-        side.scroll_to_cursor();
-        match went {
-            Ok(()) => self.follow(self.active, before, window, cx),
-            Err(err) => window.push_notification(Notification::error(format!("{}: {err}", path.display())), cx),
-        }
-        cx.notify();
+        let remote = self.panels[self.active].tabs.current().remote().is_some();
+        let named = Some(path.clone());
+        let go = move |panel: &mut sc_core::Panel| match remote {
+            true => panel.disconnect(path),
+            false => panel.go_to_folder(path),
+        };
+        self.move_tab(self.active, false, go, named, window, cx);
     }
 
     /// The saved servers as on disk, changed, saved and shown.

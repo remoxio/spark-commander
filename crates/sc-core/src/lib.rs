@@ -690,6 +690,30 @@ impl Panel {
         Ok(())
     }
 
+    /// `reload`'s reading of its folder, to do off the UI thread (a network mount may hang); none for an archive or search results.
+    pub fn reading(&self) -> Option<(PathBuf, impl FnOnce() -> io::Result<Vec<Entry>> + Send + 'static)> {
+        if self.archive.is_some() || self.found.is_some() {
+            return None;
+        }
+        let (remote, path) = (self.remote.clone(), self.path.clone());
+        let read = {
+            let path = path.clone();
+            move || match remote {
+                Some(remote) => remote.entries(&path),
+                None => read_dir(&path),
+            }
+        };
+        Some((path, read))
+    }
+
+    /// What `reading` read in `folder`, shown if the panel is still there, as `reload` would; the cursor stays on its entry.
+    pub fn read_again(&mut self, folder: &Path, entries: Vec<Entry>) {
+        if self.archive.is_none() && self.found.is_none() && self.path == folder {
+            let select = self.entries.get(self.cursor).map(|e| e.name.clone());
+            self.show(entries, select);
+        }
+    }
+
     fn enter_archive(&mut self, path: PathBuf, origin: Option<PathBuf>, watch: &archive::Watch) -> io::Result<()> {
         let items = archive::list_watched(&path, watch)?;
         self.moved();

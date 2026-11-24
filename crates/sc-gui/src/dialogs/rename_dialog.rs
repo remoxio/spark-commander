@@ -259,12 +259,10 @@ impl Commander {
     /// The side's panel reads its folder again.
     /// The folders on this computer shown, read again; marks and cursor stay.
     pub(crate) fn reread_local(&mut self, cx: &mut Context<Self>) {
-        for side in &mut self.panels {
-            let panel = side.tabs.current_mut();
+        for ix in 0..self.panels.len() {
+            let panel = self.panels[ix].tabs.current();
             if panel.remote().is_none() && !panel.in_archive() {
-                // shortcut: a folder that cannot be read now keeps its old list.
-                let _ = panel.reload();
-                side.scroll_to_cursor();
+                self.read_again(ix, cx);
             }
         }
         self.sidebar.refresh(self.settings.show_hidden);
@@ -272,11 +270,48 @@ impl Commander {
     }
 
     pub(crate) fn reread(&mut self, side: usize, cx: &mut Context<Self>) {
-        let side = &mut self.panels[side];
-        // shortcut: a server's folder is read on the UI thread here.
-        let _ = side.tabs.current_mut().reload();
-        side.scroll_to_cursor();
+        self.read_again(side, cx);
         cx.notify();
+    }
+
+    /// Panel `ix` reads its folder again off the UI thread, shown at once when quick, else when
+    /// read (a network mount that hangs keeps the old list meanwhile); one such read per side at a time.
+    fn read_again(&mut self, ix: usize, cx: &mut Context<Self>) {
+        let Some((folder, read)) = self.panels[ix].tabs.current().reading() else {
+            // Search results, an archive: as before, here.
+            let side = &mut self.panels[ix];
+            let _ = side.tabs.current_mut().reload();
+            return side.scroll_to_cursor();
+        };
+        if self.rereading[ix] {
+            return;
+        }
+        match crate::quick_or_later(read) {
+            Ok(read) => self.show_read(ix, &folder, read),
+            Err(later) => {
+                self.rereading[ix] = true;
+                cx.spawn(async move |this, cx| {
+                    let read = later.await;
+                    let _ = this.update(cx, |this, cx| {
+                        this.rereading[ix] = false;
+                        if let Ok(read) = read {
+                            this.show_read(ix, &folder, read);
+                            cx.notify();
+                        }
+                    });
+                })
+                .detach();
+            }
+        }
+    }
+
+    fn show_read(&mut self, ix: usize, folder: &std::path::Path, read: std::io::Result<Vec<sc_core::Entry>>) {
+        // shortcut: a folder that cannot be read now keeps its old list.
+        if let Ok(entries) = read {
+            let side = &mut self.panels[ix];
+            side.tabs.current_mut().read_again(folder, entries);
+            side.scroll_to_cursor();
+        }
     }
 }
 

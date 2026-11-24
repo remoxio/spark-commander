@@ -541,6 +541,8 @@ struct Commander {
     parked: Vec<Option<workspaces::Parked>>,
     /// Workspaces opened this run: a server's late answer for one left is dropped.
     switches: u64,
+    /// Each side's folder being read again off the UI thread (`read_again`), slow to answer.
+    rereading: [bool; 2],
     /// The built-in terminal's shells and the one shown; shown or not, and its height.
     terminals: Vec<terminal::pane::TerminalTab>,
     terminal_tab: usize,
@@ -721,6 +723,7 @@ impl Commander {
             parked: workspaces.list.iter().map(|_| None).collect(),
             workspaces,
             switches: 0,
+            rereading: [false; 2],
             terminals: Vec::new(),
             terminal_tab: 0,
             toolbar_fit: Rc::default(),
@@ -1359,20 +1362,9 @@ impl Commander {
                 return false;
             }
         };
-        let side = &mut self.panels[ix];
-        let before = side.tabs.current().spot();
-        match side.tabs.navigate(|panel| panel.go_to_folder(target.clone())) {
-            Ok(()) => {
-                side.scroll_to_cursor();
-                self.follow(ix, before, window, cx);
-                true
-            }
-            Err(err) => {
-                let text = format!("{}: {err}", target.display());
-                window.push_notification(Notification::error(text), cx);
-                false
-            }
-        }
+        // Still going (a slow network mount): the path bar closes, as for a server.
+        let named = Some(target.clone());
+        self.move_tab(ix, false, move |panel| panel.go_to_folder(target), named, window, cx).unwrap_or(true)
     }
 
     /// Back (-1) or Forward (1) in the active tab's history.
@@ -2008,9 +2000,9 @@ impl Commander {
         self.navigate_on(self.active, remote, go, window, cx);
     }
 
-    /// `background` for a server: the move runs on a copy of the panel,
-    /// which then takes the tab's place. Locally it is instant, and keys
-    /// pressed meanwhile must not be lost.
+    /// The move runs on a copy of the panel, which then takes the tab's place.
+    /// `background` for a server; locally it lands at once when quick (keys
+    /// pressed meanwhile wait for it), else when done (a network mount that hangs).
     fn navigate_on(
         &mut self,
         ix: usize,
@@ -2019,46 +2011,81 @@ impl Commander {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        self.move_tab(ix, background, go, None, window, cx);
+    }
+
+    /// As `navigate_on`, a failure named by `named` if given, else by the panel's place.
+    /// Whether it went, once it landed here; none while it goes on.
+    fn move_tab(
+        &mut self,
+        ix: usize,
+        background: bool,
+        go: impl FnOnce(&mut Panel) -> io::Result<()> + Send + 'static,
+        named: Option<PathBuf>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Option<bool> {
         let side = &mut self.panels[ix];
         let before = side.tabs.current().spot();
-        if !background {
-            match side.tabs.navigate(go) {
-                Ok(()) => self.follow(ix, before, window, cx),
-                Err(err) => self.move_failed(ix, err, window, cx),
-            }
-            self.panels[ix].scroll_to_cursor();
-            return cx.notify();
-        }
-        let switches = self.switches;
-        let mut moved = side.tabs.start_move();
+        let (switches, mut moved) = (self.switches, side.tabs.start_move());
         let mark = moved.mark();
+        let went = move || go(&mut moved).map(|()| moved);
+        let later = match background {
+            true => cx.background_executor().spawn(async move { Ok::<_, futures::channel::oneshot::Canceled>(went()) }),
+            false => match quick_or_later(went) {
+                Ok(went) => return Some(self.land(ix, mark, before, went, named, window, cx)),
+                Err(later) => cx.background_executor().spawn(later),
+            },
+        };
         cx.spawn_in(window, async move |this, cx| {
-            let went = cx
-                .background_executor()
-                .spawn(async move { go(&mut moved).map(|()| moved) });
-            let went = went.await;
+            let Ok(went) = later.await else {
+                return;
+            };
             let _ = this.update_in(cx, |this, window, cx| {
-                if this.switches != switches {
-                    return;
+                if this.switches == switches {
+                    this.land(ix, mark, before, went, named, window, cx);
                 }
-                // Its tab closed, or moved again since: the newer move stands.
-                let Some(tab) = this.panels[ix].tabs.place_of(mark) else {
-                    return;
-                };
-                match went {
-                    Ok(moved) => {
-                        this.panels[ix].tabs.navigated(tab, moved);
-                        this.follow(ix, before, window, cx);
-                    }
-                    // Cancelled: as it was.
-                    Err(err) if err.kind() == io::ErrorKind::Interrupted => {}
-                    Err(err) => this.move_failed(ix, err, window, cx),
-                }
-                this.panels[ix].scroll_to_cursor();
-                cx.notify();
             });
         })
         .detach();
+        None
+    }
+
+    /// A move made on a copy of panel `ix`'s tab takes the tab's place, unless
+    /// the tab closed or moved again since (the newer move stands). Whether it went.
+    #[allow(clippy::too_many_arguments)]
+    fn land(
+        &mut self,
+        ix: usize,
+        mark: sc_core::TabMark,
+        before: Option<(Option<String>, PathBuf)>,
+        went: io::Result<Panel>,
+        named: Option<PathBuf>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        let Some(tab) = self.panels[ix].tabs.place_of(mark) else {
+            return false;
+        };
+        let landed = match went {
+            Ok(moved) => {
+                self.panels[ix].tabs.navigated(tab, moved);
+                self.follow(ix, before, window, cx);
+                true
+            }
+            // Cancelled: as it was.
+            Err(err) if err.kind() == io::ErrorKind::Interrupted => false,
+            Err(err) => {
+                match named {
+                    Some(path) => window.push_notification(Notification::error(format!("{}: {err}", path.display())), cx),
+                    None => self.move_failed(ix, err, window, cx),
+                }
+                false
+            }
+        };
+        self.panels[ix].scroll_to_cursor();
+        cx.notify();
+        landed
     }
 
     fn move_failed(&mut self, ix: usize, err: io::Error, window: &mut Window, cx: &mut Context<Self>) {
@@ -3090,6 +3117,23 @@ impl Over {
     }
 }
 
+/// How long the UI waits for a folder's reading before it goes on without it.
+const QUICK: Duration = Duration::from_millis(250);
+
+/// `work`, which may hang (a folder on a network mount that does not answer), on a
+/// thread of its own: its result if done within `QUICK`, else `later` brings it; only that thread waits.
+pub(crate) fn quick_or_later<T: Send + 'static>(work: impl FnOnce() -> T + Send + 'static) -> Result<T, futures::channel::oneshot::Receiver<T>> {
+    let (quick, now) = std::sync::mpsc::sync_channel(0);
+    let (done, later) = futures::channel::oneshot::channel();
+    std::thread::spawn(move || {
+        // Not taken in time: `later` takes it.
+        if let Err(std::sync::mpsc::SendError(result)) = quick.send(work()) {
+            let _ = done.send(result);
+        }
+    });
+    now.recv_timeout(QUICK).map_err(|_| later)
+}
+
 /// The viewer's and editor's windows: where the main one is. Wayland lets
 /// no app place its windows; as the main window's child, the compositor
 /// centres it over the main window.
@@ -3280,5 +3324,16 @@ mod tests {
         assert_eq!(shown("/home/me/"), [("/", "/"), ("home", "/home"), ("me", "/home/me")]);
         assert_eq!(shown("sftp://me@host/home"), [("sftp://me@host/", "sftp://me@host/"), ("home", "sftp://me@host/home")]);
         assert_eq!(shown(r"\\nas\share\docs"), [(r"\\nas\share\", r"\\nas\share\"), ("docs", r"\\nas\share\docs")]);
+    }
+
+    #[test]
+    fn slow_work_comes_later() {
+        assert_eq!(super::quick_or_later(|| 1).ok(), Some(1));
+        let slow = || {
+            std::thread::sleep(super::QUICK * 2);
+            2
+        };
+        let later = super::quick_or_later(slow).err().expect("not done in time");
+        assert_eq!(futures::executor::block_on(later), Ok(2));
     }
 }
