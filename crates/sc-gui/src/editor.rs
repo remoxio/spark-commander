@@ -633,7 +633,7 @@ impl TextEditor {
             };
             let choices = vec![
                 Choice { label: t!("editor.close.save"), style: Style::Primary, run: Rc::new(save) },
-                Choice { label: t!("editor.close.discard"), style: Style::Outline, run: Rc::new(|window, _| window.remove_window()) },
+                Choice { label: t!("editor.close.discard"), style: Style::Discard, run: Rc::new(|window, _| window.remove_window()) },
                 Choice { label: t!("editor.dialog.cancel"), style: Style::Outline, run: Rc::new(|_, _| {}) },
             ];
             crate::dialogs::dialog_window::choose(t!("editor.close.title"), None, what, choices, px(480.), window, cx);

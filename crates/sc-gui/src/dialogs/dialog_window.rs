@@ -175,6 +175,37 @@ struct DialogWindow {
     width: Pixels,
     /// Its keys' (Enter, Escape) where nothing inside takes them.
     focus: FocusHandle,
+    /// A question: on GNOME as libadwaita's alert.
+    alert: bool,
+}
+
+/// GNOME's: questions as libadwaita's alert dialog.
+fn adwaita() -> bool {
+    sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita)
+}
+
+/// GNOME: libadwaita's alert buttons, a row as wide as the dialog under a line,
+/// flat and bold, divided by lines, in the order given.
+fn alert_row(buttons: Vec<Stateful<Div>>, cx: &App) -> Div {
+    let line = cx.theme().border;
+    let buttons = buttons.into_iter().enumerate().map(move |(ix, button)| button.when(ix > 0, |button| button.border_l_1().border_color(line)));
+    h_flex().mt_6().border_t_1().border_color(line).children(buttons)
+}
+
+/// One of `alert_row`'s: the main one's label in the accent, a dangerous one's red.
+fn alert_button(id: impl Into<ElementId>, label: SharedString, color: Hsla, cx: &App) -> Stateful<Div> {
+    let hover = cx.theme().foreground.opacity(0.05);
+    div()
+        .id(id)
+        .flex_1()
+        .h(px(46.))
+        .flex()
+        .items_center()
+        .justify_center()
+        .font_weight(FontWeight::BOLD)
+        .text_color(color)
+        .hover(move |style| style.bg(hover))
+        .child(label)
 }
 
 /// `build`'s view in a dialog window over `parent`, `size` as it is about: the
@@ -186,7 +217,18 @@ pub(crate) fn open<V: Render>(
     cx: &mut App,
     build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
 ) {
-    open_window(title, size, true, parent, cx, build)
+    open_window(title, size, true, false, parent, cx, build)
+}
+
+/// A question as `open`: on GNOME as libadwaita's alert (`alert_row`).
+fn open_alert<V: Render>(
+    title: String,
+    size: Size<Pixels>,
+    parent: &mut Window,
+    cx: &mut App,
+    build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
+) {
+    open_window(title, size, true, true, parent, cx, build)
 }
 
 /// As `open`, the view heading itself: no title over it.
@@ -197,13 +239,14 @@ pub(crate) fn open_headed<V: Render>(
     cx: &mut App,
     build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
 ) {
-    open_window(title, size, false, parent, cx, build)
+    open_window(title, size, false, false, parent, cx, build)
 }
 
 fn open_window<V: Render>(
     title: String,
     size: Size<Pixels>,
     heading: bool,
+    alert: bool,
     parent: &mut Window,
     cx: &mut App,
     build: impl FnOnce(Main, &mut Window, &mut App) -> (Entity<V>, Option<Ok>),
@@ -248,7 +291,7 @@ fn open_window<V: Render>(
         if window.focused(cx).is_none() {
             window.focus(&focus, cx);
         }
-        cx.new(|_| DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: page, focus })
+        cx.new(|_| DialogWindow { title: title.into(), heading, content: content.into(), ok, height: Rc::default(), most, width: page, focus, alert })
     });
     match opened {
         Ok((handle, _)) => {
@@ -304,7 +347,9 @@ fn confirm(
     ok: impl Fn(&mut Window, &mut App) + 'static,
 ) {
     let ok = Rc::new(ok);
-    open(title, size(px(440.), px(150.)), parent, cx, move |main, _, cx| {
+    // GNOME: as wide as libadwaita's alert.
+    let width = if adwaita() { px(372.) } else { px(440.) };
+    open_alert(title, size(width, px(150.)), parent, cx, move |main, _, cx| {
         let text = cx.new(|_| Text(text));
         let run = move |_: &mut Window, cx: &mut App| {
             let ok = ok.clone();
@@ -364,9 +409,22 @@ impl Render for DialogWindow {
         };
         #[cfg(windows)]
         let header = Some(caption(self.title.clone(), false, px(8.), window, cx));
+        // GNOME: a question as libadwaita's alert, its title bold and centred, its buttons a row at the foot.
+        let alert = self.alert && adwaita();
         // The title heads the content, as the kit's in-window dialogs.
-        let heading = self.heading.then(|| div().px_4().pt_4().text_xl().font_weight(FontWeight::SEMIBOLD).child(self.title.clone()));
-        let buttons = self.ok.as_ref().and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
+        let heading = self.heading.then(|| match alert {
+            true => div().px_6().pt_6().text_xl().font_weight(FontWeight::BOLD).text_center().child(self.title.clone()),
+            false => div().px_4().pt_4().text_xl().font_weight(FontWeight::SEMIBOLD).child(self.title.clone()),
+        });
+        let alert_buttons = self.ok.as_ref().filter(|_| alert).and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
+            let color = if ok.danger { theme.danger } else { theme.primary };
+            let main = alert_button("dialog-ok", label.into(), color, cx).on_click(cx.listener(|this, _, window, cx| this.confirm(window, cx)));
+            let cancel = ok.cancel.then(|| {
+                alert_button("dialog-cancel", t!("remote.dialog.cancel").into(), theme.foreground, cx).on_click(|_, window, _| window.remove_window())
+            });
+            alert_row(crate::dialogs::ordered(std::iter::once((Role::Main, main)).chain(cancel.map(|cancel| (Role::Dismiss, cancel)))), cx)
+        });
+        let buttons = self.ok.as_ref().filter(|_| !alert).and_then(|ok| Some((ok, ok.label.clone()?))).map(|(ok, label)| {
             let button = Button::new("dialog-ok").label(label).min_w(px(80.));
             let button = if ok.danger { button.danger() } else { button.primary() };
             let cancel = ok.cancel.then(|| {
@@ -384,7 +442,10 @@ impl Render for DialogWindow {
             .w_full()
             .children(header)
             .children(heading)
-            .child(v_flex().p_4().child(self.content.clone()).children(buttons))
+            .map(|page| match alert {
+                true => page.child(v_flex().px_6().pt_2().text_center().child(self.content.clone())).children(alert_buttons),
+                false => page.child(v_flex().p_4().child(self.content.clone()).children(buttons)),
+            })
             .child(
                 canvas(
                     move |bounds, window, _| {
@@ -479,6 +540,8 @@ pub(crate) enum Style {
     Primary,
     Danger,
     Outline,
+    /// Losing work (Don't Save): outlined, on GNOME red as libadwaita's destructive.
+    Discard,
 }
 
 /// `text` (under a small `note`) and a button for each choice, in a dialog
@@ -486,7 +549,7 @@ pub(crate) enum Style {
 /// choices as Windows orders them, the last one leaving things as they were
 /// (Cancel).
 pub(crate) fn choose(title: String, note: Option<String>, text: String, choices: Vec<Choice>, width: Pixels, parent: &mut Window, cx: &mut App) {
-    open(title, size(width, px(200.)), parent, cx, move |main, _, cx| (cx.new(|_| Choose { note, text, choices: choices.into(), main }), None));
+    open_alert(title, size(width, px(200.)), parent, cx, move |main, _, cx| (cx.new(|_| Choose { note, text, choices: choices.into(), main }), None));
 }
 
 struct Choose {
@@ -516,10 +579,47 @@ impl Render for Choose {
             let button = match choice.style {
                 Style::Primary => button.primary(),
                 Style::Danger => button.danger(),
-                Style::Outline => button.outline(),
+                Style::Outline | Style::Discard => button.outline(),
             };
             (role, button)
         });
+        // GNOME: libadwaita's alert, the buttons a row out to the dialog's edges.
+        if adwaita() {
+            let theme = cx.theme();
+            let row = self.choices.iter().enumerate().map(|(ix, choice)| {
+                let run = choice.run.clone();
+                let color = match choice.style {
+                    Style::Primary => theme.primary,
+                    Style::Danger | Style::Discard => theme.danger,
+                    Style::Outline => theme.foreground,
+                };
+                let button = alert_button(("choice", ix), choice.label.clone().into(), color, cx).on_click(move |_, window, cx| {
+                    window.remove_window();
+                    let run = run.clone();
+                    main.run(cx, move |window, cx| run(window, cx));
+                });
+                let role = match ix {
+                    _ if Some(ix) == primary => Role::Main,
+                    _ if ix == last => Role::Dismiss,
+                    _ => Role::Other,
+                };
+                (role, button)
+            });
+            // libadwaita's order: Cancel first, the main one last.
+            let mut row: Vec<_> = row.collect();
+            row.sort_by_key(|(role, _)| match role {
+                Role::Dismiss => 0,
+                Role::Main => 2,
+                _ => 1,
+            });
+            let row = alert_row(row.into_iter().map(|(_, button)| button).collect(), cx).mx(px(-24.));
+            return v_flex()
+                .gap_3()
+                .text_sm()
+                .children(self.note.clone().map(|note| div().text_xs().child(note)))
+                .child(div().whitespace_normal().child(self.text.clone()))
+                .child(row);
+        }
         v_flex()
             .gap_3()
             .text_sm()
