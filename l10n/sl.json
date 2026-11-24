@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Jezik"
   },
-  "settings.menus.automatic": {
-    "message": "Samodejno: gumb ☰ v GNOME, drugje menijska vrstica"
-  },
-  "settings.menus.bar": {
-    "message": "Menijska vrstica"
-  },
-  "settings.menus.button": {
-    "message": "Gumb ☰ v naslovni vrstici"
-  },
-  "settings.menus.title": {
-    "message": "Meniji"
-  },
   "settings.ok": {
     "message": "V redu"
   },

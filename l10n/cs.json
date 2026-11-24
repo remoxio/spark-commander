@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Jazyk"
   },
-  "settings.menus.automatic": {
-    "message": "Automaticky: tlačítko ☰ v GNOME, jinde panel nabídek"
-  },
-  "settings.menus.bar": {
-    "message": "Panel nabídek"
-  },
-  "settings.menus.button": {
-    "message": "Tlačítko ☰ v záhlaví okna"
-  },
-  "settings.menus.title": {
-    "message": "Nabídky"
-  },
   "settings.ok": {
     "message": "OK"
   },

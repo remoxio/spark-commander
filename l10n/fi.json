@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Kieli"
   },
-  "settings.menus.automatic": {
-    "message": "Automaattinen: ☰-painike GNOMEssa, muualla valikkorivi"
-  },
-  "settings.menus.bar": {
-    "message": "Valikkorivi"
-  },
-  "settings.menus.button": {
-    "message": "☰-painike otsikkopalkissa"
-  },
-  "settings.menus.title": {
-    "message": "Valikot"
-  },
   "settings.ok": {
     "message": "OK"
   },

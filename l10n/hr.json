@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Jezik"
   },
-  "settings.menus.automatic": {
-    "message": "Automatski: gumb ☰ u okruženju GNOME, drugdje traka s izbornicima"
-  },
-  "settings.menus.bar": {
-    "message": "Traka s izbornicima"
-  },
-  "settings.menus.button": {
-    "message": "Gumb ☰ u naslovnoj traci"
-  },
-  "settings.menus.title": {
-    "message": "Izbornici"
-  },
   "settings.ok": {
     "message": "U redu"
   },

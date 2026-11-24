@@ -10,12 +10,12 @@ use gpui_kit::component::{ActiveTheme, GlobalState, Icon, Sizable, TitleBar, Win
 use gpui_kit::*;
 
 use crate::Commander;
-use sc_core::menu::{Command, ToolbarItem};
+use sc_core::menu::Command;
 
 impl Commander {
     /// Asks for our own title bar where the menus go behind the ☰ button.
     pub(crate) fn request_frame(&self, window: &mut Window) {
-        let own = self.settings.menu.button();
+        let own = sc_core::settings::menu_button();
         window.request_decorations(if own { WindowDecorations::Client } else { WindowDecorations::Server });
         // GPUI keeps telling the window manager of our frame's shadow margin otherwise.
         if !own {
@@ -25,7 +25,7 @@ impl Commander {
 
     /// Whether the menus are behind the ☰ button, not in a bar.
     pub(crate) fn menus_behind_button(&self, window: &Window) -> bool {
-        self.settings.menu.button() && own_frame(window)
+        sc_core::settings::menu_button() && own_frame(window)
     }
 
     /// The title bar, where the window draws its own frame; the toolbar taken
@@ -42,13 +42,8 @@ impl Commander {
             let caption = crate::dialogs::dialog_window::caption("Spark Commander".into(), true, lead, window, cx).flex_1().bg(self.colors.bar);
             return Some(h_flex().bg(self.colors.bar).children(toggle).child(caption).into_any_element());
         }
-        // The title kept clear of the toolbar's buttons (32 px and a gap each, Back's and Forward's arrow 18).
-        // A separator's line takes 9.
-        let shown = &self.settings.toolbar.0;
-        let arrows = shown.iter().filter(|item| matches!(item, ToolbarItem::Button(Command::GoBack | Command::GoForward))).count();
-        let lines = shown.iter().filter(|item| **item == ToolbarItem::Separator).count();
-        let buttons = px((shown.len() - lines) as f32 * 34. + lines as f32 * 9. + arrows as f32 * 18. + 16.);
-        let bar = title_bar_beside("Spark Commander", buttons.max(px(140.)), window, cx)?;
+        // No title beside the toolbar, as GNOME's Files has none beside its buttons; without one, the title.
+        let bar = title_bar(if toolbar.is_some() { "" } else { "Spark Commander" }, window, cx)?;
         let focus = self.focus.clone();
         let menu = Button::new("app-menu")
             .ghost()
@@ -72,9 +67,7 @@ impl Commander {
                 h_flex()
                     .w_full()
                     .px_1()
-                    .children(toolbar.take().zip(self.main_commander(cx)).map(|(bar, commander)| {
-                        h_flex().id("toolbar-area").flex_1().min_w_0().child(bar).context_menu(crate::toolbar_menu(commander))
-                    }))
+                    .children(toolbar.take().map(|bar| h_flex().flex_1().min_w_0().child(bar)))
                     .children(self.menus_behind_button(window).then_some(menu)),
             );
         Some(bar.into_any_element())
@@ -185,11 +178,6 @@ pub(crate) fn window_bar(title: impl Into<SharedString>, window: &Window, cx: &m
 /// The title bar of a window that draws its own frame: any on GNOME on
 /// Wayland, which draws none, and the main one for its ☰ button.
 pub(crate) fn title_bar(title: impl Into<SharedString>, window: &Window, cx: &mut App) -> Option<TitleBar> {
-    title_bar_beside(title, px(140.), window, cx)
-}
-
-/// A title bar whose title keeps `side` clear on both sides, as GTK centres it.
-fn title_bar_beside(title: impl Into<SharedString>, side: Pixels, window: &Window, cx: &mut App) -> Option<TitleBar> {
     if !own_frame(window) {
         return None;
     }
@@ -201,7 +189,7 @@ fn title_bar_beside(title: impl Into<SharedString>, side: Pixels, window: &Windo
         cx.set_global(WindowButtonPictures(pictures));
     }
     let title = div().min_w_0().truncate().font_weight(FontWeight::BOLD).child(title.into());
-    let title = div().absolute().inset_0().px(side).flex().items_center().justify_center().child(title);
+    let title = div().absolute().inset_0().px(px(140.)).flex().items_center().justify_center().child(title);
     let mut bar = TitleBar::new().child(title);
     // As tall as GTK's, its top corners the window's.
     if let Some(header) = sc_core::system::theme::header_bar() {

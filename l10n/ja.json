@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "言語"
   },
-  "settings.menus.automatic": {
-    "message": "自動：GNOME では ☰ ボタン、それ以外ではメニューバー"
-  },
-  "settings.menus.bar": {
-    "message": "メニューバー"
-  },
-  "settings.menus.button": {
-    "message": "タイトルバーの ☰ ボタン"
-  },
-  "settings.menus.title": {
-    "message": "メニュー"
-  },
   "settings.ok": {
     "message": "OK"
   },

@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Taal"
   },
-  "settings.menus.automatic": {
-    "message": "Automatisch: een ☰-knop in GNOME, elders een menubalk"
-  },
-  "settings.menus.bar": {
-    "message": "Menubalk"
-  },
-  "settings.menus.button": {
-    "message": "☰-knop in de titelbalk"
-  },
-  "settings.menus.title": {
-    "message": "Menu’s"
-  },
   "settings.ok": {
     "message": "OK"
   },

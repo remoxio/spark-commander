@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Idioma"
   },
-  "settings.menus.automatic": {
-    "message": "Automàtic: un botó ☰ a GNOME, una barra de menús a la resta"
-  },
-  "settings.menus.bar": {
-    "message": "Barra de menús"
-  },
-  "settings.menus.button": {
-    "message": "Botó ☰ a la barra de títol"
-  },
-  "settings.menus.title": {
-    "message": "Menús"
-  },
   "settings.ok": {
     "message": "D’acord"
   },

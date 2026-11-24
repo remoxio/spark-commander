@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Ngôn ngữ"
   },
-  "settings.menus.automatic": {
-    "message": "Tự động: nút ☰ trên GNOME, thanh menu ở nơi khác"
-  },
-  "settings.menus.bar": {
-    "message": "Thanh menu"
-  },
-  "settings.menus.button": {
-    "message": "Nút ☰ trên thanh tiêu đề"
-  },
-  "settings.menus.title": {
-    "message": "Menu"
-  },
   "settings.ok": {
     "message": "OK"
   },

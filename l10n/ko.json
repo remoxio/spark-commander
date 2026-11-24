@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "언어"
   },
-  "settings.menus.automatic": {
-    "message": "자동: GNOME에서는 ☰ 버튼, 그 외에는 메뉴 막대"
-  },
-  "settings.menus.bar": {
-    "message": "메뉴 막대"
-  },
-  "settings.menus.button": {
-    "message": "제목 표시줄의 ☰ 버튼"
-  },
-  "settings.menus.title": {
-    "message": "메뉴"
-  },
   "settings.ok": {
     "message": "확인"
   },

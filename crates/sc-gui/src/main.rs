@@ -345,7 +345,7 @@ fn main() {
             }),
             app_owns_titlebar_drag: cfg!(target_os = "macos"),
             // Our own frame from the start: asked for once mapped, GNOME's X11 grows the window by its title and our shadow.
-            window_decorations: Some(match Settings::load().unwrap_or_default().menu.button() {
+            window_decorations: Some(match settings::menu_button() {
                 true => WindowDecorations::Client,
                 false => WindowDecorations::Server,
             }),
@@ -833,11 +833,7 @@ impl Commander {
         let look = (settings.appearance, &settings.font, &settings.fixed_font)
             != (self.settings.appearance, &self.settings.font, &self.settings.fixed_font);
         cx.set_global(appearance::FixedFont(settings.fixed_font.clone()));
-        let menu = settings.menu != self.settings.menu;
         self.settings = settings;
-        if menu {
-            self.request_frame(window);
-        }
         if look {
             self.colors = appearance::apply(&palette(&self.settings, window), cx);
             self.set_backdrop(window, cx);
@@ -1640,7 +1636,7 @@ impl Commander {
     }
 
     /// The toolbar: icons, their names and keys as tooltips, a toggle pressed while on.
-    fn render_toolbar(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
+    fn render_toolbar(&self, window: &Window, cx: &mut Context<Self>) -> Option<AnyElement> {
         let shown = &self.settings.toolbar.0;
         if shown.is_empty() {
             return None;
@@ -1737,6 +1733,7 @@ impl Commander {
         };
         let hidden: Vec<Vec<Command>> = items[shown..].iter().map(|(commands, _)| commands.clone()).collect();
         let fit = self.toolbar_fit.clone();
+        let view = cx.entity_id();
         let buttons = items.into_iter().take(shown).enumerate().map(|(at, (_, button))| {
             let fit = fit.clone();
             let measure = canvas(
@@ -1744,7 +1741,8 @@ impl Commander {
                     let mut fit = fit.borrow_mut();
                     if fit.widths.get(at).is_some_and(|width| *width != bounds.size.width) {
                         fit.widths[at] = bounds.size.width;
-                        window.refresh();
+                        // A notice while drawing is lost: the next frame takes it.
+                        window.on_next_frame(move |_, cx| cx.notify(view));
                     }
                 },
                 |_, _, _, _| {},
@@ -1780,13 +1778,20 @@ impl Commander {
                 let mut fit = room.borrow_mut();
                 if fit.room != bounds.size.width {
                     fit.room = bounds.size.width;
-                    window.refresh();
+                    window.on_next_frame(move |_, cx| cx.notify(view));
                 }
             },
             |_, _, _, _| {},
         );
+        let group = h_flex().id("toolbar-buttons").flex_none().when(mac, |group| group.gap_2()).when(!mac, |group| group.gap_0p5());
+        let group = group.children(buttons).children(more);
+        // In GNOME's title bar its menu on the buttons alone, not the window's too; beside them the window's.
+        let group = match !mac && self.menus_behind_button(window) {
+            true => group.on_mouse_down(MouseButton::Right, |_, _, cx| cx.stop_propagation()).context_menu(toolbar_menu(cx.entity().downgrade())).into_any_element(),
+            false => group.into_any_element(),
+        };
         let bar = bar.relative().flex_1().min_w_0().overflow_hidden().child(measure.absolute().size_full());
-        Some(bar.children(buttons).children(more).into_any_element())
+        Some(bar.child(group).into_any_element())
     }
 
     fn track_place(&mut self, window: &Window, cx: &App) {
@@ -2997,7 +3002,7 @@ impl Render for Commander {
         #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         let panels = self.desktop_menu_actions(panels, cx);
         // In the title bar where there is one, as GNOME's apps; else over the panels.
-        let mut toolbar = self.render_toolbar(cx);
+        let mut toolbar = self.render_toolbar(window, cx);
         let header = self.render_header(&mut toolbar, window, cx);
         // macOS: the title bar beside the sidebar, which runs the window's height.
         let (header, beside) = match cfg!(target_os = "macos") {

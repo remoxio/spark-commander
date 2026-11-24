@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "语言"
   },
-  "settings.menus.automatic": {
-    "message": "自动：GNOME 上为 ☰ 按钮，其他环境为菜单栏"
-  },
-  "settings.menus.bar": {
-    "message": "菜单栏"
-  },
-  "settings.menus.button": {
-    "message": "标题栏中的 ☰ 按钮"
-  },
-  "settings.menus.title": {
-    "message": "菜单"
-  },
   "settings.ok": {
     "message": "确定"
   },

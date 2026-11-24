@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "語言"
   },
-  "settings.menus.automatic": {
-    "message": "自動：GNOME 上使用 ☰ 按鈕，其他環境使用選單列"
-  },
-  "settings.menus.bar": {
-    "message": "選單列"
-  },
-  "settings.menus.button": {
-    "message": "標題列中的 ☰ 按鈕"
-  },
-  "settings.menus.title": {
-    "message": "選單"
-  },
   "settings.ok": {
     "message": "確定"
   },

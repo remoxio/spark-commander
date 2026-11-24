@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Bahasa"
   },
-  "settings.menus.automatic": {
-    "message": "Otomatis: tombol ☰ di GNOME, bilah menu di tempat lain"
-  },
-  "settings.menus.bar": {
-    "message": "Bilah menu"
-  },
-  "settings.menus.button": {
-    "message": "Tombol ☰ di bilah judul"
-  },
-  "settings.menus.title": {
-    "message": "Menu"
-  },
   "settings.ok": {
     "message": "OK"
   },

@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Γλώσσα"
   },
-  "settings.menus.automatic": {
-    "message": "Αυτόματα: κουμπί ☰ στο GNOME, γραμμή μενού αλλού"
-  },
-  "settings.menus.bar": {
-    "message": "Γραμμή μενού"
-  },
-  "settings.menus.button": {
-    "message": "Κουμπί ☰ στη γραμμή τίτλου"
-  },
-  "settings.menus.title": {
-    "message": "Μενού"
-  },
   "settings.ok": {
     "message": "OK"
   },

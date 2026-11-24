@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Język"
   },
-  "settings.menus.automatic": {
-    "message": "Automatycznie: przycisk ☰ w GNOME, gdzie indziej pasek menu"
-  },
-  "settings.menus.bar": {
-    "message": "Pasek menu"
-  },
-  "settings.menus.button": {
-    "message": "Przycisk ☰ na pasku tytułu"
-  },
-  "settings.menus.title": {
-    "message": "Menu"
-  },
   "settings.ok": {
     "message": "OK"
   },

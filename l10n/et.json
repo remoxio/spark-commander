@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Keel"
   },
-  "settings.menus.automatic": {
-    "message": "Automaatne: GNOME-s ☰ nupp, mujal menüüriba"
-  },
-  "settings.menus.bar": {
-    "message": "Menüüriba"
-  },
-  "settings.menus.button": {
-    "message": "☰ nupp tiitliribal"
-  },
-  "settings.menus.title": {
-    "message": "Menüüd"
-  },
   "settings.ok": {
     "message": "OK"
   },

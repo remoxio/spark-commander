@@ -102,7 +102,6 @@ impl Default for AddonUpdates {
 #[serde(default)]
 pub struct Settings {
     pub appearance: crate::system::theme::Appearance,
-    pub menu: MenuStyle,
     /// Show the tab header also when there is only one tab.
     pub tab_header_always: TabHeaderAlways,
     pub show_hidden: bool,
@@ -187,23 +186,10 @@ pub struct FontChoice {
     pub size: f32,
 }
 
-/// Where the menus are: a bar under the title, or behind a ☰ button in the
-/// window's own title bar, as GNOME's apps have them. Linux only.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub enum MenuStyle {
-    /// The ☰ button on GNOME, the bar elsewhere.
-    #[default]
-    Automatic,
-    Bar,
-    Button,
-}
-
-impl MenuStyle {
-    /// Whether the menus go behind the ☰ button.
-    pub fn button(self) -> bool {
-        let linux = cfg!(any(target_os = "linux", target_os = "freebsd"));
-        linux && (self == MenuStyle::Button || self == MenuStyle::Automatic && crate::system::theme::on_gnome())
-    }
+/// Whether the menus go behind a ☰ button in the window's own title bar, as
+/// GNOME's apps have them; a bar under the title elsewhere.
+pub fn menu_button() -> bool {
+    cfg!(any(target_os = "linux", target_os = "freebsd")) && crate::system::theme::on_gnome()
 }
 
 /// F4 edits in the built-in editor, Ctrl+Shift+F4 in another program.
@@ -430,7 +416,7 @@ mod tests {
     #[test]
     fn toolbar_saved_only_when_changed() {
         let mut settings = Settings::default();
-        assert!(!serde_json::to_string(&settings).unwrap().contains("toolbar"));
+        assert!(!serde_json::to_string(&settings).unwrap().contains("\"toolbar\":"));
         settings.toolbar.0.pop();
         let saved = serde_json::to_string(&settings).unwrap();
         let read: Settings = serde_json::from_str(&saved).unwrap();

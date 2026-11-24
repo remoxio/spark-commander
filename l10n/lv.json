@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Valoda"
   },
-  "settings.menus.automatic": {
-    "message": "Automātiski: ☰ poga GNOME vidē, izvēļņu josla citur"
-  },
-  "settings.menus.bar": {
-    "message": "Izvēļņu josla"
-  },
-  "settings.menus.button": {
-    "message": "☰ poga virsrakstjoslā"
-  },
-  "settings.menus.title": {
-    "message": "Izvēlnes"
-  },
   "settings.ok": {
     "message": "Labi"
   },

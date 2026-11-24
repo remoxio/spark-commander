@@ -5195,22 +5195,6 @@
     "description": "Settings › Language: the box's title.",
     "message": "Language"
   },
-  "settings.menus.automatic": {
-    "description": "Settings › Layout › Menus: a choice; ☰ is the menu button's icon.",
-    "message": "Automatic: a ☰ button on GNOME, a menu bar elsewhere"
-  },
-  "settings.menus.bar": {
-    "description": "Settings › Layout › Menus: a choice, the menus in a bar under the title.",
-    "message": "Menu bar"
-  },
-  "settings.menus.button": {
-    "description": "Settings › Layout › Menus: a choice, the menus behind a button with the ☰ icon.",
-    "message": "☰ button in the title bar"
-  },
-  "settings.menus.title": {
-    "description": "Settings › Layout: the box's title over how the menus are shown.",
-    "message": "Menus"
-  },
   "settings.ok": {
     "description": "Settings: the button that applies the changes and closes the dialog; keep it short.",
     "message": "OK"

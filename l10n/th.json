@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "ภาษา"
   },
-  "settings.menus.automatic": {
-    "message": "อัตโนมัติ: ปุ่ม ☰ บน GNOME แถบเมนูบนระบบอื่น"
-  },
-  "settings.menus.bar": {
-    "message": "แถบเมนู"
-  },
-  "settings.menus.button": {
-    "message": "ปุ่ม ☰ ในแถบชื่อเรื่อง"
-  },
-  "settings.menus.title": {
-    "message": "เมนู"
-  },
   "settings.ok": {
     "message": "ตกลง"
   },

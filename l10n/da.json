@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Sprog"
   },
-  "settings.menus.automatic": {
-    "message": "Automatisk: en ☰-knap i GNOME, ellers en menulinje"
-  },
-  "settings.menus.bar": {
-    "message": "Menulinje"
-  },
-  "settings.menus.button": {
-    "message": "☰-knap i titellinjen"
-  },
-  "settings.menus.title": {
-    "message": "Menuer"
-  },
   "settings.ok": {
     "message": "OK"
   },

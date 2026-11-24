@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Språk"
   },
-  "settings.menus.automatic": {
-    "message": "Automatisk: en ☰-knapp i GNOME, ellers en menylinje"
-  },
-  "settings.menus.bar": {
-    "message": "Menylinje"
-  },
-  "settings.menus.button": {
-    "message": "☰-knapp i tittellinjen"
-  },
-  "settings.menus.title": {
-    "message": "Menyer"
-  },
   "settings.ok": {
     "message": "OK"
   },

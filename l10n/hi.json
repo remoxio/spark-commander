@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "भाषा"
   },
-  "settings.menus.automatic": {
-    "message": "अपने-आप: GNOME पर ☰ बटन, बाकी जगह मेन्यू बार"
-  },
-  "settings.menus.bar": {
-    "message": "मेन्यू बार"
-  },
-  "settings.menus.button": {
-    "message": "टाइटल बार में ☰ बटन"
-  },
-  "settings.menus.title": {
-    "message": "मेन्यू"
-  },
   "settings.ok": {
     "message": "ठीक है"
   },

@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Dil"
   },
-  "settings.menus.automatic": {
-    "message": "Otomatik: GNOME’da ☰ düğmesi, diğerlerinde menü çubuğu"
-  },
-  "settings.menus.bar": {
-    "message": "Menü çubuğu"
-  },
-  "settings.menus.button": {
-    "message": "Başlık çubuğunda ☰ düğmesi"
-  },
-  "settings.menus.title": {
-    "message": "Menüler"
-  },
   "settings.ok": {
     "message": "Tamam"
   },

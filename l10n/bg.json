@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Език"
   },
-  "settings.menus.automatic": {
-    "message": "Автоматично: бутон ☰ в GNOME, лента с менюта другаде"
-  },
-  "settings.menus.bar": {
-    "message": "Лента с менюта"
-  },
-  "settings.menus.button": {
-    "message": "Бутон ☰ в заглавната лента"
-  },
-  "settings.menus.title": {
-    "message": "Менюта"
-  },
   "settings.ok": {
     "message": "OK"
   },

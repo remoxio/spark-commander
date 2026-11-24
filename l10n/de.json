@@ -3896,18 +3896,6 @@
   "settings.language.title": {
     "message": "Sprache"
   },
-  "settings.menus.automatic": {
-    "message": "Automatisch: eine ☰-Schaltfläche unter GNOME, sonst eine Menüleiste"
-  },
-  "settings.menus.bar": {
-    "message": "Menüleiste"
-  },
-  "settings.menus.button": {
-    "message": "☰-Schaltfläche in der Titelleiste"
-  },
-  "settings.menus.title": {
-    "message": "Menüs"
-  },
   "settings.ok": {
     "message": "OK"
   },

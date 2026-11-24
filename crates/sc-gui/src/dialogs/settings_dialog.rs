@@ -17,7 +17,7 @@ use gpui_kit::component::{Icon, IndexPath};
 use gpui_kit::component::menu::{DropdownMenu, PopupMenu, PopupMenuItem};
 use sc_core::dates::{self, Clock};
 use sc_core::menu::{self, ToolbarItem};
-use sc_core::settings::{AddonUpdates, FontChoice, MenuStyle, PAGES, Settings, Blur, SidebarButton, SidebarLayout, SidebarOpacity, ToolbarStyle, TerminalOpacity, StartFont, StartMode};
+use sc_core::settings::{AddonUpdates, FontChoice, PAGES, Settings, Blur, SidebarButton, SidebarLayout, SidebarOpacity, ToolbarStyle, TerminalOpacity, StartFont, StartMode};
 use sc_core::system::theme::Appearance;
 use sc_core::t;
 
@@ -885,19 +885,6 @@ impl SettingsDialog {
         )
     }
 
-    fn render_menus(&self, cx: &mut Context<Self>) -> GroupBox {
-        let styles = [MenuStyle::Automatic, MenuStyle::Bar, MenuStyle::Button];
-        GroupBox::new().outline().title(t!("settings.menus.title")).child(
-            RadioGroup::vertical("menu-style")
-                .children([t!("settings.menus.automatic"), t!("settings.menus.bar"), t!("settings.menus.button")])
-                .selected_index(styles.iter().position(|style| *style == self.draft.menu))
-                .on_click(cx.listener(move |this, at: &usize, _, cx| {
-                    this.draft.menu = styles[*at];
-                    cx.notify();
-                })),
-        )
-    }
-
     /// The operation queue: how long done operations stay, how fast links download.
     fn render_queue(&self, cx: &mut Context<Self>) -> GroupBox {
         let muted = cx.theme().muted_foreground;
@@ -1277,10 +1264,6 @@ impl SettingsDialog {
         let content = match title {
             "Layout" => {
                 let mut groups: Vec<GroupBox> = self.render_appearance(cx).into_iter().collect();
-                // GNOME's apps have their menus behind a ☰ button in the title bar.
-                if cfg!(any(target_os = "linux", target_os = "freebsd")) {
-                    groups.push(self.render_menus(cx));
-                }
                 groups.push(self.render_sidebar(cx));
                 groups.push(self.render_tabs(cx));
                 groups
