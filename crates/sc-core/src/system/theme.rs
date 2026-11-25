@@ -133,7 +133,8 @@ pub fn system(dark: bool) -> Palette {
                 // GNOME: libadwaita's own (`sc-adwstyle`), else its colours as of 1.6.
                 None => libadwaita(dark).unwrap_or_else(|| Palette { selection: gnome_accent(interface_setting("accent-color").as_deref()), ..adwaita(dark) }),
             };
-            Palette { font: desktop_font(), font_size: None, ..palette }
+            let (font, points) = desktop_font().unzip();
+            Palette { font, font_size: points.flatten().map(font_pixels), ..palette }
         }
     }
 }
@@ -246,23 +247,28 @@ fn font_family(pango: &str) -> String {
     sized.map_or(family, |(name, _)| name.trim_end()).to_owned()
 }
 
+/// The size in points of a Pango font name, where it gives one.
+fn pango_points(pango: &str) -> Option<f32> {
+    pango.rsplit([' ', ',']).next()?.parse().ok().filter(|points: &f32| *points > 0.)
+}
+
 /// GNOME, Ubuntu's own desktop among them (`ubuntu:GNOME`).
 pub fn on_gnome() -> bool {
     on_desktop("GNOME")
 }
 
-/// The interface font of GNOME, Cinnamon, MATE or Xfce.
-fn desktop_font() -> Option<String> {
-    static FONT: OnceLock<Option<String>> = OnceLock::new();
+/// The interface font of GNOME, Cinnamon, MATE or Xfce: its family, its size in points.
+fn desktop_font() -> Option<(String, Option<f32>)> {
+    static FONT: OnceLock<Option<(String, Option<f32>)>> = OnceLock::new();
     let find = || {
         #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         if on_desktop("XFCE") {
-            return crate::system::desktop::xfce_setting("FontName").map(|name| font_family(&name));
+            return crate::system::desktop::xfce_setting("FontName");
         }
         let gtk = on_gnome() || on_desktop("X-Cinnamon") || on_desktop("MATE");
-        gtk.then(|| interface_setting("font-name").map(|name| font_family(&name))).flatten()
+        gtk.then(|| interface_setting("font-name")).flatten()
     };
-    FONT.get_or_init(|| find().map(real_family)).clone()
+    FONT.get_or_init(|| find().map(|pango| (real_family(font_family(&pango)), pango_points(&pango)))).clone()
 }
 
 /// The desktop's fixed-width font, its family and size in points: KDE's
@@ -284,7 +290,7 @@ pub fn desktop_fixed_font() -> Option<(String, f32)> {
         #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
         let pango: Option<String> = None;
         let pango = pango?;
-        let points = pango.rsplit_once(' ').and_then(|(_, size)| size.parse().ok()).unwrap_or(10.);
+        let points = pango_points(&pango).unwrap_or(10.);
         Some((font_family(&pango), points))
     };
     FONT.get_or_init(|| find().map(|(family, points)| (real_family(family), points))).clone()
@@ -1167,6 +1173,7 @@ mod tests {
         assert_eq!(font_family("Noto Sans,  10"), "Noto Sans");
         assert_eq!(font_family("Ubuntu Sans 11"), "Ubuntu Sans");
         assert_eq!(font_family("Cantarell"), "Cantarell");
+        assert_eq!((pango_points("Noto Sans,  10"), pango_points("Noto Sans 9"), pango_points("Cantarell")), (Some(10.), Some(9.), None));
         std::fs::remove_dir_all(root).unwrap();
     }
 }

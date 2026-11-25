@@ -100,6 +100,14 @@ struct Number {
     input: Entity<InputState>,
 }
 
+/// Push buttons' size: the toolkit's one height where it draws them (GTK's, Qt's), else compact.
+fn push_size(cx: &App) -> gpui_kit::component::Size {
+    match cx.has_global::<gpui_kit::component::ToolkitControls>() {
+        true => gpui_kit::component::Size::Medium,
+        false => gpui_kit::component::Size::Small,
+    }
+}
+
 struct FindFiles {
     commander: WeakEntity<Commander>,
     separate: bool,
@@ -644,7 +652,7 @@ impl FindFiles {
     ) -> impl IntoElement + use<T> {
         let label = choices.iter().find(|(value, _)| *value == current).map_or(String::new(), |(_, label)| label.clone());
         let this = cx.weak_entity();
-        Button::new(id).small().outline().label(label).dropdown_caret(true).disabled(disabled).dropdown_menu(move |mut menu: PopupMenu, _, _| {
+        Button::new(id).with_size(push_size(cx)).outline().label(label).dropdown_caret(true).disabled(disabled).dropdown_menu(move |mut menu: PopupMenu, _, _| {
             for (value, label) in &choices {
                 let (this, value) = (this.clone(), *value);
                 let item = PopupMenuItem::new(label.clone()).checked(value == current).on_click(move |_, _, cx| {
@@ -680,7 +688,7 @@ impl FindFiles {
         let label = |text: String| div().w(px(90.)).flex_none().child(text);
         let drives = {
             let places = self.places.clone();
-            Button::new("drives").small().outline().label(t!("search.drives")).dropdown_caret(true).dropdown_menu(
+            Button::new("drives").with_size(push_size(cx)).outline().label(t!("search.drives")).dropdown_caret(true).dropdown_menu(
                 move |mut menu: PopupMenu, _, _| {
                     for drive in search::drives() {
                         let (places, text) = (places.clone(), drive.display().to_string());
@@ -713,7 +721,7 @@ impl FindFiles {
                     .child(label(t!("search.places.label")))
                     .child(div().flex_1().child(Input::new(&self.places).small().disabled(self.only_chosen)))
                     .child(self.history("places-history", &self.places, &self.saved.places))
-                    .child(Button::new("browse").small().outline().label(">>").on_click(cx.listener(|this, _, window, cx| this.browse(window, cx))))
+                    .child(Button::new("browse").with_size(push_size(cx)).outline().label(">>").on_click(cx.listener(|this, _, window, cx| this.browse(window, cx))))
                     .child(drives),
             )
             .child(
@@ -905,10 +913,10 @@ impl FindFiles {
                 h_flex()
                     .gap_2()
                     .child(div().w(px(220.)).child(Input::new(&self.save_name).small()))
-                    .child(Button::new("save").small().outline().label(t!("search.saved.save")).on_click(cx.listener(|this, _, window, cx| this.save(window, cx))))
+                    .child(Button::new("save").with_size(push_size(cx)).outline().label(t!("search.saved.save")).on_click(cx.listener(|this, _, window, cx| this.save(window, cx))))
                     .child(
                         Button::new("load")
-                            .small()
+                            .with_size(push_size(cx))
                             .outline()
                             .label(t!("search.saved.load"))
                             .disabled(!chosen)
@@ -916,7 +924,7 @@ impl FindFiles {
                     )
                     .child(
                         Button::new("delete")
-                            .small()
+                            .with_size(push_size(cx))
                             .outline()
                             .label(t!("search.saved.delete"))
                             .disabled(!chosen)
@@ -978,7 +986,7 @@ impl Render for FindFiles {
         )
         .track_scroll(&self.scroll)
         .flex_1();
-        let button = |id: &'static str, label: String| Button::new(id).small().outline().label(label);
+        let button = |id: &'static str, label: String| Button::new(id).with_size(push_size(cx)).outline().label(label);
         v_flex()
             .key_context(CONTEXT)
             .size_full()
@@ -1043,14 +1051,14 @@ impl Render for FindFiles {
                             .pt_8()
                             .child(match searching {
                                 true => Button::new("stop")
-                                    .small()
+                                    .with_size(push_size(cx))
                                     .label(t!("search.stop"))
                                     .on_click(cx.listener(|this, _, _, cx| {
                                         this.stop_search();
                                         cx.notify();
                                     })),
                                 false => Button::new("start")
-                                    .small()
+                                    .with_size(push_size(cx))
                                     .primary()
                                     .label(t!("search.start"))
                                     .on_click(cx.listener(|this, _, window, cx| this.start(window, cx))),

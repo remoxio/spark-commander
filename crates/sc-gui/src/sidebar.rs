@@ -762,12 +762,14 @@ impl Commander {
         .track_scroll(&self.sidebar.tree_scroll)
         .size_full()
         .pr(px(12.));
+        // Not while a section slides open or shut: the tree is shorter than its rows only meanwhile.
+        let sliding = self.sidebar.leaving.is_some() && self.settings.sidebar_layout == SidebarLayout::Vertical;
         let rows = div()
             .relative()
             .flex_1()
             .min_h_0()
             .child(list)
-            .child(div().absolute().inset_0().child(Scrollbar::vertical(&self.sidebar.tree_scroll)));
+            .when(!sliding, |rows| rows.child(div().absolute().inset_0().child(Scrollbar::vertical(&self.sidebar.tree_scroll))));
         v_flex().size_full().child(rows)
     }
 
