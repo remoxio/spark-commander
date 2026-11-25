@@ -5,9 +5,41 @@
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::OnceLock;
+use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::{Mutex, OnceLock};
 
 use serde::{Deserialize, Serialize};
+
+/// How many times the desktop's look has changed while the app runs.
+static LOOK: AtomicU32 = AtomicU32::new(0);
+
+/// The desktop's look changed (`toolkit_style::watch`): what was read of it is read again when next asked.
+pub fn look_changed() {
+    LOOK.fetch_add(1, Ordering::Relaxed);
+}
+
+/// A part of the desktop's look, read once until it changes (`look_changed`).
+// shortcut: each change leaves the part read before allocated (a few KB, so it can be lent for good), fine while looks change by hand; a store of its own if they ever change often.
+pub struct LookCache<T: 'static>(Mutex<Option<(u32, &'static T)>>);
+
+impl<T> LookCache<T> {
+    pub const fn new() -> Self {
+        Self(Mutex::new(None))
+    }
+
+    pub fn get(&self, read: impl FnOnce() -> T) -> &'static T {
+        let now = LOOK.load(Ordering::Relaxed);
+        let mut slot = self.0.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+        if let Some((at, value)) = *slot
+            && at == now
+        {
+            return value;
+        }
+        let value: &'static T = Box::leak(Box::new(read()));
+        *slot = Some((now, value));
+        value
+    }
+}
 
 /// Settings' choice: the system's light or dark, or always one.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -259,7 +291,7 @@ pub fn on_gnome() -> bool {
 
 /// The interface font of GNOME, Cinnamon, MATE or Xfce: its family, its size in points.
 fn desktop_font() -> Option<(String, Option<f32>)> {
-    static FONT: OnceLock<Option<(String, Option<f32>)>> = OnceLock::new();
+    static FONT: LookCache<Option<(String, Option<f32>)>> = LookCache::new();
     let find = || {
         #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         if on_desktop("XFCE") {
@@ -268,13 +300,13 @@ fn desktop_font() -> Option<(String, Option<f32>)> {
         let gtk = on_gnome() || on_desktop("X-Cinnamon") || on_desktop("MATE");
         gtk.then(|| interface_setting("font-name")).flatten()
     };
-    FONT.get_or_init(|| find().map(|pango| (real_family(font_family(&pango)), pango_points(&pango)))).clone()
+    FONT.get(|| find().map(|pango| (real_family(font_family(&pango)), pango_points(&pango)))).clone()
 }
 
 /// The desktop's fixed-width font, its family and size in points: KDE's
 /// "fixed", GNOME's, Cinnamon's and MATE's monospace font, Xfce's.
 pub fn desktop_fixed_font() -> Option<(String, f32)> {
-    static FONT: OnceLock<Option<(String, f32)>> = OnceLock::new();
+    static FONT: LookCache<Option<(String, f32)>> = LookCache::new();
     let find = || -> Option<(String, f32)> {
         #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         if on_kde() {
@@ -293,7 +325,7 @@ pub fn desktop_fixed_font() -> Option<(String, f32)> {
         let points = pango_points(&pango).unwrap_or(10.);
         Some((font_family(&pango), points))
     };
-    FONT.get_or_init(|| find().map(|(family, points)| (real_family(family), points))).clone()
+    FONT.get(|| find().map(|(family, points)| (real_family(family), points))).clone()
 }
 
 /// The family a fontconfig alias ("Sans", Cinnamon's) stands for, which GPUI needs.
@@ -715,7 +747,7 @@ impl HeaderBar {
 
 /// The GTK theme's header bar; none off Linux.
 pub fn header_bar() -> Option<HeaderBar> {
-    static BAR: OnceLock<Option<HeaderBar>> = OnceLock::new();
+    static BAR: LookCache<Option<HeaderBar>> = LookCache::new();
     let find = || {
         if !cfg!(any(target_os = "linux", target_os = "freebsd")) {
             return None;
@@ -736,7 +768,7 @@ pub fn header_bar() -> Option<HeaderBar> {
         }
         Some(bar)
     };
-    *BAR.get_or_init(find)
+    *BAR.get(find)
 }
 
 /// libadwaita's, as GNOME's apps draw it whatever the GTK theme (Breeze's
@@ -753,7 +785,7 @@ fn header_bar_of(theme: &str) -> HeaderBar {
 /// The window buttons GTK draws, from the desktop's icon theme: minimize,
 /// maximize, restore and close, as SVG files. None without GNOME's settings.
 pub fn window_buttons() -> Option<&'static [PathBuf; 4]> {
-    static BUTTONS: OnceLock<Option<[PathBuf; 4]>> = OnceLock::new();
+    static BUTTONS: LookCache<Option<[PathBuf; 4]>> = LookCache::new();
     let find = || {
         if !cfg!(any(target_os = "linux", target_os = "freebsd")) {
             return None;
@@ -767,7 +799,7 @@ pub fn window_buttons() -> Option<&'static [PathBuf; 4]> {
             ["minimize", "maximize", "restore", "close"].map(|button| icon(&format!("window-{button}-symbolic")));
         Some([minimize?, maximize?, restore?, close?])
     };
-    BUTTONS.get_or_init(find).as_ref()
+    BUTTONS.get(find).as_ref()
 }
 
 /// Where icon themes live, the user's first.

@@ -5,9 +5,10 @@
 //! colours through `sc-adwstyle`; all beside the app.
 
 use std::collections::HashMap;
-use std::io;
+use std::io::{self, BufRead, BufReader};
 use std::process::{Command, Stdio};
-use std::sync::OnceLock;
+
+use crate::system::theme::{LookCache, on_desktop};
 
 /// An image in device pixels, straight RGBA.
 pub struct Picture {
@@ -53,19 +54,62 @@ pub fn draw(scale: f32, button_height: u32) -> io::Result<Drawn> {
 }
 
 /// The GTK 3 theme's colours, without images, on Xfce, MATE and Cinnamon;
-/// asked once, some 40 ms.
+/// asked once until the look changes, some 40 ms.
 pub fn gtk_colors() -> Option<&'static Drawn> {
-    static COLORS: OnceLock<Option<Drawn>> = OnceLock::new();
+    static COLORS: LookCache<Option<Drawn>> = LookCache::new();
     let ask = || (helper() == Some("sc-gtkstyle")).then(|| run(&["colors"]).ok()).flatten();
-    COLORS.get_or_init(ask).as_ref()
+    COLORS.get(ask).as_ref()
 }
 
 /// libadwaita's colours on GNOME, light and dark (`light.window_bg_color`, …),
-/// as its apps get them (Yaru, high contrast, the accent); asked once, some 150 ms.
+/// as its apps get them (Yaru, high contrast, the accent); asked once until the look changes, some 150 ms.
 pub fn adwaita_colors() -> Option<&'static Drawn> {
-    static COLORS: OnceLock<Option<Drawn>> = OnceLock::new();
+    static COLORS: LookCache<Option<Drawn>> = LookCache::new();
     let ask = || crate::system::theme::on_gnome().then(|| run_helper("sc-adwstyle", &["colors"]).ok()).flatten();
-    COLORS.get_or_init(ask).as_ref()
+    COLORS.get(ask).as_ref()
+}
+
+/// Calls `changed`, from a thread of its own, each time the desktop's look changes (theme, icons,
+/// fonts, colours): on Xfce, MATE, Cinnamon and GNOME as GTK's apps learn it (`sc-gtkstyle watch`);
+/// on KDE when Plasma writes `kdeglobals`, looked at every 2 s. Elsewhere never.
+pub fn watch(changed: impl Fn() + Send + 'static) {
+    if ["XFCE", "MATE", "X-Cinnamon", "GNOME"].into_iter().any(on_desktop) {
+        let spawned = std::env::current_exe().and_then(|exe| {
+            // Its stdin kept open: it ends when the app does.
+            Command::new(exe.with_file_name("sc-gtkstyle")).arg("watch").stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::null()).spawn()
+        });
+        let mut child = match spawned {
+            Ok(child) => child,
+            Err(err) => return eprintln!("sc-gtkstyle watch: {err}"),
+        };
+        let Some(lines) = child.stdout.take() else {
+            return;
+        };
+        std::thread::spawn(move || {
+            for line in BufReader::new(lines).lines().map_while(Result::ok) {
+                if line == "changed" {
+                    changed();
+                }
+            }
+            let _ = child.wait();
+        });
+    } else if on_desktop("KDE") {
+        let Some(path) = dirs::config_dir().map(|dir| dir.join("kdeglobals")) else {
+            return;
+        };
+        std::thread::spawn(move || {
+            let written = || std::fs::metadata(&path).and_then(|file| file.modified()).ok();
+            let mut was = written();
+            loop {
+                std::thread::sleep(std::time::Duration::from_secs(2));
+                let now = written();
+                if now != was {
+                    was = now;
+                    changed();
+                }
+            }
+        });
+    }
 }
 
 fn run(args: &[&str]) -> io::Result<Drawn> {

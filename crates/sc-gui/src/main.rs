@@ -705,6 +705,7 @@ impl Commander {
         cx.observe_window_display(window, |this, window, cx| this.track_place(window, cx)).detach();
         Self::watch_queue(window, cx);
         Self::watch_devices(cx);
+        Self::watch_look(window, cx);
         // Back from another program, which may have changed the folders.
         cx.observe_window_activation(window, |this, window, cx| {
             if window.is_window_active() {
@@ -1802,6 +1803,29 @@ impl Commander {
     }
 
     /// Settings, on the page named `page`.
+    /// The desktop's look changed (its theme, icons, fonts, colours): read again, every window drawn anew, no restart.
+    fn watch_look(window: &mut Window, cx: &mut Context<Self>) {
+        use futures::StreamExt as _;
+        let (tell, mut told) = futures::channel::mpsc::unbounded();
+        sc_core::system::toolkit_style::watch(move || drop(tell.unbounded_send(())));
+        cx.spawn_in(window, async move |this, cx| {
+            while told.next().await.is_some() {
+                theme::look_changed();
+                let restyled = this.update_in(cx, |this, window, cx| {
+                    this.colors = appearance::apply(&palette(&this.settings, window), cx);
+                    this.set_backdrop(window, cx);
+                    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+                    appearance::draw_toolkit_controls(window, cx);
+                    cx.refresh_windows();
+                });
+                if restyled.is_err() {
+                    break;
+                }
+            }
+        })
+        .detach();
+    }
+
     pub(crate) fn open_settings_at(&mut self, page: &str, window: &mut Window, cx: &mut Context<Self>) {
         let page = settings::PAGES.iter().position(|&name| name == page).unwrap_or(0);
         dialogs::settings_dialog::open(cx.entity().downgrade(), self.settings.clone(), page, window, cx);

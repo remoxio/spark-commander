@@ -1106,8 +1106,9 @@ pub fn icon(name: &str) -> Option<PathBuf> {
     if name.starts_with('/') {
         return Some(PathBuf::from(name)).filter(|p| p.is_file());
     }
-    static FOUND: OnceLock<Mutex<HashMap<String, Option<PathBuf>>>> = OnceLock::new();
-    let found = FOUND.get_or_init(Default::default);
+    // Looked up anew in another icon theme.
+    static FOUND: crate::system::theme::LookCache<Mutex<HashMap<String, Option<PathBuf>>>> = crate::system::theme::LookCache::new();
+    let found = FOUND.get(Default::default);
     if let Some(known) = found.lock().ok()?.get(name) {
         return known.clone();
     }
@@ -1149,9 +1150,9 @@ pub fn icon(name: &str) -> Option<PathBuf> {
 
 /// KDE's icon theme, Xfce's, GNOME's, Cinnamon's, MATE's; hicolor where none is set.
 fn icon_theme() -> String {
-    static THEME: OnceLock<String> = OnceLock::new();
+    static THEME: crate::system::theme::LookCache<String> = crate::system::theme::LookCache::new();
     THEME
-        .get_or_init(|| {
+        .get(|| {
             let desktops = desktops();
             let on = |name: &str| desktops.iter().any(|d| d == name);
             let found = match () {
@@ -1210,8 +1211,15 @@ pub(crate) fn kde_setting(group: &str, key: &str) -> Option<String> {
     read_desktop(&path)?.get(group)?.get(key).cloned().filter(|v| !v.is_empty())
 }
 
-/// One of Xfce's look settings (xsettings): the user's, else the distribution's defaults.
+/// One of Xfce's look settings (xsettings): as xfconfd has it now (it writes
+/// its files a while after a change), else the user's file, else the
+/// distribution's defaults.
 pub(crate) fn xfce_setting(name: &str) -> Option<String> {
+    let group = if name.ends_with("FontName") { "Gtk" } else { "Net" };
+    let asked = Command::new("xfconf-query").args(["-c", "xsettings", "-p", &format!("/{group}/{name}")]).stderr(Stdio::null()).output();
+    if let Some(value) = asked.ok().filter(|done| done.status.success()).map(|done| String::from_utf8_lossy(&done.stdout).trim().to_owned()) {
+        return Some(value).filter(|value| !value.is_empty());
+    }
     config_dirs().iter().find_map(|dir| {
         let text = fs::read_to_string(dir.join("xfce4/xfconf/xfce-perchannel-xml/xsettings.xml")).ok()?;
         let doc = roxmltree::Document::parse(&text).ok()?;

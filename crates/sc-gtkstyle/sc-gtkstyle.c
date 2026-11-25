@@ -540,14 +540,95 @@ static void toggle(GtkStyleContext *window, int height) {
     g_object_unref(bar);
 }
 
+// `watch`: a line "changed" a moment after the desktop's look changes, however
+// many settings one change touches; till stdin closes (the app gone).
+static guint pending;
+
+static gboolean report(gpointer data) {
+    (void)data;
+    pending = 0;
+    puts("changed");
+    fflush(stdout);
+    return G_SOURCE_REMOVE;
+}
+
+static void changed(void) {
+    if (pending) g_source_remove(pending);
+    pending = g_timeout_add(300, report, NULL);
+}
+
+static void on_notify(GObject *object, GParamSpec *spec, gpointer data) {
+    (void)object, (void)spec, (void)data;
+    changed();
+}
+
+static void on_setting(GSettings *settings, const char *key, gpointer data) {
+    (void)settings, (void)key, (void)data;
+    changed();
+}
+
+static void on_xfconf(GDBusConnection *bus, const char *sender, const char *path, const char *interface,
+                      const char *signal, GVariant *parameters, gpointer data) {
+    (void)bus, (void)sender, (void)path, (void)interface, (void)signal, (void)parameters, (void)data;
+    changed();
+}
+
+static gboolean gone(GIOChannel *input, GIOCondition condition, gpointer data) {
+    (void)input, (void)condition, (void)data;
+    gtk_main_quit();
+    return G_SOURCE_REMOVE;
+}
+
+// GTK's own settings (theme, icons, font, dark: Xfce's, MATE's and Cinnamon's
+// XSETTINGS, GNOME's on Wayland), GNOME's, MATE's and Cinnamon's interface
+// settings (accent, colour scheme, fixed-width font), Xfce's xsettings channel.
+static void watch(void) {
+    static const char *const PROPERTIES[] = {"gtk-theme-name", "gtk-icon-theme-name", "gtk-font-name",
+                                             "gtk-application-prefer-dark-theme"};
+    for (size_t i = 0; i < G_N_ELEMENTS(PROPERTIES); i++) {
+        char signal[64];
+        snprintf(signal, sizeof signal, "notify::%s", PROPERTIES[i]);
+        g_signal_connect(gtk_settings_get_default(), signal, G_CALLBACK(on_notify), NULL);
+    }
+    static const char *const SCHEMAS[] = {"org.gnome.desktop.interface", "org.mate.interface", "org.cinnamon.desktop.interface"};
+    static const char *const KEYS[] = {"gtk-theme", "icon-theme", "font-name", "monospace-font-name", "color-scheme",
+                                       "accent-color", "text-scaling-factor"};
+    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
+    for (size_t i = 0; source && i < G_N_ELEMENTS(SCHEMAS); i++) {
+        GSettingsSchema *schema = g_settings_schema_source_lookup(source, SCHEMAS[i], TRUE);
+        if (!schema) continue;
+        GSettings *settings = g_settings_new(SCHEMAS[i]);
+        for (size_t k = 0; k < G_N_ELEMENTS(KEYS); k++) {
+            if (!g_settings_schema_has_key(schema, KEYS[k])) continue;
+            char signal[64];
+            snprintf(signal, sizeof signal, "changed::%s", KEYS[k]);
+            g_signal_connect(settings, signal, G_CALLBACK(on_setting), NULL);
+            // GSettings tells of a key's changes once it has been read.
+            g_variant_unref(g_settings_get_value(settings, KEYS[k]));
+        }
+        g_settings_schema_unref(schema);
+    }
+    GDBusConnection *bus = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, NULL);
+    if (bus)
+        g_dbus_connection_signal_subscribe(bus, NULL, "org.xfce.Xfconf", "PropertyChanged", "/org/xfce/Xfconf", "xsettings",
+                                           G_DBUS_SIGNAL_FLAGS_NONE, on_xfconf, NULL, NULL);
+    GIOChannel *input = g_io_channel_unix_new(0);
+    g_io_add_watch(input, G_IO_IN | G_IO_HUP | G_IO_ERR, gone, NULL);
+    gtk_main();
+}
+
 int main(int argc, char **argv) {
     if (!gtk_init_check(&argc, &argv)) {
         fprintf(stderr, "sc-gtkstyle: no display\n");
         return 1;
     }
+    if (argc == 2 && !strcmp(argv[1], "watch")) {
+        watch();
+        return 0;
+    }
     gboolean colors_only = argc == 2 && !strcmp(argv[1], "colors");
     if (argc < 3 && !colors_only) {
-        fprintf(stderr, "usage: sc-gtkstyle <scale> <button height> | sc-gtkstyle colors\n");
+        fprintf(stderr, "usage: sc-gtkstyle <scale> <button height> | sc-gtkstyle colors | sc-gtkstyle watch\n");
         return 2;
     }
     scale = colors_only ? 1 : g_ascii_strtod(argv[1], NULL);
