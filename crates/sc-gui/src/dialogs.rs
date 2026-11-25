@@ -22,7 +22,7 @@ use gpui_kit::component::button::{Button, ButtonCustomVariant, ButtonVariant, Bu
 use gpui_kit::component::{ActiveTheme, NativeControls, WindowClose, WindowCornerRadius, h_flex};
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::component::scroll::ScrollableElement as _;
-use gpui_kit::{AnyElement, AnyWindowHandle, App, Div, FontWeight, Global, IntoElement, ParentElement, Stateful, Styled, canvas, div, px};
+use gpui_kit::{AnyElement, AnyWindowHandle, App, Div, FontWeight, Global, IntoElement, ParentElement, Pixels, Stateful, Styled, canvas, div, px};
 use sc_core::system::theme::{ButtonOrder, button_order};
 
 /// A dialog button's part, for the desktop's order of them.
@@ -141,6 +141,18 @@ pub(crate) fn footer(cx: &App) -> Div {
     h_flex().gap_2().justify_end().when_some(band, |row, fill| {
         row.mx(px(-24.)).mb(px(-24.)).mt_3().p(px(24.)).bg(fill).border_t_1().border_color(cx.theme().border).rounded_b(px(7.))
     })
+}
+
+/// Linux's dialog windows (not macOS's, nor Windows' in-window ones): Settings' page between lines, under its
+/// title and over the buttons, as KDE's System Settings; Settings' and Shortcuts' buttons under a line across the window.
+pub(crate) fn lined(cx: &App) -> bool {
+    dialog_window::separate() && !cx.has_global::<gpui_kit::component::MacControls>()
+}
+
+/// A dialog's buttons under a line across its window, 16 px under what is over them, where `lined`; `gap` the
+/// space its column already puts between them.
+pub(crate) fn line_over(buttons: Div, gap: Pixels, cx: &App) -> Div {
+    buttons.when(lined(cx), |row| row.mt(px(16.) - gap).mx(px(-16.)).px_4().pt_4().border_t_1().border_color(cx.theme().border))
 }
 
 /// A dialog's scrolling page or list, its scrollbar at the window's right edge (over the 16 px padding), not afloat in the padding.

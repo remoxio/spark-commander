@@ -24,14 +24,13 @@ fn custom() -> SharedString {
     sc_core::t!("keys.custom").into()
 }
 
-/// Settings' size, its window 720 by 577 px on Xfce.
-const WIDTH: f32 = 720.;
 
 /// GNOME's: each change applied at once, as its preferences; Reset All and a × beside the title.
 fn instant() -> bool {
     crate::dialogs::dialog_window::separate() && sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita)
 }
-const BODY_HEIGHT: f32 = 500.;
+/// Settings' height: the same window.
+const BODY_HEIGHT: f32 = super::settings_dialog::HEIGHT;
 const KEY_WIDTH: f32 = 150.;
 /// A row's reset button's column.
 const RESET_WIDTH: f32 = 22.;
@@ -99,9 +98,9 @@ pub fn open(
     };
     // GNOME: its title beside Reset All and its × (`render`).
     if instant() {
-        return crate::dialogs::dialog_window::open_headed(sc_core::t!("keys.title"), size(px(WIDTH), px(BODY_HEIGHT)), window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
+        return crate::dialogs::dialog_window::open_headed(sc_core::t!("keys.title"), super::settings_dialog::opened(), window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
     }
-    crate::dialogs::dialog_window::show(sc_core::t!("keys.title"), size(px(WIDTH), px(BODY_HEIGHT)), window, cx, build, |_, _, _| false);
+    crate::dialogs::dialog_window::show(sc_core::t!("keys.title"), super::settings_dialog::opened(), window, cx, build, |_, _, _| false);
 }
 
 /// The dropdown's items (the presets, the user's sets, Custom while the
@@ -456,8 +455,9 @@ impl Render for KeysDialog {
             .child(self.render_presets(cx))
             .child(Input::new(&self.search).small())
             .child(self.render_list(cx))
+            // Under a line as Settings' buttons; the column's gap_3 between.
             .child(
-                crate::dialogs::footer(cx)
+                crate::dialogs::line_over(crate::dialogs::footer(cx), px(12.), cx)
                     .child(div().flex_1().min_w_0().children(note))
                     .child(reset_all)
                     .children(crate::dialogs::ordered([

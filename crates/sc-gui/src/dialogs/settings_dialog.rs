@@ -24,7 +24,9 @@ use crate::Commander;
 use crate::dialogs::Role;
 use crate::menus::toolbar_icon;
 
-const WIDTH: f32 = 720.;
+pub(crate) const WIDTH: f32 = 720.;
+/// In a window of its own, the page and its buttons; Shortcuts' too, the same window.
+pub(crate) const HEIGHT: f32 = 500.;
 /// Its page's height: the rail of pages (406 px) and a little; a longer page scrolls.
 const BODY_HEIGHT: f32 = 440.;
 
@@ -45,10 +47,9 @@ fn fluent() -> bool {
     sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Fluent)
 }
 
-/// Linux's dialog windows: the page between lines, under its title and over the buttons (or the window's foot), the
-/// scrollbar from one to the other at the window's edge, as KDE's System Settings; not macOS's, nor Windows' in-window.
-fn lined(cx: &App) -> bool {
-    crate::dialogs::dialog_window::separate() && !cx.has_global::<MacControls>()
+/// The window's size as it opens, its heading and padding guessed (76 px at Xfce's 9 pt); Shortcuts' too, so both open in the same place.
+pub(crate) fn opened() -> Size<Pixels> {
+    size(px(WIDTH), px(HEIGHT + 76.))
 }
 
 /// GNOME's: each change applied at once, as its preferences, no OK, Cancel or Apply; a × to close.
@@ -229,7 +230,7 @@ pub fn open(
     view
     };
     if crate::dialogs::dialog_window::separate() {
-        let size = size(px(WIDTH), px(BODY_HEIGHT + 90.));
+        let size = opened();
         // GNOME: its title beside its × (`render`).
         if instant() {
             return crate::dialogs::dialog_window::open_headed(t!("settings.title"), size, window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
@@ -1305,7 +1306,7 @@ impl SettingsDialog {
             "Add-ons" => self.render_addons(cx),
             _ => Vec::new(),
         };
-        let lined = lined(cx);
+        let lined = crate::dialogs::lined(cx);
         // A list fills the page, its scrollbar in its frame; groups scroll, the scrollbar at the window's edge from line to line.
         let body = match list {
             Some(list) => v_flex().flex_1().min_h_0().pt_3().pr(gpui_kit::component::scroll::Scrollbar::width()).child(list),
@@ -1351,26 +1352,25 @@ impl Render for SettingsDialog {
                 .rounded_full()
                 .on_click(|_, window, cx| crate::dialogs::dialog_window::close(window, cx));
             let title = div().text_xl().font_weight(FontWeight::SEMIBOLD).child(t!("settings.title"));
-            let page = h_flex().w_full().h(px(BODY_HEIGHT)).items_start().gap_3().text_sm().child(self.render_rail(cx)).child(self.render_page(cx));
-            return v_flex().w_full().gap_4().child(h_flex().justify_between().items_center().child(title).child(close)).child(page).into_any_element();
+            let page = h_flex().w_full().flex_1().min_h_0().items_start().gap_3().text_sm().child(self.render_rail(cx)).child(self.render_page(cx));
+            let heading = h_flex().justify_between().items_center().child(title).child(close);
+            return v_flex().w_full().h(px(HEIGHT)).gap_4().child(heading).child(page).into_any_element();
         }
+        // Windows' in-window dialog: the page alone, the dialog's footer under it.
         let page = h_flex()
             .w_full()
-            .h(px(BODY_HEIGHT))
+            .map(|page| match self.owner {
+                Some(_) => page.flex_1().min_h_0(),
+                None => page.h(px(BODY_HEIGHT)),
+            })
             .items_start()
             .gap_3()
             .text_sm()
             .child(self.render_rail(cx))
             .child(self.render_page(cx));
-        // In a window of its own: the footer's buttons under it; on Linux under a line across the window, as far under the rail.
-        let lined = lined(cx);
-        let footer = self.owner.is_some().then(|| {
-            div()
-                .pt_4()
-                .when(lined, |el| el.mt_4().mx(px(-16.)).px_4().border_t_1().border_color(cx.theme().border))
-                .child(buttons(&cx.entity(), self.draft != self.saved))
-        });
-        v_flex().w_full().child(page).children(footer).into_any_element()
+        // In a window of its own: the buttons under it, all as tall as Shortcuts'; on Linux under a line across the window, as far under the rail.
+        let footer = self.owner.is_some().then(|| crate::dialogs::line_over(div().pt_4().child(buttons(&cx.entity(), self.draft != self.saved)), px(0.), cx));
+        v_flex().w_full().when(self.owner.is_some(), |el| el.h(px(HEIGHT))).child(page).children(footer).into_any_element()
     }
 }
 
