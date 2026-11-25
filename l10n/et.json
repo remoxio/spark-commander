@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, läbipaistmatu"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Läbipaistvus"
   },
   "settings.cancel": {
     "message": "Tühista"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Süsteemi keel: {language}"
   },
-  "settings.language.title": {
-    "message": "Keel"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Lisamoodulid"
   },
-  "settings.page.date": {
-    "message": "Kuupäev"
+  "settings.page.date_time": {
+    "message": "Kuupäev ja kellaaeg"
   },
   "settings.page.display": {
     "message": "Kuva"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Määra ülemparool…"
   },
-  "settings.passwords.title": {
-    "message": "Salvestatud paroolid"
-  },
   "settings.passwords.unlock": {
     "message": "Ava…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Toimingute järjekord"
   },
   "settings.shell.default": {
     "message": "Vaikimisi: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Ainult tekst"
-  },
-  "settings.toolbar.title": {
-    "message": "Tööriistariba nupud"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

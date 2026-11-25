@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%，不透明"
   },
-  "settings.backdrop.terminal": {
-    "message": "終端機"
+  "settings.backdrop.transparency": {
+    "message": "透明度"
   },
   "settings.cancel": {
     "message": "取消"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "系統語言：{language}"
   },
-  "settings.language.title": {
-    "message": "語言"
-  },
   "settings.ok": {
     "message": "確定"
   },
   "settings.page.addons": {
     "message": "附加元件"
   },
-  "settings.page.date": {
-    "message": "日期"
+  "settings.page.date_time": {
+    "message": "日期與時間"
   },
   "settings.page.display": {
     "message": "顯示"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "設定主密碼…"
   },
-  "settings.passwords.title": {
-    "message": "已儲存的密碼"
-  },
   "settings.passwords.unlock": {
     "message": "解鎖…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "作業佇列"
   },
   "settings.shell.default": {
     "message": "預設：{shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "僅文字"
-  },
-  "settings.toolbar.title": {
-    "message": "工具列按鈕"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

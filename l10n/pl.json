@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, nieprzezroczysty"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Przezroczystość"
   },
   "settings.cancel": {
     "message": "Anuluj"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Język systemu: {language}"
   },
-  "settings.language.title": {
-    "message": "Język"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Dodatki"
   },
-  "settings.page.date": {
-    "message": "Data"
+  "settings.page.date_time": {
+    "message": "Data i godzina"
   },
   "settings.page.display": {
     "message": "Wyświetlanie"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Ustaw hasło główne…"
   },
-  "settings.passwords.title": {
-    "message": "Zapisane hasła"
-  },
   "settings.passwords.unlock": {
     "message": "Odblokuj…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Kolejka operacji"
   },
   "settings.shell.default": {
     "message": "Domyślna: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Tylko tekst"
-  },
-  "settings.toolbar.title": {
-    "message": "Przyciski paska narzędzi"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

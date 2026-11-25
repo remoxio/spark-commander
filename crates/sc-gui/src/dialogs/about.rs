@@ -79,7 +79,7 @@ fn content(cx: &App) -> impl IntoElement + use<> {
         .chain(about::SHIPPED.iter().map(|p| (p.name, (p.what)(), p.licence, p.website)));
     let addons = Addon::ALL.iter().map(|a| (a.name(), a.purpose(), a.licence(), a.website().1));
     let libraries = about::LIBRARIES.iter().map(|p| (p.name, (p.what)(), p.licence, p.website));
-    let mut parts = v_flex().pr_3();
+    let mut parts = v_flex().px_3().pb_2();
     for (group, title, list) in [
         ("shipped", t!("about.shipped"), shipped.collect::<Vec<_>>()),
         ("addons", t!("about.addons"), addons.collect()),
@@ -96,6 +96,6 @@ fn content(cx: &App) -> impl IntoElement + use<> {
         .child(header)
         .child(div().border_t_1().border_color(cx.theme().border))
         .child(div().font_semibold().child(t!("about.made_with")))
-        // A box of its own height, the list scrolling in it.
-        .child(v_flex().h(px(340.)).child(crate::dialogs::edge_scrolled(div().id("about-parts").flex_1().min_h_0().child(parts))))
+        // A box of its own height, the list scrolling in its frame.
+        .child(v_flex().h(px(340.)).child(crate::dialogs::framed_list(div().id("about-parts").child(parts), cx)))
 }

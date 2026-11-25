@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, opaco"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminale"
+  "settings.backdrop.transparency": {
+    "message": "Trasparenza"
   },
   "settings.cancel": {
     "message": "Annulla"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Lingua del sistema: {language}"
   },
-  "settings.language.title": {
-    "message": "Lingua"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Componenti aggiuntivi"
   },
-  "settings.page.date": {
-    "message": "Data"
+  "settings.page.date_time": {
+    "message": "Data e ora"
   },
   "settings.page.display": {
     "message": "Visualizzazione"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Imposta password principale…"
   },
-  "settings.passwords.title": {
-    "message": "Password salvate"
-  },
   "settings.passwords.unlock": {
     "message": "Sblocca…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Coda operazioni"
   },
   "settings.shell.default": {
     "message": "Predefinita: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Solo testo"
-  },
-  "settings.toolbar.title": {
-    "message": "Pulsanti della barra degli strumenti"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

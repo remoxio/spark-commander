@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, непровидно"
   },
-  "settings.backdrop.terminal": {
-    "message": "Терминал"
+  "settings.backdrop.transparency": {
+    "message": "Провидност"
   },
   "settings.cancel": {
     "message": "Откажи"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Језик система: {language}"
   },
-  "settings.language.title": {
-    "message": "Језик"
-  },
   "settings.ok": {
     "message": "У реду"
   },
   "settings.page.addons": {
     "message": "Додаци"
   },
-  "settings.page.date": {
-    "message": "Датум"
+  "settings.page.date_time": {
+    "message": "Датум и време"
   },
   "settings.page.display": {
     "message": "Приказ"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Подеси главну лозинку…"
   },
-  "settings.passwords.title": {
-    "message": "Сачуване лозинке"
-  },
   "settings.passwords.unlock": {
     "message": "Откључај…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Ред операција"
   },
   "settings.shell.default": {
     "message": "Подразумевано: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Само текст"
-  },
-  "settings.toolbar.title": {
-    "message": "Дугмад на траци са алаткама"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

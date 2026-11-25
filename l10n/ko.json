@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, 불투명"
   },
-  "settings.backdrop.terminal": {
-    "message": "터미널"
+  "settings.backdrop.transparency": {
+    "message": "투명도"
   },
   "settings.cancel": {
     "message": "취소"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "시스템 언어: {language}"
   },
-  "settings.language.title": {
-    "message": "언어"
-  },
   "settings.ok": {
     "message": "확인"
   },
   "settings.page.addons": {
     "message": "추가 기능"
   },
-  "settings.page.date": {
-    "message": "날짜"
+  "settings.page.date_time": {
+    "message": "날짜 및 시간"
   },
   "settings.page.display": {
     "message": "표시"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "마스터 암호 설정…"
   },
-  "settings.passwords.title": {
-    "message": "저장된 암호"
-  },
   "settings.passwords.unlock": {
     "message": "잠금 해제…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "작업 대기열"
   },
   "settings.shell.default": {
     "message": "기본값: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "텍스트만"
-  },
-  "settings.toolbar.title": {
-    "message": "도구 모음 버튼"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI(Windows)"

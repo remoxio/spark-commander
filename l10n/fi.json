@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100 %, peittävä"
   },
-  "settings.backdrop.terminal": {
-    "message": "Pääte"
+  "settings.backdrop.transparency": {
+    "message": "Läpinäkyvyys"
   },
   "settings.cancel": {
     "message": "Peruuta"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Järjestelmän kieli: {language}"
   },
-  "settings.language.title": {
-    "message": "Kieli"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Lisäosat"
   },
-  "settings.page.date": {
-    "message": "Päiväys"
+  "settings.page.date_time": {
+    "message": "Päiväys ja aika"
   },
   "settings.page.display": {
     "message": "Näyttö"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Aseta pääsalasana…"
   },
-  "settings.passwords.title": {
-    "message": "Tallennetut salasanat"
-  },
   "settings.passwords.unlock": {
     "message": "Avaa…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "kt/s"
-  },
-  "settings.queue.title": {
-    "message": "Tehtäväjono"
   },
   "settings.shell.default": {
     "message": "Oletus: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Vain teksti"
-  },
-  "settings.toolbar.title": {
-    "message": "Työkalurivin painikkeet"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

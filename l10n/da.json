@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100 %, helt dækkende"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Gennemsigtighed"
   },
   "settings.cancel": {
     "message": "Annuller"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Systemsprog: {language}"
   },
-  "settings.language.title": {
-    "message": "Sprog"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Tilføjelser"
   },
-  "settings.page.date": {
-    "message": "Dato"
+  "settings.page.date_time": {
+    "message": "Dato og tid"
   },
   "settings.page.display": {
     "message": "Visning"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Angiv hovedadgangskode…"
   },
-  "settings.passwords.title": {
-    "message": "Gemte adgangskoder"
-  },
   "settings.passwords.unlock": {
     "message": "Lås op…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Handlingskø"
   },
   "settings.shell.default": {
     "message": "Standard: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Kun tekst"
-  },
-  "settings.toolbar.title": {
-    "message": "Værktøjslinjens knapper"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

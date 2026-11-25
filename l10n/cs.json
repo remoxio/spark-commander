@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100 %, neprůhledné"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminál"
+  "settings.backdrop.transparency": {
+    "message": "Průhlednost"
   },
   "settings.cancel": {
     "message": "Zrušit"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Jazyk systému: {language}"
   },
-  "settings.language.title": {
-    "message": "Jazyk"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Doplňky"
   },
-  "settings.page.date": {
-    "message": "Datum"
+  "settings.page.date_time": {
+    "message": "Datum a čas"
   },
   "settings.page.display": {
     "message": "Zobrazení"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Nastavit hlavní heslo…"
   },
-  "settings.passwords.title": {
-    "message": "Uložená hesla"
-  },
   "settings.passwords.unlock": {
     "message": "Odemknout…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Fronta operací"
   },
   "settings.shell.default": {
     "message": "Výchozí: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Pouze text"
-  },
-  "settings.toolbar.title": {
-    "message": "Tlačítka panelu nástrojů"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

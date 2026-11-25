@@ -44,6 +44,12 @@ fn fluent() -> bool {
     sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Fluent)
 }
 
+/// Linux's dialog windows: the page between lines, under its title and over the buttons (or the window's foot), the
+/// scrollbar from one to the other at the window's edge, as KDE's System Settings; not macOS's, nor Windows' in-window.
+fn lined(cx: &App) -> bool {
+    crate::dialogs::dialog_window::separate() && !cx.has_global::<MacControls>()
+}
+
 /// GNOME's: each change applied at once, as its preferences, no OK, Cancel or Apply; a × to close.
 fn instant() -> bool {
     crate::dialogs::dialog_window::separate() && sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita)
@@ -280,7 +286,7 @@ fn page_name(page: &str) -> String {
         "Toolbar" => t!("settings.page.toolbar"),
         "Display" => t!("settings.page.display"),
         "Font" => t!("settings.page.font"),
-        "Date" => t!("settings.page.date"),
+        "Date" => t!("settings.page.date_time"),
         "Language" => t!("settings.page.language"),
         "Edit/View" => t!("settings.page.edit_view"),
         "Terminal" => t!("settings.page.terminal"),
@@ -720,7 +726,7 @@ impl SettingsDialog {
 
     /// The app's languages in a list, as Total Commander's: the system's
     /// first, then each in its own words and English.
-    fn render_language(&self, cx: &mut Context<Self>) -> GroupBox {
+    fn render_language(&self, cx: &mut Context<Self>) -> Div {
         let theme = cx.theme();
         let system = sc_core::l10n::languages().into_iter().find(|language| Some(&language.tag) == self.system_language.as_ref());
         let first = match system {
@@ -748,17 +754,7 @@ impl SettingsDialog {
                     cx.notify();
                 }))
         });
-        GroupBox::new().outline().title(t!("settings.language.title")
-).child(
-            v_flex()
-                .id("languages")
-                .h(px(380.))
-                .overflow_y_scroll()
-                .border_1()
-                .border_color(theme.border)
-                .bg(theme.background)
-                .children(list),
-        )
+        crate::dialogs::framed_list(v_flex().id("languages").py_0p5().children(list), cx)
     }
 
     fn render_viewer(&self, cx: &mut Context<Self>) -> GroupBox {
@@ -905,7 +901,7 @@ impl SettingsDialog {
                 .child(h_flex().gap_2().child(label).child(div().w(px(80.)).child(Input::new(input))).child(unit))
                 .child(div().whitespace_normal().text_color(muted).child(about))
         };
-        GroupBox::new().outline().title(t!("settings.queue.title")).child(
+        GroupBox::new().child(
             v_flex()
                 .gap_4()
                 .child(row(t!("settings.queue.clear_after"), &self.clear_after, t!("settings.queue.clear_after_unit"), t!("settings.queue.clear_after_help")))
@@ -914,8 +910,8 @@ impl SettingsDialog {
     }
 
     /// The toolbar's buttons in order: each replaced, moved or removed; more added.
-    /// The toolbar's buttons in a box; what adds to them is under it (`render_toolbar_adding`).
-    fn render_toolbar(&self, cx: &mut Context<Self>) -> GroupBox {
+    /// Its style over the list of buttons, what adds to them under it (`render_toolbar_adding`).
+    fn render_toolbar(&self, cx: &mut Context<Self>) -> Div {
         let shown = self.draft.toolbar.0.clone();
         let this = cx.weak_entity();
         let small = |id: (&'static str, usize), icon: Lucide| Button::new(id).ghost().small().icon(Icon::new(icon));
@@ -961,12 +957,14 @@ impl SettingsDialog {
                 this.draft.toolbar_style = styles[*at];
                 cx.notify();
             }));
-        GroupBox::new().outline().title(t!("settings.toolbar.title")).child(
-            v_flex()
-                .gap_2()
-                .when(offered, |el| el.child(style))
-                .children(rows),
-        )
+        v_flex()
+            .flex_1()
+            .min_h_0()
+            .gap_3()
+            // Its own height: the list takes the rest.
+            .when(offered, |el| el.child(div().flex_none().child(style)))
+            .child(crate::dialogs::framed_list(v_flex().id("toolbar-buttons").p_1().gap_0p5().children(rows.into_iter().map(|row| row.px_1())), cx))
+            .child(self.render_toolbar_adding(cx))
     }
 
     /// Adding to the toolbar, or its default back: under the list, always in sight.
@@ -1028,7 +1026,7 @@ impl SettingsDialog {
             let label = if master { t!("settings.passwords.change_master") } else { t!("settings.passwords.set_master") };
             buttons = buttons.child(Button::new("passwords-master").outline().label(label).on_click(move |_, window, cx| ask(Ask::Set, window, cx, done.clone())));
         }
-        GroupBox::new().outline().title(t!("settings.passwords.title")).child(
+        GroupBox::new().child(
             v_flex()
                 .gap_3()
                 .child(div().whitespace_normal().child(place))
@@ -1278,23 +1276,26 @@ impl SettingsDialog {
 
     fn render_page(&self, cx: &mut Context<Self>) -> impl IntoElement {
         let title = PAGES[self.page];
-        let content = match title {
+        let list = match title {
+            "Toolbar" => Some(self.render_toolbar(cx)),
+            "Language" => Some(self.render_language(cx)),
+            _ => None,
+        };
+        let groups = match title {
             "Layout" => {
                 let mut groups: Vec<GroupBox> = self.render_appearance(cx).into_iter().collect();
                 groups.push(self.render_sidebar(cx));
                 groups.push(self.render_tabs(cx));
                 groups
             }
-            "Toolbar" => vec![self.render_toolbar(cx)],
             "Display" => self.render_files(cx),
             "Font" => vec![self.render_font(Which::Main, cx), self.render_font(Which::Fixed, cx)],
             "Date" => self.render_date(cx),
-            "Language" => vec![self.render_language(cx)],
             "Edit/View" => vec![self.render_viewer(cx), self.render_editor(cx)],
             "Terminal" => {
                 let mut groups = vec![self.render_shell(cx)];
                 if sc_core::system::theme::see_through() {
-                    groups.push(GroupBox::new().outline().title(t!("settings.backdrop.terminal")).child(self.render_backdrop(true, cx)));
+                    groups.push(GroupBox::new().outline().title(t!("settings.backdrop.transparency")).child(self.render_backdrop(true, cx)));
                 }
                 groups
             }
@@ -1303,6 +1304,14 @@ impl SettingsDialog {
             "Add-ons" => self.render_addons(cx),
             _ => Vec::new(),
         };
+        let lined = lined(cx);
+        // A list fills the page, its scrollbar in its frame; groups scroll, the scrollbar at the window's edge from line to line.
+        let body = match list {
+            Some(list) => v_flex().flex_1().min_h_0().pt_3().pr(gpui_kit::component::scroll::Scrollbar::width()).child(list),
+            None => crate::dialogs::edge_scrolled(v_flex().id("settings-page-body").flex_1().min_h_0().gap_3().pt_3().when(lined, |el| el.pb_4()).children(groups))
+                // Down past the rail's foot to the line over the buttons, or to the window's.
+                .when(lined, |el| el.mb(px(-16.))),
+        };
         // The page's name as a pane's title, bold, unboxed; macOS's smaller.
         let mac = cx.has_global::<MacControls>();
         let fluent = fluent();
@@ -1310,10 +1319,10 @@ impl SettingsDialog {
             .flex_1()
             .min_w_0()
             .h_full()
-            .gap_3()
             .child(
                 div()
-                    .py_1()
+                    .pt_1()
+                    .pb_2()
                     .map(|el| match () {
                         _ if mac => el.text_base().font_semibold(),
                         _ if fluent => el.text_xl().font_semibold(),
@@ -1321,8 +1330,9 @@ impl SettingsDialog {
                     })
                     .child(page_name(title)),
             )
-            .child(crate::dialogs::edge_scrolled(v_flex().id("settings-page-body").flex_1().min_h_0().gap_3().children(content)))
-            .when(title == "Toolbar", |page| page.child(self.render_toolbar_adding(cx)))
+            // Out to the window's right edge, as the scrollbar under it.
+            .when(lined, |page| page.child(div().h(px(1.)).mr(px(-16.)).bg(cx.theme().border)))
+            .child(body)
     }
 }
 
@@ -1351,8 +1361,14 @@ impl Render for SettingsDialog {
             .text_sm()
             .child(self.render_rail(cx))
             .child(self.render_page(cx));
-        // In a window of its own: the footer's buttons under it.
-        let footer = self.owner.is_some().then(|| div().pt_4().child(buttons(&cx.entity(), self.draft != self.saved)));
+        // In a window of its own: the footer's buttons under it; on Linux under a line across the window, as far under the rail.
+        let lined = lined(cx);
+        let footer = self.owner.is_some().then(|| {
+            div()
+                .pt_4()
+                .when(lined, |el| el.mt_4().mx(px(-16.)).px_4().border_t_1().border_color(cx.theme().border))
+                .child(buttons(&cx.entity(), self.draft != self.saved))
+        });
         v_flex().w_full().child(page).children(footer).into_any_element()
     }
 }

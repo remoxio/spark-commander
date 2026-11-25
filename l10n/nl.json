@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, ondoorzichtig"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Transparantie"
   },
   "settings.cancel": {
     "message": "Annuleren"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Systeemtaal: {language}"
   },
-  "settings.language.title": {
-    "message": "Taal"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Add-ons"
   },
-  "settings.page.date": {
-    "message": "Datum"
+  "settings.page.date_time": {
+    "message": "Datum en tijd"
   },
   "settings.page.display": {
     "message": "Weergave"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Hoofdwachtwoord instellen…"
   },
-  "settings.passwords.title": {
-    "message": "Opgeslagen wachtwoorden"
-  },
   "settings.passwords.unlock": {
     "message": "Ontgrendelen…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Bewerkingswachtrij"
   },
   "settings.shell.default": {
     "message": "Standaard: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Alleen tekst"
-  },
-  "settings.toolbar.title": {
-    "message": "Werkbalkknoppen"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

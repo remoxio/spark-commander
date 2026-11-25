@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, opac"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Transparență"
   },
   "settings.cancel": {
     "message": "Anulați"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Limba sistemului: {language}"
   },
-  "settings.language.title": {
-    "message": "Limbă"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Suplimente"
   },
-  "settings.page.date": {
-    "message": "Dată"
+  "settings.page.date_time": {
+    "message": "Dată și oră"
   },
   "settings.page.display": {
     "message": "Afișare"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Setați parola principală…"
   },
-  "settings.passwords.title": {
-    "message": "Parole salvate"
-  },
   "settings.passwords.unlock": {
     "message": "Deblocați…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Coada de operații"
   },
   "settings.shell.default": {
     "message": "Implicit: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Doar text"
-  },
-  "settings.toolbar.title": {
-    "message": "Butoanele barei de instrumente"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, opac"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Transparència"
   },
   "settings.cancel": {
     "message": "Cancel·la"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Idioma del sistema: {language}"
   },
-  "settings.language.title": {
-    "message": "Idioma"
-  },
   "settings.ok": {
     "message": "D’acord"
   },
   "settings.page.addons": {
     "message": "Complements"
   },
-  "settings.page.date": {
-    "message": "Data"
+  "settings.page.date_time": {
+    "message": "Data i hora"
   },
   "settings.page.display": {
     "message": "Visualització"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Defineix una contrasenya mestra…"
   },
-  "settings.passwords.title": {
-    "message": "Contrasenyes desades"
-  },
   "settings.passwords.unlock": {
     "message": "Desbloqueja…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Cua d’operacions"
   },
   "settings.shell.default": {
     "message": "Predeterminat: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Només text"
-  },
-  "settings.toolbar.title": {
-    "message": "Botons de la barra d’eines"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

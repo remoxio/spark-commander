@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100 %, nepermatoma"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminalas"
+  "settings.backdrop.transparency": {
+    "message": "Skaidrumas"
   },
   "settings.cancel": {
     "message": "Atšaukti"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Sistemos kalba: {language}"
   },
-  "settings.language.title": {
-    "message": "Kalba"
-  },
   "settings.ok": {
     "message": "Gerai"
   },
   "settings.page.addons": {
     "message": "Priedai"
   },
-  "settings.page.date": {
-    "message": "Data"
+  "settings.page.date_time": {
+    "message": "Data ir laikas"
   },
   "settings.page.display": {
     "message": "Rodymas"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Nustatyti pagrindinį slaptažodį…"
   },
-  "settings.passwords.title": {
-    "message": "Įrašyti slaptažodžiai"
-  },
   "settings.passwords.unlock": {
     "message": "Atrakinti…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Operacijų eilė"
   },
   "settings.shell.default": {
     "message": "Numatytasis: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Tik tekstas"
-  },
-  "settings.toolbar.title": {
-    "message": "Įrankių juostos mygtukai"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, necaurspīdīgs"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminālis"
+  "settings.backdrop.transparency": {
+    "message": "Caurspīdīgums"
   },
   "settings.cancel": {
     "message": "Atcelt"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Sistēmas valoda: {language}"
   },
-  "settings.language.title": {
-    "message": "Valoda"
-  },
   "settings.ok": {
     "message": "Labi"
   },
   "settings.page.addons": {
     "message": "Papildinājumi"
   },
-  "settings.page.date": {
-    "message": "Datums"
+  "settings.page.date_time": {
+    "message": "Datums un laiks"
   },
   "settings.page.display": {
     "message": "Attēlojums"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Iestatīt galveno paroli…"
   },
-  "settings.passwords.title": {
-    "message": "Saglabātās paroles"
-  },
   "settings.passwords.unlock": {
     "message": "Atbloķēt…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Darbību rinda"
   },
   "settings.shell.default": {
     "message": "Noklusējums: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Tikai teksts"
-  },
-  "settings.toolbar.title": {
-    "message": "Rīkjoslas pogas"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

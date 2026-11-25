@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100 %, nepriehľadné"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminál"
+  "settings.backdrop.transparency": {
+    "message": "Priehľadnosť"
   },
   "settings.cancel": {
     "message": "Zrušiť"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Jazyk systému: {language}"
   },
-  "settings.language.title": {
-    "message": "Jazyk"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Doplnky"
   },
-  "settings.page.date": {
-    "message": "Dátum"
+  "settings.page.date_time": {
+    "message": "Dátum a čas"
   },
   "settings.page.display": {
     "message": "Zobrazenie"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Nastaviť hlavné heslo…"
   },
-  "settings.passwords.title": {
-    "message": "Uložené heslá"
-  },
   "settings.passwords.unlock": {
     "message": "Odomknúť…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Rad operácií"
   },
   "settings.shell.default": {
     "message": "Predvolený: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Iba text"
-  },
-  "settings.toolbar.title": {
-    "message": "Tlačidlá panela nástrojov"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

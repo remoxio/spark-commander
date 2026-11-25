@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, पूरी तरह ठोस"
   },
-  "settings.backdrop.terminal": {
-    "message": "टर्मिनल"
+  "settings.backdrop.transparency": {
+    "message": "पारदर्शिता"
   },
   "settings.cancel": {
     "message": "रद्द करें"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "सिस्टम की भाषा: {language}"
   },
-  "settings.language.title": {
-    "message": "भाषा"
-  },
   "settings.ok": {
     "message": "ठीक है"
   },
   "settings.page.addons": {
     "message": "ऐड-ऑन"
   },
-  "settings.page.date": {
-    "message": "तारीख"
+  "settings.page.date_time": {
+    "message": "तारीख और समय"
   },
   "settings.page.display": {
     "message": "डिस्प्ले"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "मास्टर पासवर्ड सेट करें…"
   },
-  "settings.passwords.title": {
-    "message": "सेव किए गए पासवर्ड"
-  },
   "settings.passwords.unlock": {
     "message": "अनलॉक करें…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "ऑपरेशन कतार"
   },
   "settings.shell.default": {
     "message": "डिफ़ॉल्ट: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "केवल टेक्स्ट"
-  },
-  "settings.toolbar.title": {
-    "message": "टूलबार बटन"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

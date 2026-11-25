@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, đặc"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Độ trong suốt"
   },
   "settings.cancel": {
     "message": "Hủy"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Ngôn ngữ hệ thống: {language}"
   },
-  "settings.language.title": {
-    "message": "Ngôn ngữ"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Tiện ích bổ sung"
   },
-  "settings.page.date": {
-    "message": "Ngày"
+  "settings.page.date_time": {
+    "message": "Ngày và giờ"
   },
   "settings.page.display": {
     "message": "Hiển thị"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Đặt mật khẩu chính…"
   },
-  "settings.passwords.title": {
-    "message": "Mật khẩu đã lưu"
-  },
   "settings.passwords.unlock": {
     "message": "Mở khóa…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Hàng đợi thao tác"
   },
   "settings.shell.default": {
     "message": "Mặc định: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Chỉ văn bản"
-  },
-  "settings.toolbar.title": {
-    "message": "Nút trên thanh công cụ"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

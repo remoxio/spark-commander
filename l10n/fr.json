@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100 %, opaque"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Transparence"
   },
   "settings.cancel": {
     "message": "Annuler"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Langue du système : {language}"
   },
-  "settings.language.title": {
-    "message": "Langue"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Modules complémentaires"
   },
-  "settings.page.date": {
-    "message": "Date"
+  "settings.page.date_time": {
+    "message": "Date et heure"
   },
   "settings.page.display": {
     "message": "Affichage"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Définir un mot de passe principal…"
   },
-  "settings.passwords.title": {
-    "message": "Mots de passe enregistrés"
-  },
   "settings.passwords.unlock": {
     "message": "Déverrouiller…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "Ko/s"
-  },
-  "settings.queue.title": {
-    "message": "File d’attente des opérations"
   },
   "settings.shell.default": {
     "message": "Par défaut : {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Texte seul"
-  },
-  "settings.toolbar.title": {
-    "message": "Boutons de la barre d’outils"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%, padat"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Transparansi"
   },
   "settings.cancel": {
     "message": "Batal"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Bahasa sistem: {language}"
   },
-  "settings.language.title": {
-    "message": "Bahasa"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Pengaya"
   },
-  "settings.page.date": {
-    "message": "Tanggal"
+  "settings.page.date_time": {
+    "message": "Tanggal dan waktu"
   },
   "settings.page.display": {
     "message": "Tampilan"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Atur kata sandi utama…"
   },
-  "settings.passwords.title": {
-    "message": "Kata sandi yang disimpan"
-  },
   "settings.passwords.unlock": {
     "message": "Buka kunci…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Antrean operasi"
   },
   "settings.shell.default": {
     "message": "Bawaan: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Hanya teks"
-  },
-  "settings.toolbar.title": {
-    "message": "Tombol bilah alat"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

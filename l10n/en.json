@@ -5083,9 +5083,9 @@
     "description": "Settings › Layout › Sidebar and Settings › Terminal: beside the slider at 100%, nothing of the desktop shows.",
     "message": "100%, solid"
   },
-  "settings.backdrop.terminal": {
-    "description": "Settings › Terminal: the box's title over the terminal's see-through options.",
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "description": "Settings › Terminal: the box's title over how much the terminal lets the desktop show through, and its blur.",
+    "message": "Transparency"
   },
   "settings.cancel": {
     "description": "Settings: the button that closes the dialog without applying; keep it short.",
@@ -5191,10 +5191,6 @@
     "description": "Settings › Language: the first row; language = the system's language in its own words, e.g. Deutsch.",
     "message": "System language: {language}"
   },
-  "settings.language.title": {
-    "description": "Settings › Language: the box's title.",
-    "message": "Language"
-  },
   "settings.ok": {
     "description": "Settings: the button that applies the changes and closes the dialog; keep it short.",
     "message": "OK"
@@ -5203,9 +5199,9 @@
     "description": "Settings: a page's name in the list down the left and over the page; keep it short.",
     "message": "Add-ons"
   },
-  "settings.page.date": {
-    "description": "Settings: a page's name (dates' and times' format) in the list down the left and over the page; keep it short.",
-    "message": "Date"
+  "settings.page.date_time": {
+    "description": "Settings: the page (in the list of pages and as its title) on how dates and times are shown.",
+    "message": "Date and time"
   },
   "settings.page.display": {
     "description": "Settings: a page's name (which files are shown, folders' order) in the list down the left and over the page; keep it short.",
@@ -5267,10 +5263,6 @@
     "description": "Settings › Passwords: button, while none is set.",
     "message": "Set master password…"
   },
-  "settings.passwords.title": {
-    "description": "Settings › Passwords: the box's title.",
-    "message": "Saved passwords"
-  },
   "settings.passwords.unlock": {
     "description": "Settings › Passwords: button that asks for the master password; keep it short.",
     "message": "Unlock…"
@@ -5298,10 +5290,6 @@
   "settings.queue.download_limit_unit": {
     "description": "Settings › Operations: the unit after the speed limit's field, kilobytes per second; keep it short.",
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "description": "Settings › Operations: the box's title.",
-    "message": "Operation queue"
   },
   "settings.shell.default": {
     "description": "Settings › Terminal › Shell: a choice; shell = the default shell, e.g. /bin/bash or Windows PowerShell.",
@@ -5422,10 +5410,6 @@
   "settings.toolbar.text": {
     "description": "Settings › Toolbar and the toolbar's right-click menu: a choice; the toolbar's buttons show their name only.",
     "message": "Text only"
-  },
-  "settings.toolbar.title": {
-    "description": "Settings › Toolbar: the box's title.",
-    "message": "Toolbar buttons"
   },
   "settings.viewer.font.ansi": {
     "description": "Settings › Edit/View › Viewer › Font at startup: a choice, Windows' code page.",

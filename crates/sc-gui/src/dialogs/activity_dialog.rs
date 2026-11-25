@@ -45,7 +45,7 @@ impl Render for ActivityLog {
         v_flex()
             .gap_3()
             .text_sm()
-            .child(v_flex().h(px(420.)).child(crate::dialogs::edge_scrolled(div().id("activity-list").flex_1().min_h_0().children(empty).children(rows))))
+            .child(v_flex().h(px(420.)).child(crate::dialogs::framed_list(div().id("activity-list").px_2().py_1().children(empty).children(rows), cx)))
             .child(
                 crate::dialogs::footer(cx).child(
                     Button::new("activity-clear").outline().label(t!("activity.clear")).on_click(cx.listener(|this, _, window, cx| {

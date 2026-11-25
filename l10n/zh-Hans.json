@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100%，完全不透明"
   },
-  "settings.backdrop.terminal": {
-    "message": "终端"
+  "settings.backdrop.transparency": {
+    "message": "透明度"
   },
   "settings.cancel": {
     "message": "取消"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "系统语言：{language}"
   },
-  "settings.language.title": {
-    "message": "语言"
-  },
   "settings.ok": {
     "message": "确定"
   },
   "settings.page.addons": {
     "message": "附加组件"
   },
-  "settings.page.date": {
-    "message": "日期"
+  "settings.page.date_time": {
+    "message": "日期和时间"
   },
   "settings.page.display": {
     "message": "显示"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "设置主密码…"
   },
-  "settings.passwords.title": {
-    "message": "已保存的密码"
-  },
   "settings.passwords.unlock": {
     "message": "解锁…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "操作队列"
   },
   "settings.shell.default": {
     "message": "默认：{shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "仅文字"
-  },
-  "settings.toolbar.title": {
-    "message": "工具栏按钮"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI（Windows）"

@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "100 %, deckend"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Transparenz"
   },
   "settings.cancel": {
     "message": "Abbrechen"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Systemsprache: {language}"
   },
-  "settings.language.title": {
-    "message": "Sprache"
-  },
   "settings.ok": {
     "message": "OK"
   },
   "settings.page.addons": {
     "message": "Add-ons"
   },
-  "settings.page.date": {
-    "message": "Datum"
+  "settings.page.date_time": {
+    "message": "Datum und Uhrzeit"
   },
   "settings.page.display": {
     "message": "Anzeige"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Master-Passwort festlegen…"
   },
-  "settings.passwords.title": {
-    "message": "Gespeicherte Passwörter"
-  },
   "settings.passwords.unlock": {
     "message": "Entsperren…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/s"
-  },
-  "settings.queue.title": {
-    "message": "Warteschlange"
   },
   "settings.shell.default": {
     "message": "Standard: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Nur Text"
-  },
-  "settings.toolbar.title": {
-    "message": "Schaltflächen der Symbolleiste"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

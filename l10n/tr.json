@@ -3812,8 +3812,8 @@
   "settings.backdrop.solid": {
     "message": "%100, opak"
   },
-  "settings.backdrop.terminal": {
-    "message": "Terminal"
+  "settings.backdrop.transparency": {
+    "message": "Saydamlık"
   },
   "settings.cancel": {
     "message": "İptal"
@@ -3893,17 +3893,14 @@
   "settings.language.system_named": {
     "message": "Sistem dili: {language}"
   },
-  "settings.language.title": {
-    "message": "Dil"
-  },
   "settings.ok": {
     "message": "Tamam"
   },
   "settings.page.addons": {
     "message": "Eklentiler"
   },
-  "settings.page.date": {
-    "message": "Tarih"
+  "settings.page.date_time": {
+    "message": "Tarih ve saat"
   },
   "settings.page.display": {
     "message": "Gösterim"
@@ -3950,9 +3947,6 @@
   "settings.passwords.set_master": {
     "message": "Ana parola belirle…"
   },
-  "settings.passwords.title": {
-    "message": "Kayıtlı parolalar"
-  },
   "settings.passwords.unlock": {
     "message": "Kilidi aç…"
   },
@@ -3973,9 +3967,6 @@
   },
   "settings.queue.download_limit_unit": {
     "message": "KB/sn"
-  },
-  "settings.queue.title": {
-    "message": "İşlem kuyruğu"
   },
   "settings.shell.default": {
     "message": "Varsayılan: {shell}"
@@ -4057,9 +4048,6 @@
   },
   "settings.toolbar.text": {
     "message": "Yalnızca metin"
-  },
-  "settings.toolbar.title": {
-    "message": "Araç çubuğu düğmeleri"
   },
   "settings.viewer.font.ansi": {
     "message": "ANSI (Windows)"

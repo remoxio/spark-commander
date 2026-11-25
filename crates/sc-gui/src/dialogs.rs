@@ -157,6 +157,21 @@ pub(crate) fn edge_scrolled(area: Stateful<Div>) -> Div {
         .child(area.pr(if edge { width + px(16.) } else { width }).overflow_y_scrollbar())
 }
 
+/// A list in its frame, the scrollbar inside it beside the rows, as GTK's and Qt's lists; filling its column.
+pub(crate) fn framed_list(list: Stateful<Div>, cx: &App) -> Div {
+    let theme = cx.theme();
+    let width = gpui_kit::component::scroll::Scrollbar::width();
+    div()
+        .flex_1()
+        .min_h_0()
+        .flex()
+        .flex_col()
+        .border_1()
+        .border_color(theme.border)
+        .bg(theme.background)
+        .child(list.flex_1().min_h_0().pr(width).overflow_y_scrollbar())
+}
+
 #[cfg(test)]
 mod tests {
     use super::{ButtonOrder, Role, arrange};
