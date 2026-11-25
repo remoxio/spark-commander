@@ -126,7 +126,7 @@
     "message": "Nem"
   },
   "addons.offer.text": {
-    "message": "A fájl ({name}) megnyitásához egy bővítmény kell, amely nincs telepítve: {addon}. Letöltöd a Beállítások > Bővítmények oldalon?"
+    "message": "A fájl ({name}) így is megtekinthető, de jobban mutat egy bővítménnyel, amely nincs telepítve: {addon}. Letöltöd a Beállítások > Bővítmények oldalon?"
   },
   "addons.offer.title": {
     "message": "Bővítmény"

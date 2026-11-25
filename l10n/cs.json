@@ -126,7 +126,7 @@
     "message": "Ne"
   },
   "addons.offer.text": {
-    "message": "{name} potřebuje doplněk, který není nainstalován: {addon}. Stáhnout ho v Nastavení > Doplňky?"
+    "message": "{name} lze zobrazit i takto, ale lépe s doplňkem, který není nainstalován: {addon}. Stáhnout ho v Nastavení > Doplňky?"
   },
   "addons.offer.title": {
     "message": "Doplněk"

@@ -126,7 +126,7 @@
     "message": "Không"
   },
   "addons.offer.text": {
-    "message": "{name} cần một tiện ích bổ sung chưa được cài đặt: {addon}. Tải về trong Cài đặt > Tiện ích bổ sung?"
+    "message": "{name} vẫn xem được, nhưng sẽ tốt hơn với một tiện ích bổ sung chưa được cài đặt: {addon}. Tải về trong Cài đặt > Tiện ích bổ sung?"
   },
   "addons.offer.title": {
     "message": "Tiện ích bổ sung"

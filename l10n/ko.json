@@ -126,7 +126,7 @@
     "message": "아니요"
   },
   "addons.offer.text": {
-    "message": "{name}을(를) 열려면 설치되지 않은 추가 기능이 필요합니다: {addon}. 설정 > 추가 기능에서 다운로드하시겠습니까?"
+    "message": "{name}은(는) 지금도 볼 수 있지만, 설치되지 않은 추가 기능이 있으면 더 잘 보입니다: {addon}. 설정 > 추가 기능에서 다운로드하시겠습니까?"
   },
   "addons.offer.title": {
     "message": "추가 기능"

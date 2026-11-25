@@ -126,7 +126,7 @@
     "message": "Ei"
   },
   "addons.offer.text": {
-    "message": "{name} tarvitsee lisäosan, jota ei ole asennettu: {addon}. Ladataanko se kohdassa Asetukset > Lisäosat?"
+    "message": "{name} voidaan näyttää näinkin, mutta paremmin lisäosalla, jota ei ole asennettu: {addon}. Ladataanko se kohdassa Asetukset > Lisäosat?"
   },
   "addons.offer.title": {
     "message": "Lisäosa"

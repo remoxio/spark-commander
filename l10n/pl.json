@@ -126,7 +126,7 @@
     "message": "Nie"
   },
   "addons.offer.text": {
-    "message": "{name} wymaga dodatku, który nie jest zainstalowany: {addon}. Pobrać go (Ustawienia > Dodatki)?"
+    "message": "{name} można wyświetlić i tak, ale lepiej z dodatkiem, który nie jest zainstalowany: {addon}. Pobrać go (Ustawienia > Dodatki)?"
   },
   "addons.offer.title": {
     "message": "Dodatek"

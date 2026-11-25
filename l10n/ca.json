@@ -126,7 +126,7 @@
     "message": "No"
   },
   "addons.offer.text": {
-    "message": "{name} necessita un complement que no està instal·lat: {addon}. Vols baixar-lo a Configuració > Complements?"
+    "message": "{name} es pot veure tal com està, però millor amb un complement que no està instal·lat: {addon}. Vols baixar-lo a Configuració > Complements?"
   },
   "addons.offer.title": {
     "message": "Complement"

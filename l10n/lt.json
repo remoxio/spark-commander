@@ -126,7 +126,7 @@
     "message": "Ne"
   },
   "addons.offer.text": {
-    "message": "Norint atidaryti {name}, reikia neįdiegto priedo: {addon}. Atsisiųsti jį skiltyje Nustatymai > Priedai?"
+    "message": "{name} galima peržiūrėti ir dabar, bet geriau su neįdiegtu priedu: {addon}. Atsisiųsti jį skiltyje Nustatymai > Priedai?"
   },
   "addons.offer.title": {
     "message": "Priedas"

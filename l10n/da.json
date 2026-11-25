@@ -126,7 +126,7 @@
     "message": "Nej"
   },
   "addons.offer.text": {
-    "message": "{name} kræver en tilføjelse, der ikke er installeret: {addon}. Vil du hente den under Indstillinger > Tilføjelser?"
+    "message": "{name} kan vises, som det er, men bedre med en tilføjelse, der ikke er installeret: {addon}. Vil du hente den under Indstillinger > Tilføjelser?"
   },
   "addons.offer.title": {
     "message": "Tilføjelse"

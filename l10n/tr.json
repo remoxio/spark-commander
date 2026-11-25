@@ -126,7 +126,7 @@
     "message": "Hayır"
   },
   "addons.offer.text": {
-    "message": "{name} için yüklü olmayan bir eklenti gerekiyor: {addon}. Ayarlar > Eklentiler bölümünden indirilsin mi?"
+    "message": "{name} bu hâliyle de görüntülenebilir, ancak yüklü olmayan bir eklentiyle daha iyi görünür: {addon}. Ayarlar > Eklentiler bölümünden indirilsin mi?"
   },
   "addons.offer.title": {
     "message": "Eklenti"

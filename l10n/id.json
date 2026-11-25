@@ -126,7 +126,7 @@
     "message": "Tidak"
   },
   "addons.offer.text": {
-    "message": "{name} memerlukan pengaya yang belum terinstal: {addon}. Unduh di Pengaturan > Pengaya?"
+    "message": "{name} tetap bisa dilihat, tetapi lebih baik dengan pengaya yang belum terinstal: {addon}. Unduh di Pengaturan > Pengaya?"
   },
   "addons.offer.title": {
     "message": "Pengaya"

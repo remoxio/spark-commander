@@ -126,7 +126,7 @@
     "message": "否"
   },
   "addons.offer.text": {
-    "message": "{name} 需要尚未安裝的附加元件：{addon}。要在「設定 > 附加元件」中下載嗎？"
+    "message": "{name} 現在也能檢視，但安裝附加元件後效果更好：{addon}。要在「設定 > 附加元件」中下載嗎？"
   },
   "addons.offer.title": {
     "message": "附加元件"

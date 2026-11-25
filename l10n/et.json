@@ -126,7 +126,7 @@
     "message": "Ei"
   },
   "addons.offer.text": {
-    "message": "{name} vajab lisamoodulit, mis pole installitud: {addon}. Kas laadida see alla jaotises Seaded > Lisamoodulid?"
+    "message": "{name} on vaadatav ka praegu, kuid paremini lisamooduliga, mis pole installitud: {addon}. Kas laadida see alla jaotises Seaded > Lisamoodulid?"
   },
   "addons.offer.title": {
     "message": "Lisamoodul"

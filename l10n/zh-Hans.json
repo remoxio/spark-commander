@@ -126,7 +126,7 @@
     "message": "否"
   },
   "addons.offer.text": {
-    "message": "{name} 需要一个尚未安装的附加组件：{addon}。要在“设置 > 附加组件”中下载吗？"
+    "message": "{name} 现在也能查看，但安装附加组件后效果更好：{addon}。要在“设置 > 附加组件”中下载吗？"
   },
   "addons.offer.title": {
     "message": "附加组件"

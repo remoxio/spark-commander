@@ -126,7 +126,7 @@
     "message": "Nee"
   },
   "addons.offer.text": {
-    "message": "{name} heeft een add-on nodig die niet is geïnstalleerd: {addon}. Downloaden via Instellingen > Add-ons?"
+    "message": "{name} is ook zo te bekijken, maar beter met een add-on die niet is geïnstalleerd: {addon}. Downloaden via Instellingen > Add-ons?"
   },
   "addons.offer.title": {
     "message": "Add-on"

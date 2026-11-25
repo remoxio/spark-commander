@@ -126,7 +126,7 @@
     "message": "Ne"
   },
   "addons.offer.text": {
-    "message": "Za datoteku {name} potreban je dodatak koji nije instaliran: {addon}. Želite li ga preuzeti u Postavke > Dodaci?"
+    "message": "Datoteka {name} može se pregledati i ovako, ali bolje s dodatkom koji nije instaliran: {addon}. Želite li ga preuzeti u Postavke > Dodaci?"
   },
   "addons.offer.title": {
     "message": "Dodatak"

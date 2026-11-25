@@ -126,7 +126,7 @@
     "message": "Non"
   },
   "addons.offer.text": {
-    "message": "{name} nécessite un module complémentaire qui n’est pas installé : {addon}. Le télécharger dans Réglages > Modules complémentaires ?"
+    "message": "{name} peut être affiché tel quel, mais mieux avec un module complémentaire qui n’est pas installé : {addon}. Le télécharger dans Réglages > Modules complémentaires ?"
   },
   "addons.offer.title": {
     "message": "Module complémentaire"

@@ -143,7 +143,7 @@ fn offer_updates(updates: Vec<(Addon, String)>, cx: &mut App) {
     );
 }
 
-/// `name` needs the missing `addon`: Yes shows Settings > Add-ons; No, and
+/// The missing `addon` would show `name` better: Yes shows Settings > Add-ons; No, and
 /// Never show again (which the settings keep), `go_on` without it.
 pub fn offer(
     addon: Addon,

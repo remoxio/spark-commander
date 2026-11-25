@@ -126,7 +126,7 @@
     "message": "Nē"
   },
   "addons.offer.text": {
-    "message": "Failam {name} nepieciešams papildinājums, kas nav instalēts: {addon}. Vai lejupielādēt to sadaļā Iestatījumi > Papildinājumi?"
+    "message": "Failu {name} var apskatīt arī tagad, taču labāk ar papildinājumu, kas nav instalēts: {addon}. Vai lejupielādēt to sadaļā Iestatījumi > Papildinājumi?"
   },
   "addons.offer.title": {
     "message": "Papildinājums"

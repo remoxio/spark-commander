@@ -126,7 +126,7 @@
     "message": "Nie"
   },
   "addons.offer.text": {
-    "message": "Súbor {name} potrebuje doplnok, ktorý nie je nainštalovaný: {addon}. Chcete ho stiahnuť v časti Nastavenia > Doplnky?"
+    "message": "Súbor {name} sa dá zobraziť aj takto, no lepšie s doplnkom, ktorý nie je nainštalovaný: {addon}. Chcete ho stiahnuť v časti Nastavenia > Doplnky?"
   },
   "addons.offer.title": {
     "message": "Doplnok"

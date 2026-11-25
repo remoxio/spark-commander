@@ -126,7 +126,7 @@
     "message": "Não"
   },
   "addons.offer.text": {
-    "message": "{name} precisa de um suplemento que não está instalado: {addon}. Transferi-lo em Definições > Suplementos?"
+    "message": "{name} pode ser visualizado assim, mas fica melhor com um suplemento que não está instalado: {addon}. Transferi-lo em Definições > Suplementos?"
   },
   "addons.offer.title": {
     "message": "Suplemento"

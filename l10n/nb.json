@@ -126,7 +126,7 @@
     "message": "Nei"
   },
   "addons.offer.text": {
-    "message": "{name} trenger et tillegg som ikke er installert: {addon}. Vil du laste det ned under Innstillinger > Tillegg?"
+    "message": "{name} kan vises som det er, men bedre med et tillegg som ikke er installert: {addon}. Vil du laste det ned under Innstillinger > Tillegg?"
   },
   "addons.offer.title": {
     "message": "Tillegg"

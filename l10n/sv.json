@@ -126,7 +126,7 @@
     "message": "Nej"
   },
   "addons.offer.text": {
-    "message": "{name} behöver ett tillägg som inte är installerat: {addon}. Vill du hämta det under Inställningar > Tillägg?"
+    "message": "{name} kan visas som det är, men bättre med ett tillägg som inte är installerat: {addon}. Vill du hämta det under Inställningar > Tillägg?"
   },
   "addons.offer.title": {
     "message": "Tillägg"

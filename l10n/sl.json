@@ -126,7 +126,7 @@
     "message": "Ne"
   },
   "addons.offer.text": {
-    "message": "Za {name} je potreben dodatek, ki ni nameščen: {addon}. Ga želite prenesti v razdelku Nastavitve > Dodatki?"
+    "message": "{name} si lahko ogledate že zdaj, bolje pa z dodatkom, ki ni nameščen: {addon}. Ga želite prenesti v razdelku Nastavitve > Dodatki?"
   },
   "addons.offer.title": {
     "message": "Dodatek"

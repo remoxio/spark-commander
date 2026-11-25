@@ -126,7 +126,7 @@
     "message": "No"
   },
   "addons.offer.text": {
-    "message": "{name} necesita un complemento que no está instalado: {addon}. ¿Descargarlo en Opciones > Complementos?"
+    "message": "{name} se puede ver así, pero mejor con un complemento que no está instalado: {addon}. ¿Descargarlo en Opciones > Complementos?"
   },
   "addons.offer.title": {
     "message": "Complemento"

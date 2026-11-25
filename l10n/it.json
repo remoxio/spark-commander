@@ -126,7 +126,7 @@
     "message": "No"
   },
   "addons.offer.text": {
-    "message": "{name} richiede un componente aggiuntivo non installato: {addon}. Vuoi scaricarlo in Impostazioni > Componenti aggiuntivi?"
+    "message": "{name} si può visualizzare anche così, ma meglio con un componente aggiuntivo non installato: {addon}. Vuoi scaricarlo in Impostazioni > Componenti aggiuntivi?"
   },
   "addons.offer.title": {
     "message": "Componente aggiuntivo"

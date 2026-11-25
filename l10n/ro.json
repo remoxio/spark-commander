@@ -126,7 +126,7 @@
     "message": "Nu"
   },
   "addons.offer.text": {
-    "message": "{name} are nevoie de un supliment care nu este instalat: {addon}. Îl descărcați din Setări > Suplimente?"
+    "message": "{name} poate fi vizualizat și așa, dar mai bine cu un supliment care nu este instalat: {addon}. Îl descărcați din Setări > Suplimente?"
   },
   "addons.offer.title": {
     "message": "Supliment"

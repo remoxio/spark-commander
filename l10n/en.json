@@ -168,11 +168,11 @@
     "message": "No"
   },
   "addons.offer.text": {
-    "description": "Dialog offering a missing add-on; name = the file opened, e.g. movie.mkv; addon = the add-on's name, e.g. mpv (libmpv). Settings > Add-ons is the settings dialog's page.",
-    "message": "{name} needs an add-on that is not installed: {addon}. Download it in Settings > Add-ons?"
+    "description": "Dialog offering a missing add-on that would show a file better (the file is viewed without it too); name = the file opened, e.g. movie.mkv; addon = the add-on's name, e.g. mpv (libmpv). Settings > Add-ons is the settings dialog's page.",
+    "message": "{name} can be viewed as it is, but an add-on that is not installed shows it better: {addon}. Download it in Settings > Add-ons?"
   },
   "addons.offer.title": {
-    "description": "Title of the dialog offering a missing add-on a file needs.",
+    "description": "Title of the dialog offering a missing add-on that would show a file better.",
     "message": "Add-on"
   },
   "addons.offer.yes": {
