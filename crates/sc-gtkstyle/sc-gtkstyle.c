@@ -547,6 +547,11 @@ int main(int argc, char **argv) {
     GdkRGBA fill = sample(plain, button_height, button_height, button_height / 2, button_height / 2);
     if (fill.alpha > 0) put_color("button", fill, background);
     g_object_unref(plain);
+    // A file manager's side pane (GTK's places sidebar, Thunar's, Nemo's): the theme's `.sidebar` fill.
+    GtkStyleContext *pane = node(window, GTK_TYPE_SCROLLED_WINDOW, "placessidebar", "sidebar");
+    GdkRGBA side = sample(pane, 24, 24, 12, 12);
+    if (side.alpha > 0) put_color("sidebar", side, background);
+    g_object_unref(pane);
     // The scrollbars' sizes and colours: the app's theme takes them as it starts.
     scrollbars(window, background);
     if (colors_only) {

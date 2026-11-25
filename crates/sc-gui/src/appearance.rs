@@ -186,7 +186,7 @@ pub fn apply(palette: &Palette, cx: &mut App) -> PanelColors {
         // GNOME's: libadwaita's sidebar colour, as Files' (#ebebed, dark #2e2e32), its bars'.
         window: color(match sc_core::system::theme::control_style() {
             Some(ControlStyle::Adwaita) => palette.bar,
-            _ => palette.window,
+            _ => gtk_sidebar(palette.dark).unwrap_or(palette.window),
         }),
         marked: color(palette.marked),
     }
@@ -447,6 +447,14 @@ fn toolkit_controls(drawn: &mut sc_core::system::toolkit_style::Drawn, scale: f3
 /// GTK's scrollbars as the theme draws them beside a view, where sc-gtkstyle
 /// measured them, in its colours (`dark` as they are): their width, the
 /// thumb's breadth and inset, the track's fill and line, the thumb's fills and outline.
+/// The GTK theme's side pane fill (`.sidebar`, Thunar's and Nemo's), in its colours (`dark` as they are).
+fn gtk_sidebar(dark: bool) -> Option<u32> {
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+    return sc_core::system::toolkit_style::gtk_colors().filter(|drawn| drawn.dark == dark)?.colors.get("sidebar").copied();
+    #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
+    None
+}
+
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
 fn gtk_scrollbar(dark: bool) -> Option<(gpui_kit::component::ScrollbarSize, gpui_kit::component::ScrollbarLook)> {
     let drawn = sc_core::system::toolkit_style::gtk_colors().filter(|drawn| drawn.dark == dark)?;
