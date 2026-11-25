@@ -548,6 +548,8 @@ where
             .copied()
             .filter(|native| native.combo_button && self.state.appearance && !self.state.disabled);
 
+        // SparkCommander patch: GTK's combo box as the theme draws it, its arrow in it, see `ToolkitControls::combo`.
+        let gtk_combo = crate::toolkit::drawn(cx, |controls| controls.combo.as_ref()).filter(|_| self.state.appearance);
         self.state.list.update(cx, |list, cx| {
             list.set_searchable(searchable, cx);
             list.delegate_mut().size = self.state.size;
@@ -597,13 +599,33 @@ where
                                 .when(native.bold, |this| this.font_weight(gpui::FontWeight::BOLD))
                                 .hover(|this| this.bg(hover).border_color(hover_frame))
                         })
+                        .when_some(gtk_combo.clone(), |this, (scale, combo)| {
+                            let (disabled, open, images) = (self.state.disabled, self.state.open, combo.images.clone());
+                            let end = px(images.0[0].size(0).height.0 as f32 / scale / 2. - 1.).floor();
+                            let ends = gpui::Edges { left: end, right: combo.arrow.max(end), top: end, bottom: end };
+                            let state = if disabled { crate::toolkit::DISABLED } else { crate::toolkit::NORMAL };
+                            this.group(crate::toolkit::COMBO)
+                                .bg(cx.theme().transparent)
+                                .border_0()
+                                .rounded_none()
+                                .opacity(1.)
+                                .pl(combo.inset)
+                                .pr(combo.arrow)
+                                .text_color(combo.text[state])
+                                .child(match open {
+                                    true => crate::toolkit::framed(scale, images.0[crate::toolkit::PRESSED].clone(), ends).absolute().inset_0(),
+                                    false => crate::toolkit::layers(crate::toolkit::COMBO, disabled, move |state| {
+                                        crate::toolkit::framed(scale, images.0[state].clone(), ends)
+                                    }),
+                                })
+                        })
                         .refine_style(&self.state.style)
-                        .when(outline_visible && self.state.appearance, |this| {
+                        .when(outline_visible && self.state.appearance && gtk_combo.is_none(), |this| {
                             let ring = mac.map_or(cx.theme().ring, |mac| mac.accent);
                             this.border_1().border_color(ring)
                         })
                         .when(
-                            outline_visible && self.state.appearance && self.focus_ring_enabled,
+                            outline_visible && self.state.appearance && self.focus_ring_enabled && gtk_combo.is_none(),
                             |this| this.focus_ring_style(window, cx),
                         )
                         .when(allow_open, |this| {
@@ -638,7 +660,7 @@ where
                                         }
                                     }))
                                 })
-                                .when(!show_clean, |this| {
+                                .when(!show_clean && gtk_combo.is_none(), |this| {
                                     let icon = match self.icon.clone() {
                                         Some(icon) => icon
                                             .xsmall()

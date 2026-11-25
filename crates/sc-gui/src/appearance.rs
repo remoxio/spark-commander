@@ -8,6 +8,8 @@ use gpui_kit::component::{DialogFrame, NativeControls, Theme as KitTheme, ThemeM
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
 use gpui_kit::component::{ActiveTheme, StateImages, ToolkitControls};
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+use gpui_kit::component::{ToolkitCombo, ToolkitField};
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
 use gpui_kit::{Global, RenderImage, Window};
 use gpui_kit::{App, Hsla, hsla, px, rgb};
 use sc_core::settings::FontChoice;
@@ -90,6 +92,11 @@ pub fn apply(palette: &Palette, cx: &mut App) -> PanelColors {
             kit.font_size = px(size / 0.875);
         }
         kit.scrollbar_mode = ScrollbarMode::Always;
+        // Xfce, MATE, Cinnamon: as the GTK theme draws them.
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+        {
+            (kit.scrollbar_size, kit.scrollbar_look) = gtk_scrollbar(palette.dark).unzip();
+        }
         // macOS: as wide as AppKit's, its knob as AppKit draws it.
         #[cfg(target_os = "macos")]
         {
@@ -418,10 +425,43 @@ fn toolkit_controls(drawn: &mut sc_core::system::toolkit_style::Drawn, scale: f3
     };
     let button = [button("plain")?, button("default")?];
     let checkbox = [states("checkbox.off.{}")?, states("checkbox.on.{}")?];
+    let radio = states("radio.off.{}").zip(states("radio.on.{}")).map(|(off, on)| [off, on]);
     let tab_close = states("tabclose.{}");
+    let combo = states("combo.{}");
+    let field = ["normal", "focused", "disabled"].map(|state| image(&format!("field.{state}")));
     let tabs = toolkit_tabs(&mut image, colors, sizes);
     let menus = toolkit_menus(&mut image, colors, sizes);
-    Some(ToolkitControls { scale, checkbox, button, tab_close, tabs, menus })
+    let color = |name: &str| colors.get(name).map(|color| Hsla::from(rgb(*color)));
+    let size = |name: &str| sizes.get(name).map(|size| px(*size));
+    let field = match field {
+        [Some(normal), Some(focused), Some(disabled)] => size("field.inset").map(|inset| ToolkitField { images: [normal, focused, disabled], inset }),
+        _ => None,
+    };
+    let combo = combo.and_then(|images| {
+        let text = ["normal", "hovered", "pressed", "disabled"].map(|state| color(&format!("combo.{state}")));
+        Some(ToolkitCombo { images, text: [text[0]?, text[1]?, text[2]?, text[3]?], inset: size("combo.inset")?, arrow: size("combo.arrow")? })
+    });
+    Some(ToolkitControls { scale, checkbox, button, tab_close, tabs, menus, radio, field, combo })
+}
+
+/// GTK's scrollbars as the theme draws them beside a view, where sc-gtkstyle
+/// measured them, in its colours (`dark` as they are): their width, the
+/// thumb's breadth and inset, the track's fill and line, the thumb's fills and outline.
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
+fn gtk_scrollbar(dark: bool) -> Option<(gpui_kit::component::ScrollbarSize, gpui_kit::component::ScrollbarLook)> {
+    let drawn = sc_core::system::toolkit_style::gtk_colors().filter(|drawn| drawn.dark == dark)?;
+    let color = |name: &str| drawn.colors.get(name).map(|color| Hsla::from(rgb(*color)));
+    let size = |name: &str| drawn.sizes.get(name).map(|size| px(*size));
+    let thumb = size("scrollbar.thumb")?;
+    let bar = gpui_kit::component::ScrollbarSize { track: size("scrollbar.width")?, thumb, inset: size("scrollbar.inset")? };
+    let look = gpui_kit::component::ScrollbarLook {
+        track: color("scrollbar")?,
+        line: color("scrollbar.line"),
+        thumb: [color("scrollbar.thumb")?, color("scrollbar.thumb.hovered")?, color("scrollbar.thumb.pressed")?],
+        outline: color("scrollbar.thumb.outline"),
+        radius: size("scrollbar.radius")?.min(thumb / 2.),
+    };
+    Some((bar, look))
 }
 
 /// GTK's menus, where sc-gtkstyle drew them.

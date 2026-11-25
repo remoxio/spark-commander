@@ -42,6 +42,17 @@ pub struct MenuMnemonics(pub Rc<dyn Fn(&[&str], bool) -> Vec<(String, Option<usi
 
 impl gpui::Global for MenuMnemonics {}
 
+/// SparkCommander patch: the letters underlined only while Alt is held, or in
+/// a menu opened by Alt and its letter, as GTK shows them; they work unseen.
+pub struct MnemonicsOnAlt;
+
+impl gpui::Global for MnemonicsOnAlt {}
+
+/// SparkCommander patch: whether the letters show now: always, without `MnemonicsOnAlt`.
+pub(crate) fn letters_shown(keyed: bool, window: &Window, cx: &App) -> bool {
+    !cx.has_global::<MnemonicsOnAlt>() || keyed || window.modifiers().alt
+}
+
 /// SparkCommander patch: `shown`, its letter at char `at` underlined.
 pub(crate) fn hot_text(shown: SharedString, at: Option<usize>) -> AnyElement {
     let Some((start, letter)) = at.and_then(|at| shown.char_indices().nth(at)) else {
@@ -384,6 +395,9 @@ pub struct PopupMenu {
     /// too), and each item's label as shown with its letter, as last drawn.
     mnemonics: bool,
     hot: Vec<(SharedString, Option<usize>)>,
+    /// SparkCommander patch: opened by a key, its letters underlined (see `MnemonicsOnAlt`); whether they are, as last drawn.
+    pub(crate) keyed: bool,
+    shown: bool,
 
     /// SparkCommander patch: GNOME's: the selected submenu shown in this menu's
     /// place; this one drawn so inside its parent, without a frame of its own.
@@ -416,6 +430,8 @@ impl PopupMenu {
             priority: gpui_base::POPUP_PRIORITY,
             mnemonics: false,
             hot: Vec::new(),
+            keyed: false,
+            shown: true,
             in_place: false,
             embedded: false,
             _subscriptions: vec![],
@@ -449,6 +465,11 @@ impl PopupMenu {
 
     fn mnemonics_on(&self, cx: &App) -> bool {
         self.mnemonics || self.parent_menu.as_ref().and_then(|parent| parent.upgrade()).is_some_and(|parent| parent.read(cx).mnemonics_on(cx))
+    }
+
+    /// SparkCommander patch: whether it or the menu it hangs from was opened by a key.
+    fn keyed_on(&self, cx: &App) -> bool {
+        self.keyed || self.parent_menu.as_ref().and_then(|parent| parent.upgrade()).is_some_and(|parent| parent.read(cx).keyed_on(cx))
     }
 
     /// SparkCommander patch: the item with the letter typed, as a click on it (a submenu opens).
@@ -1492,7 +1513,7 @@ impl PopupMenu {
     /// SparkCommander patch: item `ix`'s label, its letter underlined if it has one.
     fn hot_label(&self, ix: usize, label: &SharedString) -> AnyElement {
         match self.hot.get(ix) {
-            Some((shown, at)) => hot_text(shown.clone(), *at),
+            Some((shown, at)) => hot_text(shown.clone(), at.filter(|_| self.shown)),
             None => label.clone().into_any_element(),
         }
     }
@@ -1811,6 +1832,7 @@ impl Render for PopupMenu {
 
         // SparkCommander patch: the items' letters, as the app chooses them.
         let mnemonics = cx.try_global::<MenuMnemonics>().filter(|_| self.mnemonics_on(cx)).map(|mnemonics| mnemonics.0.clone());
+        self.shown = letters_shown(self.keyed_on(cx), window, cx);
         self.hot = match mnemonics {
             Some(mnemonics) => {
                 let labels: Vec<&str> = self.menu_items.iter().map(|item| match item {

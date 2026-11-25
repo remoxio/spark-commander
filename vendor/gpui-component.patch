@@ -1586,7 +1586,7 @@ diff -ruN a/src/highlighter/mod.rs b/src/highlighter/mod.rs
  
 diff -ruN a/src/input/input.rs b/src/input/input.rs
 --- a/src/input/input.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/input/input.rs	2026-11-23 13:55:46.979118653 +0100
++++ b/src/input/input.rs	2026-11-25 04:43:02.807466755 +0100
 @@ -705,6 +705,10 @@
          };
  
@@ -1598,7 +1598,7 @@ diff -ruN a/src/input/input.rs b/src/input/input.rs
          let bg = if presentation.is_code_editor() {
              cx.theme().editor_background()
          } else {
-@@ -715,6 +719,16 @@
+@@ -715,6 +719,20 @@
          } else {
              bg
          };
@@ -1612,21 +1612,25 @@ diff -ruN a/src/input/input.rs b/src/input/input.rs
 +            Some(fill) => fill,
 +            None => bg,
 +        };
++        // SparkCommander patch: GTK's entry as the theme draws it, see `ToolkitControls::field`.
++        let gtk_field = crate::toolkit::drawn(cx, |controls| controls.field.as_ref())
++            .filter(|_| self.appearance && self.bordered && !presentation.is_code_editor());
++        let gtk_framed = gtk_field.is_some();
          let prefix = self.prefix;
          let suffix = self.suffix;
          let show_clear_button = self.cleanable
-@@ -757,8 +771,8 @@
+@@ -757,8 +775,8 @@
              .styles(|styles| {
                  styles.focused(|style| {
                      style.when(
 -                        self.appearance && self.bordered && self.focus_bordered,
 -                        |style| style.border_1().border_color(cx.theme().ring),
-+                        self.appearance && self.bordered && self.focus_bordered && field_line.is_none(),
++                        self.appearance && self.bordered && self.focus_bordered && field_line.is_none() && !gtk_framed,
 +                        |style| style.border_1().border_color(mac.map_or(cx.theme().ring, |mac| mac.accent)),
                      )
                  })
              })
-@@ -795,14 +809,31 @@
+@@ -795,14 +813,41 @@
                  this.bg(bg)
                      .rounded(cx.theme().radius)
                      .when(self.bordered, |this| {
@@ -1651,12 +1655,22 @@ diff -ruN a/src/input/input.rs b/src/input/input.rs
 +                    .border_b_0()
 +                    .child(div().absolute().left(inset).right(inset).bottom_0().h(height).bg(color))
 +            })
++            // Its frame the theme's, the text at the theme's inset.
++            .when_some(gtk_field, |this, (scale, field)| {
++                let image = field.images[if disabled { 2 } else if focused { 1 } else { 0 }].clone();
++                let end = px(image.size(0).height.0 as f32 / scale / 2. - 1.).floor();
++                this.relative()
++                    .bg(cx.theme().transparent)
++                    .border_0()
++                    .when(!is_multi_line, |this| this.px(field.inset))
++                    .child(crate::toolkit::framed(scale, image, gpui::Edges::all(end)).absolute().inset_0())
++            })
              .items_center()
              .gap(gap_x)
              .refine_style(&self.style)
              .when(
 -                focused && self.appearance && self.bordered && self.focus_bordered,
-+                focused && self.appearance && self.bordered && self.focus_bordered && field_line.is_none(),
++                focused && self.appearance && self.bordered && self.focus_bordered && field_line.is_none() && !gtk_framed,
                  |this| this.focus_ring_style(window, cx),
              )
              .children(prefix.map(|p| {
@@ -1780,9 +1794,9 @@ diff -ruN a/src/kbd.rs b/src/kbd.rs
              .into_any_element()
      }
  }
-diff -ruN -x .cargo-ok a/src/lib.rs b/src/lib.rs
+diff -ruN a/src/lib.rs b/src/lib.rs
 --- a/src/lib.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/lib.rs	2026-11-24 23:41:03.883654983 +0100
++++ b/src/lib.rs	2026-11-25 04:46:18.560236136 +0100
 @@ -20,6 +20,15 @@
  mod touch_selection;
  mod virtual_list;
@@ -1792,7 +1806,7 @@ diff -ruN -x .cargo-ok a/src/lib.rs b/src/lib.rs
 +pub use native::{DialogFrame, NativeControls, WindowClose};
 +// SparkCommander patch: see `ToolkitControls`.
 +mod toolkit;
-+pub use toolkit::{StateImages, ToolkitControls, ToolkitMenus, ToolkitTabs, state_layers};
++pub use toolkit::{StateImages, ToolkitCombo, ToolkitControls, ToolkitField, ToolkitMenus, ToolkitTabs, state_layers};
 +// SparkCommander patch: see `MacControls`.
 +mod mac;
 +pub use mac::{AlertIcon, MacControls};
@@ -1926,7 +1940,7 @@ diff -ruN a/src/mac.rs b/src/mac.rs
 +pub(crate) const CHECK_MARK: &[u8] = br#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path d="M2.4 6.4 4.9 8.9 9.7 3.2" fill="none" stroke="black" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>"#;
 diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 --- a/src/menu/app_menu_bar.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/app_menu_bar.rs	2026-11-24 23:41:03.916313180 +0100
++++ b/src/menu/app_menu_bar.rs	2026-11-25 04:49:30.068919841 +0100
 @@ -1,10 +1,18 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): menu-bar menus may
 +// use the window's height. Changes are marked "SparkCommander patch".
@@ -1943,7 +1957,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
      global_state::GlobalState,
      h_flex,
      menu::PopupMenu,
-+    menu::popup_menu::{MenuMnemonics, hot_text, is_letter, typed_letter},
++    menu::popup_menu::{MenuMnemonics, hot_text, is_letter, letters_shown, typed_letter},
  };
  use gpui::{
      App, AppContext as _, ClickEvent, Context, DismissEvent, Entity, FocusHandle, Focusable,
@@ -1964,7 +1978,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
  pub fn init(cx: &mut App) {
      cx.bind_keys([
          KeyBinding::new("escape", Cancel, Some(CONTEXT)),
-@@ -25,6 +43,8 @@
+@@ -25,8 +43,12 @@
  /// The application menu bar, for Windows and Linux.
  pub struct AppMenuBar {
      menus: Vec<Entity<AppMenu>>,
@@ -1972,10 +1986,16 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 +    names: Vec<SharedString>,
      selected_index: Option<usize>,
      action_context: Option<FocusHandle>,
++    /// SparkCommander patch: the open menu was opened by Alt and its letter.
++    keyed: bool,
  }
-@@ -37,12 +57,33 @@
+ 
+ impl AppMenuBar {
+@@ -36,13 +58,36 @@
+             let mut this = Self {
                  selected_index: None,
                  action_context: None,
++                keyed: false,
                  menus: Vec::new(),
 +                names: Vec::new(),
              };
@@ -1994,6 +2014,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 +                names,
 +                selected_index: None,
 +                action_context: None,
++                keyed: false,
 +                menus: menus
 +                    .map(|(ix, (name, build))| {
 +                        let items = Items::Built(build);
@@ -2007,7 +2028,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
      /// Reload the menus from the app.
      pub fn reload(&mut self, cx: &mut Context<Self>) {
          let menu_bar = cx.entity();
-@@ -51,6 +92,7 @@
+@@ -51,6 +96,7 @@
              .iter()
              .cloned()
              .collect();
@@ -2015,7 +2036,15 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
          self.menus = menus
              .iter()
              .enumerate()
-@@ -110,6 +152,24 @@
+@@ -100,6 +146,7 @@
+         if self.selected_index.is_none() && ix.is_some() {
+             self.action_context = window.focused(cx);
+         } else if ix.is_none() {
++            self.keyed = false;
+             if let Some(action_context) = self.action_context.as_ref() {
+                 action_context.focus(window, cx);
+             }
+@@ -110,6 +157,25 @@
          cx.notify();
      }
  
@@ -2033,6 +2062,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 +        }
 +        let Some(letter) = typed_letter(keystroke) else { return false };
 +        let Some(ix) = self.hot(cx).iter().position(|(shown, at)| is_letter(shown, *at, letter)) else { return false };
++        self.keyed = true;
 +        self.set_selected_index(Some(ix), window, cx);
 +        true
 +    }
@@ -2040,7 +2070,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
      #[inline]
      fn has_activated_menu(&self) -> bool {
          self.selected_index.is_some()
-@@ -138,7 +198,7 @@
+@@ -138,7 +204,7 @@
      menu_bar: Entity<AppMenuBar>,
      ix: usize,
      name: SharedString,
@@ -2049,7 +2079,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
      popup_menu: Option<Entity<PopupMenu>>,
  
      _subscription: Option<Subscription>,
-@@ -151,15 +211,24 @@
+@@ -151,15 +217,24 @@
          menu_bar: Entity<AppMenuBar>,
          cx: &mut App,
      ) -> Entity<Self> {
@@ -2078,7 +2108,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
      }
  
      /// Whether this menu's popup is the one the menu bar currently has open.
-@@ -175,10 +244,23 @@
+@@ -175,10 +250,23 @@
          let action_context = self.menu_bar.read(cx).action_context.clone();
          let popup_menu = match self.popup_menu.as_ref() {
              None => {
@@ -2106,7 +2136,25 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
                  popup_menu.update(cx, |menu, cx| {
                      menu.set_action_context(action_context.clone(), cx);
                  });
-@@ -258,17 +340,53 @@
+@@ -196,6 +284,8 @@
+             }
+         };
+ 
++        let keyed = self.menu_bar.read(cx).keyed;
++        popup_menu.update(cx, |menu, _| menu.keyed = keyed);
+         let focus_handle = popup_menu.read(cx).focus_handle(cx);
+         if !focus_handle.contains_focused(window, cx) {
+             focus_handle.focus(window, cx);
+@@ -234,6 +324,8 @@
+     fn toggle(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+         let is_open = self.is_open(cx);
+         _ = self.menu_bar.update(cx, |state, cx| {
++            // SparkCommander patch: opened by the pointer, its letters unseen (`MnemonicsOnAlt`).
++            state.keyed = false;
+             let new_ix = if is_open { None } else { Some(self.ix) };
+             state.set_selected_index(new_ix, window, cx);
+         });
+@@ -258,17 +350,54 @@
  impl Render for AppMenu {
      fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
          let is_open = self.is_open(cx);
@@ -2124,6 +2172,7 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 +        let gtk = crate::toolkit::menus(cx);
 +        // SparkCommander patch: the name with its letter underlined.
 +        let hot = self.menu_bar.read(cx).hot(cx).into_iter().nth(self.ix);
++        let shown = letters_shown(self.menu_bar.read(cx).keyed, window, cx);
 +        let theme = cx.theme();
 +        let colors = match &gtk {
 +            Some((_, menus)) => ButtonCustomVariant::new(cx)
@@ -2156,20 +2205,23 @@ diff -ruN a/src/menu/app_menu_bar.rs b/src/menu/app_menu_bar.rs
 -                    .label(self.name.clone())
 +                    .with_variant(ButtonVariant::Custom(colors))
 +                    .map(|button| match hot {
-+                        Some((shown, at)) => button.child(hot_text(shown.into(), at)),
++                        Some((name, at)) => button.child(hot_text(name.into(), at.filter(|_| shown))),
 +                        None => button.label(self.name.clone()),
 +                    })
                      .open(is_open)
                      .on_mouse_down(
                          MouseButton::Left,
-@@ -330,6 +448,7 @@
+@@ -330,8 +459,10 @@
              TestRoot {
                  menu_bar: cx.new(|_| AppMenuBar {
                      menus: Vec::new(),
 +                    names: Vec::new(),
                      selected_index: None,
                      action_context: None,
++                    keyed: false,
                  }),
+                 first_focus,
+                 second_focus,
 diff -ruN a/src/menu/context_menu.rs b/src/menu/context_menu.rs
 --- a/src/menu/context_menu.rs	2006-07-24 03:21:28.000000000 +0200
 +++ b/src/menu/context_menu.rs	2026-11-17 17:18:36.166972300 +0100
@@ -2430,7 +2482,7 @@ diff -ruN a/src/menu/menu_item.rs b/src/menu/menu_item.rs
                      this.on_mouse_down(MouseButton::Left, move |_, _, cx| {
 diff -ruN a/src/menu/mod.rs b/src/menu/mod.rs
 --- a/src/menu/mod.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/mod.rs	2026-11-21 17:58:34.200383032 +0100
++++ b/src/menu/mod.rs	2026-11-25 04:49:26.142597073 +0100
 @@ -1,3 +1,6 @@
 +// Modified for SparkCommander: exports MenuBuilder. Changes are marked
 +// "SparkCommander patch".
@@ -2448,13 +2500,13 @@ diff -ruN a/src/menu/mod.rs b/src/menu/mod.rs
  pub use context_menu::{ContextMenu, ContextMenuExt, ContextMenuState};
  pub use dropdown_menu::DropdownMenu;
 -pub use popup_menu::{PopupMenu, PopupMenuItem};
-+pub use popup_menu::{MenuIcons, MenuMnemonics, PopupMenu, PopupMenuItem};
++pub use popup_menu::{MenuIcons, MenuMnemonics, MnemonicsOnAlt, PopupMenu, PopupMenuItem};
  
  pub(crate) fn init(cx: &mut App) {
      app_menu_bar::init(cx);
-diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
+diff -ruN a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 --- a/src/menu/popup_menu.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/menu/popup_menu.rs	2026-11-24 23:52:01.965226701 +0100
++++ b/src/menu/popup_menu.rs	2026-11-25 04:49:26.109611915 +0100
 @@ -1,8 +1,16 @@
 +// Modified for Spark Commander (Apache-2.0, section 4b): a long menu's
 +// scrollbar shows while it scrolls. Changes are marked "SparkCommander patch".
@@ -2473,7 +2525,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  use crate::{ActiveTheme, ElementExt, Icon, IconName, Sizable as _, h_flex, v_flex};
  use crate::{Side, Size, kbd::Kbd};
  use gpui::{
-@@ -18,6 +26,47 @@
+@@ -18,6 +26,58 @@
  
  const CONTEXT: &str = "PopupMenu";
  
@@ -2492,6 +2544,17 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +pub struct MenuMnemonics(pub Rc<dyn Fn(&[&str], bool) -> Vec<(String, Option<usize>)>>);
 +
 +impl gpui::Global for MenuMnemonics {}
++
++/// SparkCommander patch: the letters underlined only while Alt is held, or in
++/// a menu opened by Alt and its letter, as GTK shows them; they work unseen.
++pub struct MnemonicsOnAlt;
++
++impl gpui::Global for MnemonicsOnAlt {}
++
++/// SparkCommander patch: whether the letters show now: always, without `MnemonicsOnAlt`.
++pub(crate) fn letters_shown(keyed: bool, window: &Window, cx: &App) -> bool {
++    !cx.has_global::<MnemonicsOnAlt>() || keyed || window.modifiers().alt
++}
 +
 +/// SparkCommander patch: `shown`, its letter at char `at` underlined.
 +pub(crate) fn hot_text(shown: SharedString, at: Option<usize>) -> AnyElement {
@@ -2521,7 +2584,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  pub fn init(cx: &mut App) {
      cx.bind_keys([
          KeyBinding::new("enter", Confirm { secondary: false }, Some(CONTEXT)),
-@@ -61,6 +110,8 @@
+@@ -61,6 +121,8 @@
          label: SharedString,
          disabled: bool,
          menu: Entity<PopupMenu>,
@@ -2530,7 +2593,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      },
  }
  
-@@ -105,6 +156,7 @@
+@@ -105,6 +167,7 @@
              label: label.into(),
              disabled: false,
              menu,
@@ -2538,7 +2601,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          }
      }
  
-@@ -293,6 +345,8 @@
+@@ -293,6 +356,8 @@
      /// the very frame the menu opens. GPUI looks a handle up in the previously
      /// rendered frame, and the trigger was in it when the menu was not yet.
      pub(crate) trigger_focus_handle: Option<FocusHandle>,
@@ -2547,7 +2610,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      selected_index: Option<usize>,
      min_width: Option<Pixels>,
      max_width: Option<Pixels>,
-@@ -303,7 +357,6 @@
+@@ -303,7 +368,6 @@
  
      /// The parent menu of this menu, if this is a submenu
      parent_menu: Option<WeakEntity<Self>>,
@@ -2555,7 +2618,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      external_link_icon: bool,
      scroll_handle: ScrollHandle,
      // This will update on render
-@@ -327,6 +380,16 @@
+@@ -327,6 +391,19 @@
      /// reaches it, while the scroll offset is still baked into its anchor.
      priority: usize,
  
@@ -2563,6 +2626,9 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +    /// too), and each item's label as shown with its letter, as last drawn.
 +    mnemonics: bool,
 +    hot: Vec<(SharedString, Option<usize>)>,
++    /// SparkCommander patch: opened by a key, its letters underlined (see `MnemonicsOnAlt`); whether they are, as last drawn.
++    pub(crate) keyed: bool,
++    shown: bool,
 +
 +    /// SparkCommander patch: GNOME's: the selected submenu shown in this menu's
 +    /// place; this one drawn so inside its parent, without a frame of its own.
@@ -2572,7 +2638,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      _subscriptions: Vec<Subscription>,
  }
  
-@@ -337,6 +400,7 @@
+@@ -337,6 +414,7 @@
              action_context: None,
              previous_focus_handle: None,
              trigger_focus_handle: None,
@@ -2580,7 +2646,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              parent_menu: None,
              menu_items: Vec::new(),
              selected_index: None,
-@@ -345,12 +409,15 @@
+@@ -345,12 +423,17 @@
              max_height: None,
              check_side: Side::Left,
              bounds: Bounds::default(),
@@ -2592,12 +2658,14 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              priority: gpui_base::POPUP_PRIORITY,
 +            mnemonics: false,
 +            hot: Vec::new(),
++            keyed: false,
++            shown: true,
 +            in_place: false,
 +            embedded: false,
              _subscriptions: vec![],
          }
      }
-@@ -360,7 +427,48 @@
+@@ -360,7 +443,53 @@
          cx: &mut App,
          f: impl FnOnce(Self, &mut Window, &mut Context<PopupMenu>) -> Self,
      ) -> Entity<Self> {
@@ -2626,6 +2694,11 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 +        self.mnemonics || self.parent_menu.as_ref().and_then(|parent| parent.upgrade()).is_some_and(|parent| parent.read(cx).mnemonics_on(cx))
 +    }
 +
++    /// SparkCommander patch: whether it or the menu it hangs from was opened by a key.
++    fn keyed_on(&self, cx: &App) -> bool {
++        self.keyed || self.parent_menu.as_ref().and_then(|parent| parent.upgrade()).is_some_and(|parent| parent.read(cx).keyed_on(cx))
++    }
++
 +    /// SparkCommander patch: the item with the letter typed, as a click on it (a submenu opens).
 +    fn on_letter(&mut self, event: &gpui::KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
 +        let held = event.keystroke.modifiers;
@@ -2647,7 +2720,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      }
  
      /// Set the focus handle of Entity to handle actions.
-@@ -445,9 +553,8 @@
+@@ -445,9 +574,8 @@
          self
      }
  
@@ -2659,7 +2732,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          self
      }
  
-@@ -783,7 +890,8 @@
+@@ -783,7 +911,8 @@
          self
      }
  
@@ -2669,7 +2742,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          mut self,
          items: impl IntoIterator<Item = I>,
          window: &mut Window,
-@@ -801,29 +909,42 @@
+@@ -801,29 +930,42 @@
                      disabled,
                      ..
                  } => {
@@ -2725,7 +2798,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          self
      }
  
-@@ -884,6 +1005,18 @@
+@@ -884,6 +1026,18 @@
                          }
                          self.dismiss(&Cancel, window, cx)
                      }
@@ -2744,7 +2817,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      _ => {}
                  }
              }
-@@ -904,6 +1037,94 @@
+@@ -904,6 +1058,94 @@
          window.dispatch_action(action.boxed_clone(), cx);
      }
  
@@ -2839,7 +2912,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn resolved_action_context(&self, cx: &App) -> Option<FocusHandle> {
          self.action_context.clone().or_else(|| {
              let parent = self.parent_menu.as_ref()?.upgrade()?;
-@@ -919,6 +1140,22 @@
+@@ -919,6 +1161,22 @@
          }
      }
  
@@ -2862,7 +2935,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn select_up(&mut self, _: &SelectUp, _: &mut Window, cx: &mut Context<Self>) {
          cx.stop_propagation();
          let ix = self.selected_index.unwrap_or(0);
-@@ -959,6 +1196,13 @@
+@@ -959,6 +1217,13 @@
      }
  
      fn select_left(&mut self, _: &SelectLeft, window: &mut Window, cx: &mut Context<Self>) {
@@ -2876,7 +2949,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let handled = if matches!(self.submenu_anchor.0, Anchor::TopLeft | Anchor::BottomLeft) {
              self._unselect_submenu(window, cx)
          } else {
-@@ -980,6 +1224,12 @@
+@@ -980,6 +1245,12 @@
      }
  
      fn select_right(&mut self, _: &SelectRight, window: &mut Window, cx: &mut Context<Self>) {
@@ -2889,7 +2962,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let handled = if matches!(self.submenu_anchor.0, Anchor::TopLeft | Anchor::BottomLeft) {
              self._select_submenu(window, cx)
          } else {
-@@ -1002,9 +1252,23 @@
+@@ -1002,9 +1273,23 @@
  
      fn _select_submenu(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
          if let Some(active_submenu) = self.active_submenu() {
@@ -2914,7 +2987,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  view.focus_handle.focus(window, cx);
              });
              cx.notify();
-@@ -1026,6 +1290,23 @@
+@@ -1026,6 +1311,23 @@
          return false;
      }
  
@@ -2938,7 +3011,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn _focus_parent_menu(&mut self, window: &mut Window, cx: &mut Context<Self>) {
          let Some(parent) = self.parent_menu.as_ref() else {
              return;
-@@ -1063,6 +1344,7 @@
+@@ -1063,6 +1365,7 @@
      /// The submenu is closed together with its parent, same as macOS menus.
      fn dismiss(&mut self, _: &Cancel, window: &mut Window, cx: &mut Context<Self>) {
          self.selected_index = None;
@@ -2946,7 +3019,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          cx.emit(DismissEvent);
  
          // Focus back to the previous focused handle, unless the item's click
-@@ -1109,7 +1391,8 @@
+@@ -1109,7 +1412,8 @@
          // inside the submenu, let the submenu to handle it.
          //
          // Otherwise the submenu will be dismissed before its item's `on_click`.
@@ -2956,7 +3029,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              return;
          }
  
-@@ -1179,7 +1462,8 @@
+@@ -1179,7 +1483,8 @@
              Icon::empty()
          };
  
@@ -2966,14 +3039,14 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      }
  
      #[inline]
-@@ -1205,6 +1489,14 @@
+@@ -1205,6 +1510,14 @@
          };
      }
  
 +    /// SparkCommander patch: item `ix`'s label, its letter underlined if it has one.
 +    fn hot_label(&self, ix: usize, label: &SharedString) -> AnyElement {
 +        match self.hot.get(ix) {
-+            Some((shown, at)) => hot_text(shown.clone(), *at),
++            Some((shown, at)) => hot_text(shown.clone(), at.filter(|_| self.shown)),
 +            None => label.clone().into_any_element(),
 +        }
 +    }
@@ -2981,7 +3054,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
      fn render_item(
          &self,
          ix: usize,
-@@ -1222,21 +1514,38 @@
+@@ -1222,21 +1535,38 @@
          };
  
          let selected = self.selected_index == Some(ix);
@@ -3022,7 +3095,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
              .rounded(radius)
              .items_center()
              .selected(selected)
-@@ -1267,12 +1576,16 @@
+@@ -1267,12 +1597,16 @@
              .when_some(item.a11y_label(), |this, label| this.aria_label(label));
  
          match item {
@@ -3042,7 +3115,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .border_color(cx.theme().border)
                  .disabled(true),
              PopupMenuItem::Label(label) => this.disabled(true).cursor_default().child(
-@@ -1322,6 +1635,10 @@
+@@ -1322,6 +1656,10 @@
                  let show_link_icon = *is_link && self.external_link_icon;
                  let action = action.as_ref().map(|action| action.boxed_clone());
                  let key = self.render_key_binding(action, window, cx);
@@ -3053,7 +3126,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
                  this.when(!disabled, |this| {
                      this.on_click(
-@@ -1344,7 +1661,7 @@
+@@ -1344,7 +1682,7 @@
                          .gap_3()
                          .items_center()
                          .justify_between()
@@ -3062,7 +3135,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                          .children(right_check_icon)
                          .when(show_link_icon, |this| {
                              this.child(
-@@ -1368,9 +1685,28 @@
+@@ -1368,9 +1706,28 @@
                  label,
                  menu,
                  disabled,
@@ -3092,7 +3165,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                  .items_start()
                  .child(
                      h_flex()
-@@ -1391,15 +1727,21 @@
+@@ -1391,15 +1748,21 @@
                                  .gap_2()
                                  .items_center()
                                  .justify_between()
@@ -3119,7 +3192,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      this.child({
                          let (anchor, left) = self.submenu_anchor;
                          let is_bottom_pos =
-@@ -1421,7 +1763,8 @@
+@@ -1421,7 +1784,8 @@
                          )
                          .with_priority(self.priority + 1)
                      })
@@ -3129,7 +3202,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          }
      }
  }
-@@ -1466,10 +1809,23 @@
+@@ -1466,10 +1830,24 @@
          let view = cx.entity().clone();
          let items_count = self.menu_items.len();
  
@@ -3139,6 +3212,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
 -        });
 +        // SparkCommander patch: the items' letters, as the app chooses them.
 +        let mnemonics = cx.try_global::<MenuMnemonics>().filter(|_| self.mnemonics_on(cx)).map(|mnemonics| mnemonics.0.clone());
++        self.shown = letters_shown(self.keyed_on(cx), window, cx);
 +        self.hot = match mnemonics {
 +            Some(mnemonics) => {
 +                let labels: Vec<&str> = self.menu_items.iter().map(|item| match item {
@@ -3157,7 +3231,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
  
          let has_left_icon = self
              .menu_items
-@@ -1477,6 +1833,14 @@
+@@ -1477,6 +1855,14 @@
              .any(|item| item.has_left_icon(self.check_side));
  
          let max_width = self.max_width();
@@ -3172,7 +3246,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
          let options = RenderOptions {
              has_left_icon,
              check_side: self.check_side,
-@@ -1495,24 +1859,98 @@
+@@ -1495,24 +1881,98 @@
              .on_action(cx.listener(Self::select_right))
              .on_action(cx.listener(Self::confirm))
              .on_action(cx.listener(Self::dismiss))
@@ -3280,7 +3354,7 @@ diff -ruN -x .cargo-ok a/src/menu/popup_menu.rs b/src/menu/popup_menu.rs
                      .children(
                          self.menu_items
                              .iter()
-@@ -1522,10 +1960,7 @@
+@@ -1522,10 +1982,7 @@
                              .map(|(ix, item)| self.render_item(ix, item, options, window, cx)),
                      )
                      .on_prepaint(move |bounds, _, cx| view.update(cx, |r, _| r.bounds = bounds)),
@@ -3745,7 +3819,7 @@ diff -ruN a/src/progress/progress.rs b/src/progress/progress.rs
                      .map(|this| {
 diff -ruN a/src/radio.rs b/src/radio.rs
 --- a/src/radio.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/radio.rs	2026-11-17 17:18:36.169968057 +0100
++++ b/src/radio.rs	2026-11-25 04:39:56.164598234 +0100
 @@ -8,7 +8,7 @@
  use gpui::{
      AnyElement, App, Axis, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce,
@@ -3755,21 +3829,36 @@ diff -ruN a/src/radio.rs b/src/radio.rs
  };
  use gpui_base::{Radio as BaseRadio, RadioGroup as BaseRadioGroup};
  
-@@ -185,6 +185,13 @@
+@@ -185,6 +185,20 @@
              .clone();
          let is_focused = focus_handle.is_focused(window);
          let disabled = self.disabled;
++        // SparkCommander patch: the toolkit's circle, see `ToolkitControls`.
++        let toolkit = crate::toolkit::drawn(cx, |controls| controls.radio.as_ref());
++        let drawn_size = toolkit.as_ref().map(|(scale, images)| {
++            let size = images[0].0[crate::toolkit::NORMAL].size(0);
++            (px(size.width.0 as f32 / scale), px(size.height.0 as f32 / scale))
++        });
 +        // SparkCommander patch: the circle and the label's first line centred on each other.
-+        let mark = match (cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
-+            (Some(native), _) => native.check_size,
-+            (None, Some(_)) => px(16.),
-+            (None, None) => indicator_size.to_pixels(window.rem_size()),
++        let mark = match (drawn_size, cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
++            (Some((_, height)), _, _) => height,
++            (None, Some(native), _) => native.check_size,
++            (None, None, Some(_)) => px(16.),
++            (None, None, None) => indicator_size.to_pixels(window.rem_size()),
 +        };
 +        let (mark_top, label_top) = crate::checkbox::centred(mark, self.size, window);
          let accessibility_label = self
              .accessibility_label
              .clone()
-@@ -234,25 +241,60 @@
+@@ -203,6 +217,7 @@
+ 
+         self.base
+             .id(self.id.clone())
++            .group(crate::toolkit::RADIO)
+             .checked(self.checked)
+             .disabled(self.disabled)
+             .track_focus(&focus_handle)
+@@ -234,25 +249,67 @@
                      .relative()
                      .size(indicator_size)
                      // Center on the first 1.25em line, including when the label wraps.
@@ -3788,8 +3877,15 @@ diff -ruN a/src/radio.rs b/src/radio.rs
 -                        self.id, self.size, checked, disabled, window, cx,
 -                    )),
 +                    // SparkCommander patch: the desktop style's circle and dot, see `NativeControls`; AppKit's, see `MacControls`.
-+                    .map(|this| match (cx.try_global::<crate::NativeControls>().copied(), cx.try_global::<crate::MacControls>().copied()) {
-+                        (None, Some(mac)) => {
++                    .map(|this| match (toolkit.clone(), cx.try_global::<crate::NativeControls>().copied(), cx.try_global::<crate::MacControls>().copied()) {
++                        (Some((_, images)), _, _) => {
++                            let (width, height) = drawn_size.unwrap_or_default();
++                            let images = images[checked as usize].clone();
++                            this.w(width).h(height).border_0().child(crate::toolkit::layers(crate::toolkit::RADIO, disabled, move |state| {
++                                crate::toolkit::picture(images.0[state].clone())
++                            }))
++                        }
++                        (None, None, Some(mac)) => {
 +                            let fill = if checked && !disabled { mac.accent } else { mac.well };
 +                            let dot = if disabled { mac.disabled_text } else { mac.on_accent };
 +                            this.size(px(16.))
@@ -3800,7 +3896,7 @@ diff -ruN a/src/radio.rs b/src/radio.rs
 +                                .bg(if disabled { fill.opacity(0.5) } else { fill })
 +                                .when(checked, |this| this.child(div().size(px(5.)).rounded_full().bg(dot)))
 +                        }
-+                        (Some(native), _) => {
++                        (None, Some(native), _) => {
 +                            let (border, fill) = match checked {
 +                                true => (native.checked_frame, native.checked_fill),
 +                                false => (native.check_frame, native.check_fill),
@@ -3817,7 +3913,7 @@ diff -ruN a/src/radio.rs b/src/radio.rs
 +                                    this.child(div().size(native.radio_dot).rounded_full().bg(native.mark.opacity(dim)))
 +                                })
 +                        }
-+                        (None, None) => this
++                        (None, None, None) => this
 +                            .border_color(border_color)
 +                            .map(|this| match self.checked {
 +                                false => this.bg(cx.theme().input_background()),
@@ -3967,7 +4063,7 @@ diff -ruN -x .cargo-ok a/src/root.rs b/src/root.rs
  }
 diff -ruN a/src/select.rs b/src/select.rs
 --- a/src/select.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/select.rs	2026-11-17 17:18:36.171649223 +0100
++++ b/src/select.rs	2026-11-25 04:41:27.895715510 +0100
 @@ -393,6 +393,25 @@
      fn toggle_menu(&mut self, _: &ClickEvent, window: &mut Window, cx: &mut Context<Self>) {
          cx.stop_propagation();
@@ -3994,7 +4090,7 @@ diff -ruN a/src/select.rs b/src/select.rs
          self.set_open(!self.state.open, cx);
  
          if self.state.open {
-@@ -518,6 +537,16 @@
+@@ -518,7 +537,19 @@
          let outline_visible = self.state.open || (is_focused && !self.state.disabled);
  
          let (bg, fg) = input_style(self.state.disabled, cx);
@@ -4009,9 +4105,12 @@ diff -ruN a/src/select.rs b/src/select.rs
 +            .copied()
 +            .filter(|native| native.combo_button && self.state.appearance && !self.state.disabled);
  
++        // SparkCommander patch: GTK's combo box as the theme draws it, its arrow in it, see `ToolkitControls::combo`.
++        let gtk_combo = crate::toolkit::drawn(cx, |controls| controls.combo.as_ref()).filter(|_| self.state.appearance);
          self.state.list.update(cx, |list, cx| {
              list.set_searchable(searchable, cx);
-@@ -550,9 +579,28 @@
+             list.delegate_mut().size = self.state.size;
+@@ -550,12 +581,51 @@
                          })
                          .input_size(self.state.size)
                          .input_text_size(self.state.size)
@@ -4033,15 +4132,47 @@ diff -ruN a/src/select.rs b/src/select.rs
 +                                .when(native.bold, |this| this.font_weight(gpui::FontWeight::BOLD))
 +                                .hover(|this| this.bg(hover).border_color(hover_frame))
 +                        })
++                        .when_some(gtk_combo.clone(), |this, (scale, combo)| {
++                            let (disabled, open, images) = (self.state.disabled, self.state.open, combo.images.clone());
++                            let end = px(images.0[0].size(0).height.0 as f32 / scale / 2. - 1.).floor();
++                            let ends = gpui::Edges { left: end, right: combo.arrow.max(end), top: end, bottom: end };
++                            let state = if disabled { crate::toolkit::DISABLED } else { crate::toolkit::NORMAL };
++                            this.group(crate::toolkit::COMBO)
++                                .bg(cx.theme().transparent)
++                                .border_0()
++                                .rounded_none()
++                                .opacity(1.)
++                                .pl(combo.inset)
++                                .pr(combo.arrow)
++                                .text_color(combo.text[state])
++                                .child(match open {
++                                    true => crate::toolkit::framed(scale, images.0[crate::toolkit::PRESSED].clone(), ends).absolute().inset_0(),
++                                    false => crate::toolkit::layers(crate::toolkit::COMBO, disabled, move |state| {
++                                        crate::toolkit::framed(scale, images.0[state].clone(), ends)
++                                    }),
++                                })
++                        })
                          .refine_style(&self.state.style)
-                         .when(outline_visible && self.state.appearance, |this| {
+-                        .when(outline_visible && self.state.appearance, |this| {
 -                            this.border_1().border_color(cx.theme().ring)
++                        .when(outline_visible && self.state.appearance && gtk_combo.is_none(), |this| {
 +                            let ring = mac.map_or(cx.theme().ring, |mac| mac.accent);
 +                            this.border_1().border_color(ring)
                          })
                          .when(
-                             outline_visible && self.state.appearance && self.focus_ring_enabled,
-@@ -596,6 +644,10 @@
+-                            outline_visible && self.state.appearance && self.focus_ring_enabled,
++                            outline_visible && self.state.appearance && self.focus_ring_enabled && gtk_combo.is_none(),
+                             |this| this.focus_ring_style(window, cx),
+                         )
+                         .when(allow_open, |this| {
+@@ -590,12 +660,16 @@
+                                         }
+                                     }))
+                                 })
+-                                .when(!show_clean, |this| {
++                                .when(!show_clean && gtk_combo.is_none(), |this| {
+                                     let icon = match self.icon.clone() {
+                                         Some(icon) => icon
                                              .xsmall()
                                              .text_color(cx.theme().muted_foreground)
                                              .into_any_element(),
@@ -5291,8 +5422,8 @@ diff -ruN a/src/table/state.rs b/src/table/state.rs
              })
 diff -ruN a/src/theme/mod.rs b/src/theme/mod.rs
 --- a/src/theme/mod.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/theme/mod.rs	2026-11-19 09:25:55.848482235 +0100
-@@ -142,6 +142,15 @@
++++ b/src/theme/mod.rs	2026-11-25 04:47:23.985734658 +0100
+@@ -142,6 +142,27 @@
          })
  }
  
@@ -5305,10 +5436,22 @@ diff -ruN a/src/theme/mod.rs b/src/theme/mod.rs
 +    pub inset: Pixels,
 +}
 +
++/// SparkCommander patch: a scrollbar's colours and corners as the desktop draws
++/// them (GTK's): the track's fill and the line on the view's side; the
++/// thumb's fill normal, hovered and dragged, its outline and corners.
++#[derive(Debug, Clone, Copy, PartialEq)]
++pub struct ScrollbarLook {
++    pub track: Hsla,
++    pub line: Option<Hsla>,
++    pub thumb: [Hsla; 3],
++    pub outline: Option<Hsla>,
++    pub radius: Pixels,
++}
++
  /// The global theme configuration.
  #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
  pub struct Theme {
-@@ -181,6 +190,10 @@
+@@ -181,6 +202,10 @@
      pub mono_font_family: SharedString,
      /// The monospace font size for the application, default is 13px.
      pub mono_font_size: Pixels,
@@ -5319,51 +5462,81 @@ diff -ruN a/src/theme/mod.rs b/src/theme/mod.rs
      /// Radius for the general elements.
      pub radius: Pixels,
      /// Radius for the large elements, e.g.: Dialog, Notification border radius.
-@@ -199,6 +212,9 @@
+@@ -199,6 +224,12 @@
      /// Show the scrollbar mode, default: Scrolling
      #[serde(alias = "scrollbar_show")]
      pub scrollbar_mode: ScrollbarMode,
 +    /// SparkCommander patch: the scrollbar's size as the desktop draws it; none: GPUI Kit's.
 +    #[serde(skip)]
 +    pub scrollbar_size: Option<ScrollbarSize>,
++    /// SparkCommander patch: the scrollbar's colours as the desktop draws them; none: the theme's.
++    #[serde(skip)]
++    pub scrollbar_look: Option<ScrollbarLook>,
      /// The notification setting.
      #[serde(skip)]
      pub notification: NotificationSettings,
-@@ -413,13 +429,16 @@
+@@ -401,6 +432,10 @@
+     /// This theme projected onto the Base layer, which owns the scrollbar and
+     /// resize handles and reads the semantic tokens.
+     fn base_theme(&self) -> gpui_base::Theme {
++        let look = self.scrollbar_look;
++        let track = look.map_or(self.scrollbar, |look| look.track);
++        let thumb = |state: usize, token: gpui::Background| -> gpui::Background { look.map_or(token, |look| look.thumb[state].into()) };
++        let radius = look.map_or(self.radius, |look| look.radius);
+         gpui_base::Theme {
+             appearance: if self.mode.is_dark() {
+                 gpui_base::ThemeAppearance::Dark
+@@ -413,13 +448,20 @@
                  .with_motion(scrollbar_motion(self.scrollbar_mode))
                  .with_styles(
                      gpui_base::ScrollbarStyles::default()
 -                        .track(|style| style.bg(self.scrollbar))
+-                        .track_hover(|style| style.bg(self.scrollbar))
+-                        .track_active(|style| style.bg(self.scrollbar).border_color(self.border))
 +                        .track(|style| {
-+                            style.bg(self.scrollbar).when_some(self.scrollbar_size, |style, size| style.width(size.track))
++                            style
++                                .bg(track)
++                                .when_some(self.scrollbar_size, |style, size| style.width(size.track))
++                                .when_some(look.and_then(|look| look.line), |style, line| style.border_color(line))
 +                        })
-                         .track_hover(|style| style.bg(self.scrollbar))
-                         .track_active(|style| style.bg(self.scrollbar).border_color(self.border))
++                        .track_hover(|style| style.bg(track))
++                        .track_active(|style| style.bg(track))
                          .thumb(|style| {
                              style
-                                 .bg(self.tokens.scrollbar_thumb)
-                                 .radius(self.radius)
+-                                .bg(self.tokens.scrollbar_thumb)
+-                                .radius(self.radius)
++                                .bg(thumb(0, self.tokens.scrollbar_thumb.into()))
++                                .radius(radius)
++                                .when_some(look.and_then(|look| look.outline), |style, outline| style.border_color(outline))
 +                                .when_some(self.scrollbar_size, |style, size| style.width(size.thumb).inset(size.inset))
                                  .when(gpui_base::is_mobile(), |style| {
                                      style
                                          .width(MOBILE_SCROLLBAR_THUMB_WIDTH)
-@@ -431,6 +450,7 @@
+@@ -429,8 +471,9 @@
+                         })
+                         .thumb_hover(|style| {
                              style
-                                 .bg(self.tokens.scrollbar_thumb_hover)
-                                 .radius(self.radius)
+-                                .bg(self.tokens.scrollbar_thumb_hover)
+-                                .radius(self.radius)
++                                .bg(thumb(1, self.tokens.scrollbar_thumb_hover.into()))
++                                .radius(radius)
 +                                .when_some(self.scrollbar_size, |style, size| style.width(size.thumb).inset(size.inset))
                                  .when(gpui_base::is_mobile(), |style| {
                                      style
                                          .width(SCROLLBAR_THUMB_HOVER_WIDTH)
-@@ -441,6 +461,7 @@
+@@ -439,8 +482,9 @@
+                         })
+                         .thumb_active(|style| {
                              style
-                                 .bg(self.tokens.scrollbar_thumb_hover)
-                                 .radius(self.radius)
+-                                .bg(self.tokens.scrollbar_thumb_hover)
+-                                .radius(self.radius)
++                                .bg(thumb(2, self.tokens.scrollbar_thumb_hover.into()))
++                                .radius(radius)
 +                                .when_some(self.scrollbar_size, |style, size| style.width(size.thumb).inset(size.inset))
                                  .when(gpui_base::is_mobile(), |style| {
                                      style
                                          .width(SCROLLBAR_THUMB_ACTIVE_WIDTH)
-@@ -771,11 +792,13 @@
+@@ -771,11 +815,14 @@
              font_size: px(16.),
              mono_font_family: mono_font::default_mono_font_family(),
              mono_font_size: px(13.),
@@ -5374,6 +5547,7 @@ diff -ruN a/src/theme/mod.rs b/src/theme/mod.rs
              focus_ring: true,
              scrollbar_mode: ScrollbarMode::default(),
 +            scrollbar_size: None,
++            scrollbar_look: None,
              notification: NotificationSettings::default(),
              list: ListSettings::default(),
              colors: *colors,
@@ -5545,7 +5719,7 @@ diff -ruN -x .cargo-ok a/src/title_bar.rs b/src/title_bar.rs
 diff -ruN a/src/toolkit.rs b/src/toolkit.rs
 --- a/src/toolkit.rs	1970-01-01 01:00:00.000000000 +0100
 +++ b/src/toolkit.rs	1970-01-01 01:00:00.000000000 +0100
-@@ -0,0 +1,190 @@
+@@ -0,0 +1,253 @@
 +// SparkCommander patch: this file is new.
 +use std::sync::Arc;
 +
@@ -5572,6 +5746,35 @@ diff -ruN a/src/toolkit.rs b/src/toolkit.rs
 +    pub tabs: Option<ToolkitTabs>,
 +    /// GTK's menus, where the theme draws them.
 +    pub menus: Option<ToolkitMenus>,
++    /// Radio buttons, unchecked and checked, where the toolkit draws them.
++    pub radio: Option<[StateImages; 2]>,
++    /// GTK's text fields and combo boxes, where the theme draws them.
++    pub field: Option<ToolkitField>,
++    pub combo: Option<ToolkitCombo>,
++}
++
++/// GTK's text field: the entry normal, focused and disabled, drawn whole (its
++/// corners kept, the rest stretched to any size); its text's inset.
++#[derive(Clone)]
++pub struct ToolkitField {
++    pub images: [Arc<RenderImage>; 3],
++    pub inset: Pixels,
++}
++
++/// GTK's combo box: its button with the arrow in every state, drawn whole;
++/// the label's colours and inset, the room the arrow takes at the right.
++#[derive(Clone)]
++pub struct ToolkitCombo {
++    pub images: StateImages,
++    pub text: [Hsla; 4],
++    pub inset: Pixels,
++    pub arrow: Pixels,
++}
++
++/// A part of the toolkit's controls and the images' scale, where it draws that part.
++pub(crate) fn drawn<T: Clone>(cx: &gpui::App, part: impl Fn(&ToolkitControls) -> Option<&T>) -> Option<(f32, T)> {
++    let controls = cx.try_global::<ToolkitControls>()?;
++    part(controls).map(|part| (controls.scale, part.clone()))
 +}
 +
 +/// GTK's menus as the theme draws them: the menu bar's open title and a
@@ -5629,6 +5832,8 @@ diff -ruN a/src/toolkit.rs b/src/toolkit.rs
 +/// The groups whose hover and press the layers follow.
 +pub(crate) const CHECKBOX: &str = "toolkit-checkbox";
 +pub(crate) const BUTTON: &str = "toolkit-button";
++pub(crate) const RADIO: &str = "toolkit-radio";
++pub(crate) const COMBO: &str = "toolkit-combo";
 +
 +pub(crate) const NORMAL: usize = 0;
 +pub(crate) const HOVERED: usize = 1;
@@ -5719,6 +5924,38 @@ diff -ruN a/src/toolkit.rs b/src/toolkit.rs
 +        let strip = part(left_width - middle_width / 2., middle_width * 2.);
 +        vec![(left, left_part, left_part), (middle, middle_part, strip), (right, right_part, right_part)]
 +    })
++}
++
++/// An image drawn whole, `scale` to a pixel, stretched over its place: its
++/// `ends` (left, right, top, bottom) as drawn, the parts between stretched.
++pub(crate) fn framed(scale: f32, image: Arc<RenderImage>, ends: gpui::Edges<Pixels>) -> Div {
++    let drawn = image.size(0);
++    let size = gpui::size(px(drawn.width.0 as f32 / scale), px(drawn.height.0 as f32 / scale));
++    painted(move |bounds| frame_parts(size, ends, bounds).into_iter().map(|(shown, at)| (image.clone(), shown, at)).collect())
++}
++
++/// An image of `size` cut at its `ends` into nine, each part's place in
++/// `bounds` and where the whole image goes for that part to land there.
++fn frame_parts(size: gpui::Size<Pixels>, ends: gpui::Edges<Pixels>, bounds: Bounds<Pixels>) -> Vec<(Bounds<Pixels>, Bounds<Pixels>)> {
++    // An axis in three: each part's place in the image, and in the bounds.
++    let cut = |whole: Pixels, start: Pixels, end: Pixels, room: Pixels, at: Pixels| {
++        let middle = (room - start - end).max(px(0.));
++        [(px(0.), start, at, start), (start, whole - start - end, at + start, middle), (whole - end, end, at + start + middle, end)]
++    };
++    let columns = cut(size.width, ends.left, ends.right, bounds.size.width, bounds.origin.x);
++    let rows = cut(size.height, ends.top, ends.bottom, bounds.size.height, bounds.origin.y);
++    let mut parts = Vec::new();
++    for (x, w, to_x, to_w) in columns {
++        for (y, h, to_y, to_h) in rows {
++            if w <= px(0.) || h <= px(0.) || to_w <= px(0.) || to_h <= px(0.) {
++                continue;
++            }
++            let (kx, ky) = (to_w / w, to_h / h);
++            let at = Bounds::new(point(to_x - x * kx, to_y - y * ky), gpui::size(size.width * kx, size.height * ky));
++            parts.push((Bounds::new(point(to_x, to_y), gpui::size(to_w, to_h)), at));
++        }
++    }
++    parts
 +}
 +
 +/// Images painted where `place` puts them in the element's bounds, each

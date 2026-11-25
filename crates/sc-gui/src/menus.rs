@@ -244,10 +244,25 @@ pub fn alt_letter(bar: &Entity<AppMenuBar>, event: &KeyDownEvent, window: &mut W
     }
 }
 
+/// Where the letters show only while Alt is held (`MnemonicsOnAlt`): the
+/// window drawn again as Alt goes down or up.
+pub fn alt_changed(event: &gpui_kit::ModifiersChangedEvent, window: &mut Window, cx: &mut App) {
+    thread_local! { static ALT: std::cell::Cell<bool> = const { std::cell::Cell::new(false) }; }
+    if cx.has_global::<gpui_kit::component::menu::MnemonicsOnAlt>() && ALT.with(|alt| alt.replace(event.modifiers.alt)) != event.modifiers.alt {
+        window.refresh();
+    }
+}
+
 pub fn init(cx: &mut App) {
     let icons = |action: &dyn Action| action.as_any().downcast_ref::<Run>().and_then(|Run(command)| menu_icon(*command)).map(Icon::new);
     cx.set_global(MenuIcons(Rc::new(icons)));
     // macOS's menus have no letters to press.
+    #[cfg(not(target_os = "macos"))]
+    // GTK's desktops underline them only while Alt is held, KDE's always.
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+    if !sc_core::system::theme::on_kde() {
+        cx.set_global(gpui_kit::component::menu::MnemonicsOnAlt);
+    }
     #[cfg(not(target_os = "macos"))]
     cx.set_global(gpui_kit::component::menu::MenuMnemonics(Rc::new(|labels, bar| {
         let taken = match bar {

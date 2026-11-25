@@ -1,3 +1,6 @@
+// Modified for Spark Commander (Apache-2.0, section 4b): a track's border is
+// a line on the view's side, a thumb may have an outline, as GTK draws them.
+// Changes are marked "SparkCommander patch".
 use std::{cell::Cell, ops::Deref, panic::Location, rc::Rc};
 
 use instant::{Duration, Instant};
@@ -671,9 +674,17 @@ pub struct ScrollbarThumbStyle {
     inset: Option<Pixels>,
     radius: Option<Pixels>,
     min_length: Option<Pixels>,
+    // SparkCommander patch: a 1 px outline, as GTK's sliders have.
+    border: Option<Hsla>,
 }
 
 impl ScrollbarThumbStyle {
+    /// SparkCommander patch: the thumb outlined 1 px in `border`, in every state.
+    pub fn border_color(mut self, border: Hsla) -> Self {
+        self.border = Some(border);
+        self
+    }
+
     pub fn bg(mut self, background: impl Into<Background>) -> Self {
         self.background = Some(background.into());
         self
@@ -1043,6 +1054,7 @@ impl Scrollbar {
             inset: Some(inset),
             radius: Some(radius),
             min_length: Some(MIN_THUMB_SIZE),
+            border: None,
         }
     }
 
@@ -1179,6 +1191,7 @@ pub struct AxisPrepaintState {
     // Bounds of thumb to be rendered.
     thumb_fill_bounds: Bounds<Pixels>,
     thumb_bg: Background,
+    thumb_border: Option<Hsla>,
     geometry: ThumbGeometry,
     active_geometry: ThumbGeometry,
     track_width: Pixels,
@@ -1545,6 +1558,7 @@ impl Element for Scrollbar {
                 thumb_bounds,
                 thumb_fill_bounds,
                 thumb_bg,
+                thumb_border: self.styles.thumb.border.or(cx.theme().scrollbar.styles().thumb.border),
                 geometry,
                 active_geometry,
                 track_width,
@@ -1614,28 +1628,24 @@ impl Element for Scrollbar {
                             bounds: painted_bounds,
                             corner_radii: (0.).into(),
                             background: gpui::transparent_black().into(),
-                            border_widths: if is_vertical {
-                                Edges {
-                                    top: px(0.),
-                                    right: px(0.),
-                                    bottom: px(0.),
-                                    left: px(0.),
-                                }
-                            } else {
-                                Edges {
-                                    top: px(0.),
-                                    right: px(0.),
-                                    bottom: px(0.),
-                                    left: px(0.),
+                            // SparkCommander patch: a track's border is a line on the view's side, as GTK's.
+                            border_widths: {
+                                let line = if state.border.is_transparent() { px(0.) } else { px(1.) };
+                                if is_vertical {
+                                    Edges { top: px(0.), right: px(0.), bottom: px(0.), left: line }
+                                } else {
+                                    Edges { top: line, right: px(0.), bottom: px(0.), left: px(0.) }
                                 }
                             },
                             border_color: painted_border,
                             border_style: BorderStyle::default(),
                         });
 
-                        cx.paint_quad(
-                            fill(painted_thumb_bounds, painted_thumb_bg).corner_radii(radius),
-                        );
+                        let thumb = fill(painted_thumb_bounds, painted_thumb_bg).corner_radii(radius);
+                        cx.paint_quad(match state.thumb_border {
+                            Some(border) => thumb.border_widths(px(1.)).border_color(border.opacity(visibility_opacity)),
+                            None => thumb,
+                        });
                     });
 
                     window.on_mouse_event({

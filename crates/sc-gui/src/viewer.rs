@@ -2047,6 +2047,7 @@ impl Render for Viewer {
                 }
             }))
             // macOS shows the menus on the system's menu bar.
+            .on_modifiers_changed(crate::menus::alt_changed)
             .when(!self.quick && !cfg!(target_os = "macos") && !behind, |el| {
                 let bar = self.menu_bar.clone();
                 el.on_key_down(move |event, window, cx| crate::menus::alt_letter(&bar, event, window, cx)).child(

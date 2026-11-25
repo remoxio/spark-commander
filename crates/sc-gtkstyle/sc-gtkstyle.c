@@ -76,19 +76,22 @@ static cairo_surface_t *canvas(int width, int height, cairo_t **cr) {
     return surface;
 }
 
-// `context`'s box drawn in `width` × `height`; a check box's mark too, inside
-// its border and padding, as GTK does. Its margins, the space around it, are
-// the app's to lay out.
-static void draw(GtkStyleContext *context, cairo_t *cr, double width, double height, gboolean check) {
+// What draws a mark in a box: gtk_render_check, gtk_render_option.
+typedef void (*Mark)(GtkStyleContext *, cairo_t *, gdouble, gdouble, gdouble, gdouble);
+
+// `context`'s box drawn in `width` × `height`; a check box's or radio
+// button's mark too, inside its border and padding, as GTK does. Its margins,
+// the space around it, are the app's to lay out.
+static void draw(GtkStyleContext *context, cairo_t *cr, double width, double height, Mark mark) {
     gtk_render_background(context, cr, 0, 0, width, height);
     gtk_render_frame(context, cr, 0, 0, width, height);
-    if (!check) return;
+    if (!mark) return;
     GtkStateFlags state = gtk_style_context_get_state(context);
     GtkBorder padding, border;
     gtk_style_context_get_padding(context, state, &padding);
     gtk_style_context_get_border(context, state, &border);
     double left = padding.left + border.left, top = padding.top + border.top;
-    gtk_render_check(context, cr, left, top, width - left - padding.right - border.right, height - top - padding.bottom - border.bottom);
+    mark(context, cr, left, top, width - left - padding.right - border.right, height - top - padding.bottom - border.bottom);
 }
 
 // A node's size: its min-width and min-height with padding and border.
@@ -119,7 +122,7 @@ static void cut(const char *name, cairo_surface_t *surface, int x, int span, int
 static GdkRGBA sample(GtkStyleContext *context, int width, int height, int x, int y) {
     cairo_t *cr;
     cairo_surface_t *surface = canvas(width, height, &cr);
-    draw(context, cr, width, height, FALSE);
+    draw(context, cr, width, height, NULL);
     cairo_destroy(cr);
     cairo_surface_flush(surface);
     int stride = cairo_image_surface_get_stride(surface);
@@ -185,9 +188,9 @@ static void tabs(GtkStyleContext *window, GdkRGBA background) {
         gtk_style_context_get_margin(tab, FLAGS[i], &own);
         cairo_t *cr;
         cairo_surface_t *surface = canvas(full, height, &cr);
-        draw(header, cr, full, height, FALSE);
+        draw(header, cr, full, height, NULL);
         cairo_translate(cr, left + own.left, top + own.top);
-        draw(tab, cr, width, tab_height, FALSE);
+        draw(tab, cr, width, tab_height, NULL);
         cairo_destroy(cr);
         // Device pixels: the tab's span, its ends half its height each.
         char name[64];
@@ -236,7 +239,7 @@ static void menus(GtkStyleContext *window, GdkRGBA background) {
         int height = height_of(parts[i].box, text), width = height * 4;
         cairo_t *cr;
         cairo_surface_t *surface = canvas(width, height, &cr);
-        draw(parts[i].box, cr, width, height, FALSE);
+        draw(parts[i].box, cr, width, height, NULL);
         cairo_destroy(cr);
         cut(parts[i].name, surface, 0, cairo_image_surface_get_width(surface), height / 2. * scale + 0.5);
         cairo_surface_destroy(surface);
@@ -262,6 +265,249 @@ static void menus(GtkStyleContext *window, GdkRGBA background) {
     printf("size menu.padding %d\nsize menu.radius %d\nsize menu.context.radius %d\n", padding.top, radius, loose_radius);
     g_object_unref(line);
     GtkStyleContext *nodes[] = {loose_decoration, loose, row_label, row, menu, decoration, popup, title_label, title, bar};
+    for (size_t i = 0; i < G_N_ELEMENTS(nodes); i++) g_object_unref(nodes[i]);
+}
+
+// As `node`, its parent's only child: :first-child, :last-child and :only-child match.
+static GtkStyleContext *alone(GtkStyleContext *parent, GType type, const char *name, const char *classes) {
+    GtkStyleContext *own = node(NULL, type, name, classes);
+    GtkWidgetPath *path = gtk_widget_path_copy(gtk_style_context_get_path(parent));
+    gtk_widget_path_append_with_siblings(path, (GtkWidgetPath *)gtk_style_context_get_path(own), 0);
+    GtkStyleContext *context = gtk_style_context_new();
+    gtk_style_context_set_path(context, path);
+    gtk_style_context_set_parent(context, parent);
+    gtk_widget_path_unref(path);
+    g_object_unref(own);
+    return context;
+}
+
+// A whole drawing as `name`.
+static void put_whole(const char *name, cairo_surface_t *surface) {
+    put(name, surface, 0, cairo_image_surface_get_width(surface));
+}
+
+// A node's border and padding on each side.
+static GtkBorder edges(GtkStyleContext *context) {
+    GtkBorder border, padding;
+    GtkStateFlags state = gtk_style_context_get_state(context);
+    gtk_style_context_get_border(context, state, &border);
+    gtk_style_context_get_padding(context, state, &padding);
+    return (GtkBorder){border.left + padding.left, border.right + padding.right, border.top + padding.top, border.bottom + padding.bottom};
+}
+
+// The left (or top) of a node's border and padding.
+static int inset_of(GtkStyleContext *context, gboolean top) {
+    GtkBorder edge = edges(context);
+    return top ? edge.top : edge.left;
+}
+
+// Check boxes and radio buttons: the box or circle and its mark, unchecked
+// and checked, in every state.
+static void indicator(GtkStyleContext *window, GType type, const char *widget, const char *box, const char *name, Mark mark) {
+    GtkStyleContext *button = node(window, type, widget, NULL);
+    GtkStyleContext *context = node(button, G_TYPE_NONE, box, NULL);
+    int width, height;
+    size_of(context, &width, &height);
+    for (int on = 0; on <= 1; on++) {
+        for (int state = NORMAL; state <= DISABLED; state++) {
+            gtk_style_context_set_state(button, flags(state, on));
+            gtk_style_context_set_state(context, flags(state, on));
+            cairo_t *cr;
+            cairo_surface_t *surface = canvas(width, height, &cr);
+            draw(context, cr, width, height, mark);
+            cairo_destroy(cr);
+            char part[64];
+            snprintf(part, sizeof part, "%s.%s.%s", name, on ? "on" : "off", STATES[state]);
+            put_whole(part, surface);
+            cairo_surface_destroy(surface);
+        }
+    }
+    g_object_unref(context);
+    g_object_unref(button);
+}
+
+// Text fields: GTK's entry `height` high and four times as wide, normal,
+// focused and disabled, whole (the app keeps its corners and stretches the
+// rest to any size); its text's inset.
+static void fields(GtkStyleContext *window, int height) {
+    static const char *const NAMES[] = {"normal", "focused", "disabled"};
+    static const GtkStateFlags FLAGS[] = {GTK_STATE_FLAG_NORMAL, GTK_STATE_FLAG_FOCUSED, GTK_STATE_FLAG_INSENSITIVE};
+    GtkStyleContext *entry = node(window, GTK_TYPE_ENTRY, "entry", NULL);
+    for (int i = 0; i < 3; i++) {
+        gtk_style_context_set_state(entry, FLAGS[i]);
+        cairo_t *cr;
+        cairo_surface_t *surface = canvas(height * 4, height, &cr);
+        draw(entry, cr, height * 4, height, NULL);
+        cairo_destroy(cr);
+        char name[64];
+        snprintf(name, sizeof name, "field.%s", NAMES[i]);
+        put_whole(name, surface);
+        cairo_surface_destroy(surface);
+    }
+    gtk_style_context_set_state(entry, GTK_STATE_FLAG_NORMAL);
+    printf("size field.inset %d\n", inset_of(entry, FALSE));
+    g_object_unref(entry);
+}
+
+// Combo boxes: GTK's button with its arrow, `height` high and four times as
+// wide, in every state, whole; the label's inset and colours, the room the
+// arrow takes at the right.
+static void combos(GtkStyleContext *window, GdkRGBA background, int height) {
+    GtkStyleContext *combobox = node(window, GTK_TYPE_COMBO_BOX, "combobox", NULL);
+    GtkStyleContext *linked = node(combobox, GTK_TYPE_BOX, "box", "linked horizontal");
+    GtkStyleContext *button = alone(linked, GTK_TYPE_TOGGLE_BUTTON, "button", "combo");
+    GtkStyleContext *inner = node(button, GTK_TYPE_BOX, "box", "horizontal");
+    GtkStyleContext *label = node(inner, GTK_TYPE_CELL_VIEW, "cellview", NULL);
+    GtkStyleContext *arrow = node(inner, G_TYPE_NONE, "arrow", NULL);
+    GtkBorder border, padding;
+    gtk_style_context_get_border(button, GTK_STATE_FLAG_NORMAL, &border);
+    gtk_style_context_get_padding(button, GTK_STATE_FLAG_NORMAL, &padding);
+    int arrow_width, arrow_height;
+    size_of(arrow, &arrow_width, &arrow_height);
+    int size = MAX(MAX(arrow_width, arrow_height), 8), width = height * 4, right = border.right + padding.right + size;
+    for (int state = NORMAL; state <= DISABLED; state++) {
+        GtkStateFlags state_flags = flags(state, FALSE);
+        GtkStyleContext *nodes[] = {button, inner, label, arrow};
+        for (size_t i = 0; i < G_N_ELEMENTS(nodes); i++) gtk_style_context_set_state(nodes[i], state_flags);
+        cairo_t *cr;
+        cairo_surface_t *surface = canvas(width, height, &cr);
+        draw(button, cr, width, height, NULL);
+        gtk_render_arrow(arrow, cr, G_PI, width - right, (height - size) / 2., size);
+        cairo_destroy(cr);
+        char name[64];
+        snprintf(name, sizeof name, "combo.%s", STATES[state]);
+        put_whole(name, surface);
+        cairo_surface_destroy(surface);
+        GdkRGBA color;
+        gtk_style_context_get_color(label, state_flags, &color);
+        put_color(name, color, background);
+    }
+    printf("size combo.inset %d\nsize combo.arrow %d\n", border.left + padding.left, right);
+    GtkStyleContext *nodes[] = {arrow, label, inner, button, linked, combobox};
+    for (size_t i = 0; i < G_N_ELEMENTS(nodes); i++) g_object_unref(nodes[i]);
+}
+
+// A tab's close button as GTK's apps put one on a notebook tab (Xfce
+// Terminal's, Thunar's): a flat button with the icon theme's close icon, its
+// colour the button's, in every state.
+static void tab_close(GtkStyleContext *window) {
+    GtkStyleContext *notebook = node(window, GTK_TYPE_NOTEBOOK, "notebook", NULL);
+    GtkStyleContext *header = node(notebook, G_TYPE_NONE, "header", "top");
+    GtkStyleContext *strip = node(header, G_TYPE_NONE, "tabs", NULL);
+    GtkStyleContext *tab = node(strip, G_TYPE_NONE, "tab", NULL);
+    GtkStyleContext *button = node(tab, GTK_TYPE_BUTTON, "button", "flat image-button");
+    GtkStyleContext *image = node(button, GTK_TYPE_IMAGE, "image", NULL);
+    int icon = 16, min_width, min_height, icon_scale = (int)scale + (scale > (int)scale);
+    gtk_style_context_get(button, GTK_STATE_FLAG_NORMAL, "min-width", &min_width, "min-height", &min_height, NULL);
+    GtkBorder edge = edges(button);
+    int width = edge.left + edge.right + MAX(min_width, icon), height = edge.top + edge.bottom + MAX(min_height, icon);
+    GtkIconInfo *info = gtk_icon_theme_lookup_icon_for_scale(gtk_icon_theme_get_default(), "window-close-symbolic", icon, icon_scale, GTK_ICON_LOOKUP_FORCE_SIZE);
+    for (int state = NORMAL; state <= DISABLED; state++) {
+        gtk_style_context_set_state(button, flags(state, FALSE));
+        gtk_style_context_set_state(image, flags(state, FALSE));
+        cairo_t *cr;
+        cairo_surface_t *surface = canvas(width, height, &cr);
+        draw(button, cr, width, height, NULL);
+        GdkPixbuf *pixbuf = info ? gtk_icon_info_load_symbolic_for_context(info, image, NULL, NULL) : NULL;
+        if (pixbuf) {
+            cairo_surface_t *picture = gdk_cairo_surface_create_from_pixbuf(pixbuf, icon_scale, NULL);
+            cairo_set_source_surface(cr, picture, (width - icon) / 2., (height - icon) / 2.);
+            cairo_paint(cr);
+            cairo_surface_destroy(picture);
+            g_object_unref(pixbuf);
+        }
+        cairo_destroy(cr);
+        char name[64];
+        snprintf(name, sizeof name, "tabclose.%s", STATES[state]);
+        put_whole(name, surface);
+        cairo_surface_destroy(surface);
+    }
+    if (info) g_object_unref(info);
+    GtkStyleContext *nodes[] = {image, button, tab, strip, header, notebook};
+    for (size_t i = 0; i < G_N_ELEMENTS(nodes); i++) g_object_unref(nodes[i]);
+}
+
+// Left plus right of a node's margin, border and padding.
+static int across(GtkStyleContext *context, gboolean margin) {
+    GtkStateFlags state = gtk_style_context_get_state(context);
+    GtkBorder border, padding, space;
+    gtk_style_context_get_border(context, state, &border);
+    gtk_style_context_get_padding(context, state, &padding);
+    gtk_style_context_get_margin(context, state, &space);
+    return border.left + border.right + padding.left + padding.right + (margin ? space.left + space.right : 0);
+}
+
+// A pixel of an image surface, straight.
+static GdkRGBA pixel(cairo_surface_t *surface, int x, int y) {
+    guint32 p = *(guint32 *)(cairo_image_surface_get_data(surface) + cairo_image_surface_get_stride(surface) * y + x * 4);
+    double alpha = (p >> 24) / 255.;
+    if (alpha == 0) return (GdkRGBA){0, 0, 0, 0};
+    return (GdkRGBA){(p >> 16 & 255) / 255. / alpha, (p >> 8 & 255) / 255. / alpha, (p & 255) / 255. / alpha, alpha};
+}
+
+// Scrollbars as GTK draws them beside a view (not over it, as the app has
+// them): a vertical one drawn and measured, its width, the slider's breadth,
+// its inset from the outer edge and its corners; the trough's fill and the
+// line on the view's side; the slider's fill normal, hovered and dragged, its outline.
+static void scrollbars(GtkStyleContext *window, GdkRGBA background) {
+    GtkStyleContext *bar = node(window, GTK_TYPE_SCROLLBAR, "scrollbar", "vertical right");
+    GtkStyleContext *contents = node(bar, G_TYPE_NONE, "contents", NULL);
+    GtkStyleContext *trough = node(contents, G_TYPE_NONE, "trough", NULL);
+    GtkStyleContext *slider = node(trough, G_TYPE_NONE, "slider", NULL);
+    int slider_width, slider_height;
+    size_of(slider, &slider_width, &slider_height);
+    GtkBorder margin;
+    gtk_style_context_get_margin(slider, GTK_STATE_FLAG_NORMAL, &margin);
+    int width = across(bar, TRUE) + across(contents, TRUE) + across(trough, TRUE) + margin.left + margin.right + slider_width, length = 200;
+    static const char *const NAMES[] = {"scrollbar.thumb", "scrollbar.thumb.hovered", "scrollbar.thumb.pressed"};
+    static const GtkStateFlags FLAGS[] = {GTK_STATE_FLAG_NORMAL, GTK_STATE_FLAG_PRELIGHT, GTK_STATE_FLAG_PRELIGHT | GTK_STATE_FLAG_ACTIVE};
+    for (int i = 0; i < 3; i++) {
+        gtk_style_context_set_state(slider, FLAGS[i]);
+        cairo_t *cr;
+        cairo_surface_t *surface = canvas(width, length, &cr);
+        // Each node in its parent's content box, inside its own margins.
+        GtkStyleContext *nodes[] = {bar, contents, trough};
+        double x = 0, y = 0, w = width, h = length;
+        for (size_t n = 0; n < G_N_ELEMENTS(nodes); n++) {
+            GtkBorder space;
+            gtk_style_context_get_margin(nodes[n], GTK_STATE_FLAG_NORMAL, &space);
+            x += space.left, y += space.top, w -= space.left + space.right, h -= space.top + space.bottom;
+            gtk_render_background(nodes[n], cr, x, y, w, h);
+            gtk_render_frame(nodes[n], cr, x, y, w, h);
+            GtkBorder edge = edges(nodes[n]);
+            x += edge.left, y += edge.top, w -= edge.left + edge.right, h -= edge.top + edge.bottom;
+        }
+        gtk_render_background(slider, cr, x + margin.left, length / 4, w - margin.left - margin.right, length / 2);
+        gtk_render_frame(slider, cr, x + margin.left, length / 4, w - margin.left - margin.right, length / 2);
+        cairo_destroy(cr);
+        cairo_surface_flush(surface);
+        // The slider's columns: where its middle row differs from the trough's beyond it.
+        int columns = cairo_image_surface_get_width(surface), middle = length / 2 * scale, beyond = (length - 8) * scale;
+        int first = -1, last = -1;
+        for (int column = 0; column < columns; column++) {
+            GdkRGBA on = pixel(surface, column, middle), off = pixel(surface, column, beyond);
+            if (!gdk_rgba_equal(&on, &off)) {
+                if (first < 0) first = column;
+                last = column;
+            }
+        }
+        GdkRGBA thumb = first < 0 ? background : pixel(surface, (first + last) / 2, middle), rim = first < 0 ? thumb : pixel(surface, first, middle);
+        if (first >= 0) put_color(NAMES[i], thumb, background);
+        // An outline: its edge unlike its middle, opaque (not the antialiased end of a fill).
+        if (i == 0 && first >= 0 && rim.alpha > 0.9 && !gdk_rgba_equal(&rim, &thumb)) put_color("scrollbar.thumb.outline", rim, background);
+        if (i == 0) {
+            GdkRGBA fill = pixel(surface, columns / 2, beyond), edge = pixel(surface, 0, beyond);
+            put_color("scrollbar", fill, background);
+            if (!gdk_rgba_equal(&fill, &edge)) put_color("scrollbar.line", edge, background);
+            int radius;
+            gtk_style_context_get(slider, GTK_STATE_FLAG_NORMAL, "border-radius", &radius, NULL);
+            if (first >= 0)
+                printf("size scrollbar.width %d\nsize scrollbar.thumb %g\nsize scrollbar.inset %g\nsize scrollbar.radius %d\n", width,
+                       (last - first + 1) / scale, (columns - 1 - last) / scale, radius);
+        }
+        cairo_surface_destroy(surface);
+    }
+    GtkStyleContext *nodes[] = {slider, trough, contents, bar};
     for (size_t i = 0; i < G_N_ELEMENTS(nodes); i++) g_object_unref(nodes[i]);
 }
 
@@ -301,29 +547,15 @@ int main(int argc, char **argv) {
     GdkRGBA fill = sample(plain, button_height, button_height, button_height / 2, button_height / 2);
     if (fill.alpha > 0) put_color("button", fill, background);
     g_object_unref(plain);
+    // The scrollbars' sizes and colours: the app's theme takes them as it starts.
+    scrollbars(window, background);
     if (colors_only) {
         printf("end\n");
         return 0;
     }
 
-    GtkStyleContext *checkbutton = node(window, GTK_TYPE_CHECK_BUTTON, "checkbutton", NULL);
-    GtkStyleContext *check = node(checkbutton, G_TYPE_NONE, "check", NULL);
-    int width, height;
-    size_of(check, &width, &height);
-    for (int on = 0; on <= 1; on++) {
-        for (int state = NORMAL; state <= DISABLED; state++) {
-            gtk_style_context_set_state(checkbutton, flags(state, on));
-            gtk_style_context_set_state(check, flags(state, on));
-            cairo_t *cr;
-            cairo_surface_t *surface = canvas(width, height, &cr);
-            draw(check, cr, width, height, TRUE);
-            cairo_destroy(cr);
-            char name[64];
-            snprintf(name, sizeof name, "checkbox.%s.%s", on ? "on" : "off", STATES[state]);
-            put(name, surface, 0, cairo_image_surface_get_width(surface));
-            cairo_surface_destroy(surface);
-        }
-    }
+    indicator(window, GTK_TYPE_CHECK_BUTTON, "checkbutton", "check", "checkbox", gtk_render_check);
+    indicator(window, GTK_TYPE_RADIO_BUTTON, "radiobutton", "radio", "radio", gtk_render_option);
 
     // A button four times as wide as high, cut into its ends (half its height
     // each) and a strip of its middle, which the app stretches to any width.
@@ -334,7 +566,7 @@ int main(int argc, char **argv) {
             gtk_style_context_set_state(button, flags(state, FALSE));
             cairo_t *cr;
             cairo_surface_t *surface = canvas(button_height * 4, button_height, &cr);
-            draw(button, cr, button_height * 4, button_height, FALSE);
+            draw(button, cr, button_height * 4, button_height, NULL);
             cairo_destroy(cr);
             char name[64];
             snprintf(name, sizeof name, "button.%s.%s", is_default ? "default" : "plain", STATES[state]);
@@ -343,7 +575,10 @@ int main(int argc, char **argv) {
         }
         g_object_unref(button);
     }
+    fields(window, button_height);
+    combos(window, background, button_height);
     tabs(window, background);
+    tab_close(window);
     menus(window, background);
     printf("end\n");
     return 0;

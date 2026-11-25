@@ -12,7 +12,7 @@ use crate::{
     global_state::GlobalState,
     h_flex,
     menu::PopupMenu,
-    menu::popup_menu::{MenuMnemonics, hot_text, is_letter, typed_letter},
+    menu::popup_menu::{MenuMnemonics, hot_text, is_letter, letters_shown, typed_letter},
 };
 use gpui::{
     App, AppContext as _, ClickEvent, Context, DismissEvent, Entity, FocusHandle, Focusable,
@@ -47,6 +47,8 @@ pub struct AppMenuBar {
     names: Vec<SharedString>,
     selected_index: Option<usize>,
     action_context: Option<FocusHandle>,
+    /// SparkCommander patch: the open menu was opened by Alt and its letter.
+    keyed: bool,
 }
 
 impl AppMenuBar {
@@ -56,6 +58,7 @@ impl AppMenuBar {
             let mut this = Self {
                 selected_index: None,
                 action_context: None,
+                keyed: false,
                 menus: Vec::new(),
                 names: Vec::new(),
             };
@@ -74,6 +77,7 @@ impl AppMenuBar {
                 names,
                 selected_index: None,
                 action_context: None,
+                keyed: false,
                 menus: menus
                     .map(|(ix, (name, build))| {
                         let items = Items::Built(build);
@@ -142,6 +146,7 @@ impl AppMenuBar {
         if self.selected_index.is_none() && ix.is_some() {
             self.action_context = window.focused(cx);
         } else if ix.is_none() {
+            self.keyed = false;
             if let Some(action_context) = self.action_context.as_ref() {
                 action_context.focus(window, cx);
             }
@@ -166,6 +171,7 @@ impl AppMenuBar {
         }
         let Some(letter) = typed_letter(keystroke) else { return false };
         let Some(ix) = self.hot(cx).iter().position(|(shown, at)| is_letter(shown, *at, letter)) else { return false };
+        self.keyed = true;
         self.set_selected_index(Some(ix), window, cx);
         true
     }
@@ -278,6 +284,8 @@ impl AppMenu {
             }
         };
 
+        let keyed = self.menu_bar.read(cx).keyed;
+        popup_menu.update(cx, |menu, _| menu.keyed = keyed);
         let focus_handle = popup_menu.read(cx).focus_handle(cx);
         if !focus_handle.contains_focused(window, cx) {
             focus_handle.focus(window, cx);
@@ -316,6 +324,8 @@ impl AppMenu {
     fn toggle(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let is_open = self.is_open(cx);
         _ = self.menu_bar.update(cx, |state, cx| {
+            // SparkCommander patch: opened by the pointer, its letters unseen (`MnemonicsOnAlt`).
+            state.keyed = false;
             let new_ix = if is_open { None } else { Some(self.ix) };
             state.set_selected_index(new_ix, window, cx);
         });
@@ -354,6 +364,7 @@ impl Render for AppMenu {
         let gtk = crate::toolkit::menus(cx);
         // SparkCommander patch: the name with its letter underlined.
         let hot = self.menu_bar.read(cx).hot(cx).into_iter().nth(self.ix);
+        let shown = letters_shown(self.menu_bar.read(cx).keyed, window, cx);
         let theme = cx.theme();
         let colors = match &gtk {
             Some((_, menus)) => ButtonCustomVariant::new(cx)
@@ -384,7 +395,7 @@ impl Render for AppMenu {
                     .compact()
                     .with_variant(ButtonVariant::Custom(colors))
                     .map(|button| match hot {
-                        Some((shown, at)) => button.child(hot_text(shown.into(), at)),
+                        Some((name, at)) => button.child(hot_text(name.into(), at.filter(|_| shown))),
                         None => button.label(self.name.clone()),
                     })
                     .open(is_open)
@@ -451,6 +462,7 @@ mod tests {
                     names: Vec::new(),
                     selected_index: None,
                     action_context: None,
+                    keyed: false,
                 }),
                 first_focus,
                 second_focus,

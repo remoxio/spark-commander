@@ -729,6 +729,10 @@ impl RenderOnce for Input {
             Some(fill) => fill,
             None => bg,
         };
+        // SparkCommander patch: GTK's entry as the theme draws it, see `ToolkitControls::field`.
+        let gtk_field = crate::toolkit::drawn(cx, |controls| controls.field.as_ref())
+            .filter(|_| self.appearance && self.bordered && !presentation.is_code_editor());
+        let gtk_framed = gtk_field.is_some();
         let prefix = self.prefix;
         let suffix = self.suffix;
         let show_clear_button = self.cleanable
@@ -771,7 +775,7 @@ impl RenderOnce for Input {
             .styles(|styles| {
                 styles.focused(|style| {
                     style.when(
-                        self.appearance && self.bordered && self.focus_bordered && field_line.is_none(),
+                        self.appearance && self.bordered && self.focus_bordered && field_line.is_none() && !gtk_framed,
                         |style| style.border_1().border_color(mac.map_or(cx.theme().ring, |mac| mac.accent)),
                     )
                 })
@@ -829,11 +833,21 @@ impl RenderOnce for Input {
                     .border_b_0()
                     .child(div().absolute().left(inset).right(inset).bottom_0().h(height).bg(color))
             })
+            // Its frame the theme's, the text at the theme's inset.
+            .when_some(gtk_field, |this, (scale, field)| {
+                let image = field.images[if disabled { 2 } else if focused { 1 } else { 0 }].clone();
+                let end = px(image.size(0).height.0 as f32 / scale / 2. - 1.).floor();
+                this.relative()
+                    .bg(cx.theme().transparent)
+                    .border_0()
+                    .when(!is_multi_line, |this| this.px(field.inset))
+                    .child(crate::toolkit::framed(scale, image, gpui::Edges::all(end)).absolute().inset_0())
+            })
             .items_center()
             .gap(gap_x)
             .refine_style(&self.style)
             .when(
-                focused && self.appearance && self.bordered && self.focus_bordered && field_line.is_none(),
+                focused && self.appearance && self.bordered && self.focus_bordered && field_line.is_none() && !gtk_framed,
                 |this| this.focus_ring_style(window, cx),
             )
             .children(prefix.map(|p| {

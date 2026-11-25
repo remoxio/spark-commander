@@ -13,7 +13,7 @@ mod popup_menu;
 pub use app_menu_bar::{AppMenuBar, MenuBuilder};
 pub use context_menu::{ContextMenu, ContextMenuExt, ContextMenuState};
 pub use dropdown_menu::DropdownMenu;
-pub use popup_menu::{MenuIcons, MenuMnemonics, PopupMenu, PopupMenuItem};
+pub use popup_menu::{MenuIcons, MenuMnemonics, MnemonicsOnAlt, PopupMenu, PopupMenuItem};
 
 pub(crate) fn init(cx: &mut App) {
     app_menu_bar::init(cx);

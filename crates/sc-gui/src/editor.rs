@@ -899,6 +899,7 @@ impl Render for TextEditor {
             .on_action(cx.listener(|this, SetLanguage(chosen): &SetLanguage, _, cx| this.set_language(*chosen, cx)))
             .on_action(|_: &ToggleMinimap, _, cx| crate::toggle_minimap(cx))
             // macOS shows the menus on the system's menu bar.
+            .on_modifiers_changed(crate::menus::alt_changed)
             .when(!cfg!(target_os = "macos") && !behind, |el| {
                 let bar = self.menu_bar.clone();
                 el.on_key_down(move |event, window, cx| crate::menus::alt_letter(&bar, event, window, cx))

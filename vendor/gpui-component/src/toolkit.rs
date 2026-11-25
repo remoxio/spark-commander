@@ -24,6 +24,35 @@ pub struct ToolkitControls {
     pub tabs: Option<ToolkitTabs>,
     /// GTK's menus, where the theme draws them.
     pub menus: Option<ToolkitMenus>,
+    /// Radio buttons, unchecked and checked, where the toolkit draws them.
+    pub radio: Option<[StateImages; 2]>,
+    /// GTK's text fields and combo boxes, where the theme draws them.
+    pub field: Option<ToolkitField>,
+    pub combo: Option<ToolkitCombo>,
+}
+
+/// GTK's text field: the entry normal, focused and disabled, drawn whole (its
+/// corners kept, the rest stretched to any size); its text's inset.
+#[derive(Clone)]
+pub struct ToolkitField {
+    pub images: [Arc<RenderImage>; 3],
+    pub inset: Pixels,
+}
+
+/// GTK's combo box: its button with the arrow in every state, drawn whole;
+/// the label's colours and inset, the room the arrow takes at the right.
+#[derive(Clone)]
+pub struct ToolkitCombo {
+    pub images: StateImages,
+    pub text: [Hsla; 4],
+    pub inset: Pixels,
+    pub arrow: Pixels,
+}
+
+/// A part of the toolkit's controls and the images' scale, where it draws that part.
+pub(crate) fn drawn<T: Clone>(cx: &gpui::App, part: impl Fn(&ToolkitControls) -> Option<&T>) -> Option<(f32, T)> {
+    let controls = cx.try_global::<ToolkitControls>()?;
+    part(controls).map(|part| (controls.scale, part.clone()))
 }
 
 /// GTK's menus as the theme draws them: the menu bar's open title and a
@@ -81,6 +110,8 @@ impl ToolkitControls {
 /// The groups whose hover and press the layers follow.
 pub(crate) const CHECKBOX: &str = "toolkit-checkbox";
 pub(crate) const BUTTON: &str = "toolkit-button";
+pub(crate) const RADIO: &str = "toolkit-radio";
+pub(crate) const COMBO: &str = "toolkit-combo";
 
 pub(crate) const NORMAL: usize = 0;
 pub(crate) const HOVERED: usize = 1;
@@ -171,6 +202,38 @@ pub(crate) fn slices(scale: f32, [left, middle, right]: [Arc<RenderImage>; 3]) -
         let strip = part(left_width - middle_width / 2., middle_width * 2.);
         vec![(left, left_part, left_part), (middle, middle_part, strip), (right, right_part, right_part)]
     })
+}
+
+/// An image drawn whole, `scale` to a pixel, stretched over its place: its
+/// `ends` (left, right, top, bottom) as drawn, the parts between stretched.
+pub(crate) fn framed(scale: f32, image: Arc<RenderImage>, ends: gpui::Edges<Pixels>) -> Div {
+    let drawn = image.size(0);
+    let size = gpui::size(px(drawn.width.0 as f32 / scale), px(drawn.height.0 as f32 / scale));
+    painted(move |bounds| frame_parts(size, ends, bounds).into_iter().map(|(shown, at)| (image.clone(), shown, at)).collect())
+}
+
+/// An image of `size` cut at its `ends` into nine, each part's place in
+/// `bounds` and where the whole image goes for that part to land there.
+fn frame_parts(size: gpui::Size<Pixels>, ends: gpui::Edges<Pixels>, bounds: Bounds<Pixels>) -> Vec<(Bounds<Pixels>, Bounds<Pixels>)> {
+    // An axis in three: each part's place in the image, and in the bounds.
+    let cut = |whole: Pixels, start: Pixels, end: Pixels, room: Pixels, at: Pixels| {
+        let middle = (room - start - end).max(px(0.));
+        [(px(0.), start, at, start), (start, whole - start - end, at + start, middle), (whole - end, end, at + start + middle, end)]
+    };
+    let columns = cut(size.width, ends.left, ends.right, bounds.size.width, bounds.origin.x);
+    let rows = cut(size.height, ends.top, ends.bottom, bounds.size.height, bounds.origin.y);
+    let mut parts = Vec::new();
+    for (x, w, to_x, to_w) in columns {
+        for (y, h, to_y, to_h) in rows {
+            if w <= px(0.) || h <= px(0.) || to_w <= px(0.) || to_h <= px(0.) {
+                continue;
+            }
+            let (kx, ky) = (to_w / w, to_h / h);
+            let at = Bounds::new(point(to_x - x * kx, to_y - y * ky), gpui::size(size.width * kx, size.height * ky));
+            parts.push((Bounds::new(point(to_x, to_y), gpui::size(to_w, to_h)), at));
+        }
+    }
+    parts
 }
 
 /// Images painted where `place` puts them in the element's bounds, each

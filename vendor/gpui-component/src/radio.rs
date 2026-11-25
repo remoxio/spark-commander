@@ -185,11 +185,18 @@ impl RenderOnce for Radio {
             .clone();
         let is_focused = focus_handle.is_focused(window);
         let disabled = self.disabled;
+        // SparkCommander patch: the toolkit's circle, see `ToolkitControls`.
+        let toolkit = crate::toolkit::drawn(cx, |controls| controls.radio.as_ref());
+        let drawn_size = toolkit.as_ref().map(|(scale, images)| {
+            let size = images[0].0[crate::toolkit::NORMAL].size(0);
+            (px(size.width.0 as f32 / scale), px(size.height.0 as f32 / scale))
+        });
         // SparkCommander patch: the circle and the label's first line centred on each other.
-        let mark = match (cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
-            (Some(native), _) => native.check_size,
-            (None, Some(_)) => px(16.),
-            (None, None) => indicator_size.to_pixels(window.rem_size()),
+        let mark = match (drawn_size, cx.try_global::<crate::NativeControls>(), cx.try_global::<crate::MacControls>()) {
+            (Some((_, height)), _, _) => height,
+            (None, Some(native), _) => native.check_size,
+            (None, None, Some(_)) => px(16.),
+            (None, None, None) => indicator_size.to_pixels(window.rem_size()),
         };
         let (mark_top, label_top) = crate::checkbox::centred(mark, self.size, window);
         let accessibility_label = self
@@ -210,6 +217,7 @@ impl RenderOnce for Radio {
 
         self.base
             .id(self.id.clone())
+            .group(crate::toolkit::RADIO)
             .checked(self.checked)
             .disabled(self.disabled)
             .track_focus(&focus_handle)
@@ -246,8 +254,15 @@ impl RenderOnce for Radio {
                     .rounded_full_style(cx)
                     .border_1()
                     // SparkCommander patch: the desktop style's circle and dot, see `NativeControls`; AppKit's, see `MacControls`.
-                    .map(|this| match (cx.try_global::<crate::NativeControls>().copied(), cx.try_global::<crate::MacControls>().copied()) {
-                        (None, Some(mac)) => {
+                    .map(|this| match (toolkit.clone(), cx.try_global::<crate::NativeControls>().copied(), cx.try_global::<crate::MacControls>().copied()) {
+                        (Some((_, images)), _, _) => {
+                            let (width, height) = drawn_size.unwrap_or_default();
+                            let images = images[checked as usize].clone();
+                            this.w(width).h(height).border_0().child(crate::toolkit::layers(crate::toolkit::RADIO, disabled, move |state| {
+                                crate::toolkit::picture(images.0[state].clone())
+                            }))
+                        }
+                        (None, None, Some(mac)) => {
                             let fill = if checked && !disabled { mac.accent } else { mac.well };
                             let dot = if disabled { mac.disabled_text } else { mac.on_accent };
                             this.size(px(16.))
@@ -258,7 +273,7 @@ impl RenderOnce for Radio {
                                 .bg(if disabled { fill.opacity(0.5) } else { fill })
                                 .when(checked, |this| this.child(div().size(px(5.)).rounded_full().bg(dot)))
                         }
-                        (Some(native), _) => {
+                        (None, Some(native), _) => {
                             let (border, fill) = match checked {
                                 true => (native.checked_frame, native.checked_fill),
                                 false => (native.check_frame, native.check_fill),
@@ -275,7 +290,7 @@ impl RenderOnce for Radio {
                                     this.child(div().size(native.radio_dot).rounded_full().bg(native.mark.opacity(dim)))
                                 })
                         }
-                        (None, None) => this
+                        (None, None, None) => this
                             .border_color(border_color)
                             .map(|this| match self.checked {
                                 false => this.bg(cx.theme().input_background()),

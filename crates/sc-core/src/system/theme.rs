@@ -353,7 +353,8 @@ fn shows_no_menu_icons(kdeglobals: &str) -> bool {
     })
 }
 
-fn on_kde() -> bool {
+/// KDE Plasma.
+pub fn on_kde() -> bool {
     on_desktop("KDE")
 }
 

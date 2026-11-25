@@ -25,7 +25,7 @@ mod native;
 pub use native::{DialogFrame, NativeControls, WindowClose};
 // SparkCommander patch: see `ToolkitControls`.
 mod toolkit;
-pub use toolkit::{StateImages, ToolkitControls, ToolkitMenus, ToolkitTabs, state_layers};
+pub use toolkit::{StateImages, ToolkitCombo, ToolkitControls, ToolkitField, ToolkitMenus, ToolkitTabs, state_layers};
 // SparkCommander patch: see `MacControls`.
 mod mac;
 pub use mac::{AlertIcon, MacControls};

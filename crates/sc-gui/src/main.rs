@@ -3046,6 +3046,7 @@ impl Render for Commander {
             .text_color(cx.theme().foreground)
             .text_sm()
             .children(header)
+            .on_modifiers_changed(menus::alt_changed)
             .when(menu_bar, |el| {
                 let bar = self.menu_bar.clone();
                 el.on_key_down(move |event, window, cx| menus::alt_letter(&bar, event, window, cx)).child(

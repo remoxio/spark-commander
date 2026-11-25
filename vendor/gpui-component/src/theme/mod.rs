@@ -151,6 +151,18 @@ pub struct ScrollbarSize {
     pub inset: Pixels,
 }
 
+/// SparkCommander patch: a scrollbar's colours and corners as the desktop draws
+/// them (GTK's): the track's fill and the line on the view's side; the
+/// thumb's fill normal, hovered and dragged, its outline and corners.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ScrollbarLook {
+    pub track: Hsla,
+    pub line: Option<Hsla>,
+    pub thumb: [Hsla; 3],
+    pub outline: Option<Hsla>,
+    pub radius: Pixels,
+}
+
 /// The global theme configuration.
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Theme {
@@ -215,6 +227,9 @@ pub struct Theme {
     /// SparkCommander patch: the scrollbar's size as the desktop draws it; none: GPUI Kit's.
     #[serde(skip)]
     pub scrollbar_size: Option<ScrollbarSize>,
+    /// SparkCommander patch: the scrollbar's colours as the desktop draws them; none: the theme's.
+    #[serde(skip)]
+    pub scrollbar_look: Option<ScrollbarLook>,
     /// The notification setting.
     #[serde(skip)]
     pub notification: NotificationSettings,
@@ -417,6 +432,10 @@ impl Theme {
     /// This theme projected onto the Base layer, which owns the scrollbar and
     /// resize handles and reads the semantic tokens.
     fn base_theme(&self) -> gpui_base::Theme {
+        let look = self.scrollbar_look;
+        let track = look.map_or(self.scrollbar, |look| look.track);
+        let thumb = |state: usize, token: gpui::Background| -> gpui::Background { look.map_or(token, |look| look.thumb[state].into()) };
+        let radius = look.map_or(self.radius, |look| look.radius);
         gpui_base::Theme {
             appearance: if self.mode.is_dark() {
                 gpui_base::ThemeAppearance::Dark
@@ -430,14 +449,18 @@ impl Theme {
                 .with_styles(
                     gpui_base::ScrollbarStyles::default()
                         .track(|style| {
-                            style.bg(self.scrollbar).when_some(self.scrollbar_size, |style, size| style.width(size.track))
+                            style
+                                .bg(track)
+                                .when_some(self.scrollbar_size, |style, size| style.width(size.track))
+                                .when_some(look.and_then(|look| look.line), |style, line| style.border_color(line))
                         })
-                        .track_hover(|style| style.bg(self.scrollbar))
-                        .track_active(|style| style.bg(self.scrollbar).border_color(self.border))
+                        .track_hover(|style| style.bg(track))
+                        .track_active(|style| style.bg(track))
                         .thumb(|style| {
                             style
-                                .bg(self.tokens.scrollbar_thumb)
-                                .radius(self.radius)
+                                .bg(thumb(0, self.tokens.scrollbar_thumb.into()))
+                                .radius(radius)
+                                .when_some(look.and_then(|look| look.outline), |style, outline| style.border_color(outline))
                                 .when_some(self.scrollbar_size, |style, size| style.width(size.thumb).inset(size.inset))
                                 .when(gpui_base::is_mobile(), |style| {
                                     style
@@ -448,8 +471,8 @@ impl Theme {
                         })
                         .thumb_hover(|style| {
                             style
-                                .bg(self.tokens.scrollbar_thumb_hover)
-                                .radius(self.radius)
+                                .bg(thumb(1, self.tokens.scrollbar_thumb_hover.into()))
+                                .radius(radius)
                                 .when_some(self.scrollbar_size, |style, size| style.width(size.thumb).inset(size.inset))
                                 .when(gpui_base::is_mobile(), |style| {
                                     style
@@ -459,8 +482,8 @@ impl Theme {
                         })
                         .thumb_active(|style| {
                             style
-                                .bg(self.tokens.scrollbar_thumb_hover)
-                                .radius(self.radius)
+                                .bg(thumb(2, self.tokens.scrollbar_thumb_hover.into()))
+                                .radius(radius)
                                 .when_some(self.scrollbar_size, |style, size| style.width(size.thumb).inset(size.inset))
                                 .when(gpui_base::is_mobile(), |style| {
                                     style
@@ -799,6 +822,7 @@ impl From<&ThemeColor> for Theme {
             focus_ring: true,
             scrollbar_mode: ScrollbarMode::default(),
             scrollbar_size: None,
+            scrollbar_look: None,
             notification: NotificationSettings::default(),
             list: ListSettings::default(),
             colors: *colors,
