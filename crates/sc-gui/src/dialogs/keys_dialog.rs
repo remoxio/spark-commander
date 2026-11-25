@@ -24,13 +24,14 @@ fn custom() -> SharedString {
     sc_core::t!("keys.custom").into()
 }
 
-const WIDTH: f32 = 780.;
+/// Settings' size, its window 720 by 577 px on Xfce.
+const WIDTH: f32 = 720.;
 
 /// GNOME's: each change applied at once, as its preferences; Reset All and a × beside the title.
 fn instant() -> bool {
     crate::dialogs::dialog_window::separate() && sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita)
 }
-const BODY_HEIGHT: f32 = 560.;
+const BODY_HEIGHT: f32 = 500.;
 const KEY_WIDTH: f32 = 150.;
 /// A row's reset button's column.
 const RESET_WIDTH: f32 = 22.;
@@ -98,9 +99,9 @@ pub fn open(
     };
     // GNOME: its title beside Reset All and its × (`render`).
     if instant() {
-        return crate::dialogs::dialog_window::open_headed(sc_core::t!("keys.title"), size(px(WIDTH), px(560.)), window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
+        return crate::dialogs::dialog_window::open_headed(sc_core::t!("keys.title"), size(px(WIDTH), px(BODY_HEIGHT)), window, cx, move |main, window, cx| (build(Some(main), window, cx), None));
     }
-    crate::dialogs::dialog_window::show(sc_core::t!("keys.title"), size(px(WIDTH), px(560.)), window, cx, build, |_, _, _| false);
+    crate::dialogs::dialog_window::show(sc_core::t!("keys.title"), size(px(WIDTH), px(BODY_HEIGHT)), window, cx, build, |_, _, _| false);
 }
 
 /// The dropdown's items (the presets, the user's sets, Custom while the

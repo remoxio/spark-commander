@@ -66,7 +66,7 @@ impl Commander {
             false => Vec::new(),
         };
         let main = window.bounds();
-        let size = size(px(820.), px(700.)).min(&main.size);
+        let size = size(px(760.), px(640.)).min(&main.size);
         let origin = main.origin + point((main.size.width - size.width) / 2., (main.size.height - size.height) / 2.);
         let over = crate::Over::at(WindowBounds::Windowed(Bounds { origin, size }), window, cx);
         let options = crate::over_main_window(t!("search.title"), over, cx);
