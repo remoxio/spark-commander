@@ -289,6 +289,8 @@ fn open_now<V: Render>(
 ) {
     let main = Main::of(parent);
     let bounds = parent.bounds();
+    // Its height up to the screen's, not its owner's: Settings is taller than a small main window.
+    let screen = parent.display(cx).map_or(bounds.size.height, |display| display.bounds().size.height);
     // GNOME: its own frame's shadow around the page, 20 px a side (GPUI Kit's), so the page keeps its size.
     let page = size.width;
     let size = match sc_core::settings::menu_button() {
@@ -330,7 +332,7 @@ fn open_now<V: Render>(
             sc_core::system::theme::set_caption_color(hwnd, if cx.theme().mode.is_dark() { 0x202020 } else { 0xffffff });
         }
         let (content, ok) = build(main, window, cx);
-        let (most, focus) = (bounds.size.height * 0.9, cx.focus_handle());
+        let (most, focus) = (screen * 0.9, cx.focus_handle());
         // Unless a field has it already; one focused once shown takes it after.
         if window.focused(cx).is_none() {
             window.focus(&focus, cx);

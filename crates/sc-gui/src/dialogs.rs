@@ -21,7 +21,8 @@ pub mod tools_dialog;
 use gpui_kit::component::button::{Button, ButtonCustomVariant, ButtonVariant, ButtonVariants as _};
 use gpui_kit::component::{ActiveTheme, NativeControls, WindowClose, WindowCornerRadius, h_flex};
 use gpui_kit::prelude::FluentBuilder;
-use gpui_kit::{AnyElement, AnyWindowHandle, App, Div, FontWeight, Global, IntoElement, ParentElement, Styled, canvas, px};
+use gpui_kit::component::scroll::ScrollableElement as _;
+use gpui_kit::{AnyElement, AnyWindowHandle, App, Div, FontWeight, Global, IntoElement, ParentElement, Stateful, Styled, canvas, div, px};
 use sc_core::system::theme::{ButtonOrder, button_order};
 
 /// A dialog button's part, for the desktop's order of them.
@@ -140,6 +141,20 @@ pub(crate) fn footer(cx: &App) -> Div {
     h_flex().gap_2().justify_end().when_some(band, |row, fill| {
         row.mx(px(-24.)).mb(px(-24.)).mt_3().p(px(24.)).bg(fill).border_t_1().border_color(cx.theme().border).rounded_b(px(7.))
     })
+}
+
+/// A dialog's scrolling page or list, its scrollbar at the window's right edge (over the 16 px padding), not afloat in the padding.
+pub(crate) fn edge_scrolled(area: Stateful<Div>) -> Div {
+    let width = gpui_kit::component::scroll::Scrollbar::width();
+    let edge = dialog_window::separate();
+    // The margin on a wrapper: the scroll area keeps its element's margin inside, beside the scrollbar.
+    div()
+        .flex_1()
+        .min_h_0()
+        .flex()
+        .flex_col()
+        .when(edge, |el| el.mr(px(-16.)))
+        .child(area.pr(if edge { width + px(16.) } else { width }).overflow_y_scrollbar())
 }
 
 #[cfg(test)]

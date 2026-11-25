@@ -2,7 +2,6 @@
 //! each ended (`sc_core::activity`).
 
 use gpui_kit::component::button::Button;
-use gpui_kit::component::scroll::ScrollableElement as _;
 use gpui_kit::component::{ActiveTheme, WindowExt, h_flex, v_flex};
 use gpui_kit::*;
 use sc_core::activity::{self, Outcome};
@@ -46,7 +45,7 @@ impl Render for ActivityLog {
         v_flex()
             .gap_3()
             .text_sm()
-            .child(v_flex().h(px(420.)).child(div().id("activity-list").flex_1().min_h_0().overflow_y_scrollbar().pr_3().children(empty).children(rows)))
+            .child(v_flex().h(px(420.)).child(crate::dialogs::edge_scrolled(div().id("activity-list").flex_1().min_h_0().children(empty).children(rows))))
             .child(
                 crate::dialogs::footer(cx).child(
                     Button::new("activity-clear").outline().label(t!("activity.clear")).on_click(cx.listener(|this, _, window, cx| {

@@ -1,4 +1,3 @@
-use gpui_kit::component::scroll::ScrollableElement as _;
 use std::collections::HashSet;
 
 use gpui_kit::component::button::{Button, ButtonVariants};
@@ -1322,17 +1321,7 @@ impl SettingsDialog {
                     })
                     .child(page_name(title)),
             )
-            .child(
-                v_flex()
-                    .id("settings-page-body")
-                    .flex_1()
-                    .min_h_0()
-                    .gap_3()
-                    // The scrollbar beside the boxes, not over them.
-                    .pr(gpui_kit::component::scroll::Scrollbar::width())
-                    .overflow_y_scrollbar()
-                    .children(content),
-            )
+            .child(crate::dialogs::edge_scrolled(v_flex().id("settings-page-body").flex_1().min_h_0().gap_3().children(content)))
             .when(title == "Toolbar", |page| page.child(self.render_toolbar_adding(cx)))
     }
 }
