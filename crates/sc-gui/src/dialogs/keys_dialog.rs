@@ -32,6 +32,8 @@ fn instant() -> bool {
 }
 const BODY_HEIGHT: f32 = 560.;
 const KEY_WIDTH: f32 = 150.;
+/// A row's reset button's column.
+const RESET_WIDTH: f32 = 22.;
 /// Keys that only change others; a shortcut needs one more.
 const MODIFIERS: [&str; 9] = [
     "", "shift", "control", "ctrl", "alt", "platform", "cmd", "super", "function",
@@ -349,7 +351,7 @@ impl KeysDialog {
                         .child(div().flex_1().min_w_0().truncate().child(label))
                         .child(self.render_key(command, 0, cx))
                         .child(self.render_key(command, 1, cx))
-                        .child(reset),
+                        .child(div().w(px(RESET_WIDTH)).flex_none().child(reset)),
                 );
             }
         }
@@ -367,10 +369,11 @@ impl KeysDialog {
                     .border_b_1()
                     .border_color(theme.border)
                     .child(div().flex_1().child(sc_core::t!("keys.column.command")))
-                    .child(div().w(px(KEY_WIDTH)).child(sc_core::t!("keys.column.shortcut")))
-                    .child(div().w(px(KEY_WIDTH)).child(sc_core::t!("keys.column.alternate")))
-                    .child(div().w(px(22.)))
-                    .child(div().w(Scrollbar::width())),
+                    // Over the keys' text, inside their boxes' 1 px border and 8 px padding.
+                    .child(div().w(px(KEY_WIDTH)).pl(px(9.)).child(sc_core::t!("keys.column.shortcut")))
+                    .child(div().w(px(KEY_WIDTH)).pl(px(9.)).child(sc_core::t!("keys.column.alternate")))
+                    // Over the reset buttons and the list's room for its scrollbar, without a gap between.
+                    .child(div().w(px(RESET_WIDTH) + Scrollbar::width())),
             )
             .child(
                 div()

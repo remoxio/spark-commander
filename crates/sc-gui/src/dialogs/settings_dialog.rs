@@ -25,7 +25,8 @@ use crate::dialogs::Role;
 use crate::menus::toolbar_icon;
 
 const WIDTH: f32 = 720.;
-const BODY_HEIGHT: f32 = 550.;
+/// Its page's height: the rail of pages (406 px) and a little; a longer page scrolls.
+const BODY_HEIGHT: f32 = 440.;
 
 const START_MODES: [StartMode; 4] = [
     StartMode::Text,
