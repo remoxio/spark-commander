@@ -521,7 +521,11 @@ impl Render for DialogWindow {
             .children(heading)
             .map(|page| match alert {
                 true => page.child(v_flex().px_6().pt_2().text_center().child(self.content.clone())).children(alert_buttons),
-                false => page.child(v_flex().p_4().child(self.content.clone()).children(buttons)),
+                // The buttons 16 px under the question, as the page's padding; GNOME's row brings its own.
+                false => page.child(v_flex().p_4().child(self.content.clone()).children(buttons.map(|row| match adwaita() {
+                    true => row,
+                    false => div().pt_4().child(row).into_any_element(),
+                }))),
             })
             .child(
                 canvas(
@@ -709,6 +713,7 @@ impl Render for Choose {
             .text_sm()
             .children(self.note.clone().map(|note| div().text_xs().child(note)))
             .child(div().whitespace_normal().child(self.text.clone()))
-            .child(crate::dialogs::footer(cx).flex_wrap().children(crate::dialogs::ordered(buttons)))
+            // 16 px under the question, as a question's with OK and Cancel.
+            .child(crate::dialogs::footer(cx).mt_1().flex_wrap().children(crate::dialogs::ordered(buttons)))
     }
 }
