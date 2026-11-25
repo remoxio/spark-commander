@@ -429,6 +429,7 @@ fn toolkit_controls(drawn: &mut sc_core::system::toolkit_style::Drawn, scale: f3
     let tab_close = states("tabclose.{}");
     let combo = states("combo.{}");
     let field = ["normal", "focused", "disabled"].map(|state| image(&format!("field.{state}")));
+    let toggle = image("toolbutton.checked");
     let tabs = toolkit_tabs(&mut image, colors, sizes);
     let menus = toolkit_menus(&mut image, colors, sizes);
     let color = |name: &str| colors.get(name).map(|color| Hsla::from(rgb(*color)));
@@ -441,12 +442,10 @@ fn toolkit_controls(drawn: &mut sc_core::system::toolkit_style::Drawn, scale: f3
         let text = ["normal", "hovered", "pressed", "disabled"].map(|state| color(&format!("combo.{state}")));
         Some(ToolkitCombo { images, text: [text[0]?, text[1]?, text[2]?, text[3]?], inset: size("combo.inset")?, arrow: size("combo.arrow")? })
     });
-    Some(ToolkitControls { scale, checkbox, button, tab_close, tabs, menus, radio, field, combo })
+    let toggle = toggle.zip(size("toolbutton.corner"));
+    Some(ToolkitControls { scale, checkbox, button, tab_close, tabs, menus, radio, field, combo, toggle })
 }
 
-/// GTK's scrollbars as the theme draws them beside a view, where sc-gtkstyle
-/// measured them, in its colours (`dark` as they are): their width, the
-/// thumb's breadth and inset, the track's fill and line, the thumb's fills and outline.
 /// The GTK theme's side pane fill (`.sidebar`, Thunar's and Nemo's), in its colours (`dark` as they are).
 fn gtk_sidebar(dark: bool) -> Option<u32> {
     #[cfg(any(target_os = "linux", target_os = "freebsd"))]
@@ -455,6 +454,9 @@ fn gtk_sidebar(dark: bool) -> Option<u32> {
     None
 }
 
+/// GTK's scrollbars as the theme draws them beside a view, where sc-gtkstyle
+/// measured them, in its colours (`dark` as they are): their width, the
+/// thumb's breadth and inset, the track's fill and line, the thumb's fills and outline.
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
 fn gtk_scrollbar(dark: bool) -> Option<(gpui_kit::component::ScrollbarSize, gpui_kit::component::ScrollbarLook)> {
     let drawn = sc_core::system::toolkit_style::gtk_colors().filter(|drawn| drawn.dark == dark)?;

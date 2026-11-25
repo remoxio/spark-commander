@@ -511,6 +511,32 @@ static void scrollbars(GtkStyleContext *window, GdkRGBA background) {
     for (size_t i = 0; i < G_N_ELEMENTS(nodes); i++) g_object_unref(nodes[i]);
 }
 
+// A toolbar's toggle button checked (GtkToggleToolButton's flat button), drawn whole, and its corners' size; none where the theme draws nothing.
+static void toggle(GtkStyleContext *window, int height) {
+    GtkStyleContext *bar = node(window, GTK_TYPE_TOOLBAR, "toolbar", "horizontal");
+    GtkStyleContext *item = node(bar, GTK_TYPE_TOGGLE_TOOL_BUTTON, "toolbutton", NULL);
+    GtkStyleContext *button = node(item, GTK_TYPE_TOGGLE_BUTTON, "button", "flat toggle");
+    gtk_style_context_set_state(button, GTK_STATE_FLAG_CHECKED);
+    cairo_t *cr;
+    cairo_surface_t *surface = canvas(height, height, &cr);
+    draw(button, cr, height, height, NULL);
+    cairo_destroy(cr);
+    cairo_surface_flush(surface);
+    int w = cairo_image_surface_get_width(surface), h = cairo_image_surface_get_height(surface);
+    if (pixel(surface, w / 2, h / 2).alpha > 0 || pixel(surface, 1, h / 2).alpha > 0) {
+        put_whole("toolbutton.checked", surface);
+        int radius;
+        GtkBorder border;
+        gtk_style_context_get(button, GTK_STATE_FLAG_CHECKED, GTK_STYLE_PROPERTY_BORDER_RADIUS, &radius, NULL);
+        gtk_style_context_get_border(button, GTK_STATE_FLAG_CHECKED, &border);
+        printf("size toolbutton.corner %d\n", radius + MAX(border.top, border.left) + 1);
+    }
+    cairo_surface_destroy(surface);
+    g_object_unref(button);
+    g_object_unref(item);
+    g_object_unref(bar);
+}
+
 int main(int argc, char **argv) {
     if (!gtk_init_check(&argc, &argv)) {
         fprintf(stderr, "sc-gtkstyle: no display\n");
@@ -584,6 +610,7 @@ int main(int argc, char **argv) {
     combos(window, background, button_height);
     tabs(window, background);
     tab_close(window);
+    toggle(window, button_height);
     menus(window, background);
     printf("end\n");
     return 0;

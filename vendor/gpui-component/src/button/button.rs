@@ -692,7 +692,14 @@ impl RenderOnce for Button {
         let children = self.children;
         let instance_style = base.style().clone();
         let normal_style = style.normal(self.outline, cx);
-        let selected_style = style.selected(self.outline, cx);
+        // SparkCommander patch: a flat button checked or open (a toolbar's toggle) as GTK's theme draws one, see `ToolkitControls::toggle`.
+        let toggle = (self.variant == ButtonVariant::Ghost && selected)
+            .then(|| crate::toolkit::drawn(cx, |controls| controls.toggle.as_ref()))
+            .flatten();
+        let selected_style = match toggle.is_some() {
+            true => ButtonVariantStyle { bg: cx.theme().transparent.into(), ..style.selected(self.outline, cx) },
+            false => style.selected(self.outline, cx),
+        };
         let disabled_style = style.disabled(self.outline, cx);
         let icon_size = self.icon_size.unwrap_or_else(|| match self.size {
             Size::Size(v) => Size::Size(v * 0.75),
@@ -930,6 +937,9 @@ impl RenderOnce for Button {
             this.child(crate::toolkit::layers(crate::toolkit::BUTTON, disabled, |state| {
                 crate::toolkit::button_layer(qt, parts, state)
             }))
+        })
+        .when_some(toggle, |this, (scale, (image, corner))| {
+            this.relative().child(crate::toolkit::framed(scale, image, gpui::Edges::all(corner)).absolute().inset_0())
         })
         .child(content)
         // Fade the whole button while loading, so every variant is dimmed by

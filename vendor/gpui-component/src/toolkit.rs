@@ -29,6 +29,8 @@ pub struct ToolkitControls {
     /// GTK's text fields and combo boxes, where the theme draws them.
     pub field: Option<ToolkitField>,
     pub combo: Option<ToolkitCombo>,
+    /// GTK's flat toggle button checked (a toolbar's), drawn whole, and its corners' size, kept as the rest stretches.
+    pub toggle: Option<(Arc<RenderImage>, Pixels)>,
 }
 
 /// GTK's text field: the entry normal, focused and disabled, drawn whole (its
