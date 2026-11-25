@@ -389,7 +389,8 @@ static void combos(GtkStyleContext *window, GdkRGBA background, int height) {
 
 // A tab's close button as GTK's apps put one on a notebook tab (Xfce
 // Terminal's, Thunar's): a flat button with the icon theme's close icon, its
-// colour the button's, in every state.
+// colour the button's, in every state; MATE's apps' (Caja's, MATE Terminal's)
+// the full-colour one, Yaru-MATE's red circle.
 static void tab_close(GtkStyleContext *window) {
     GtkStyleContext *notebook = node(window, GTK_TYPE_NOTEBOOK, "notebook", NULL);
     GtkStyleContext *header = node(notebook, G_TYPE_NONE, "header", "top");
@@ -401,7 +402,9 @@ static void tab_close(GtkStyleContext *window) {
     gtk_style_context_get(button, GTK_STATE_FLAG_NORMAL, "min-width", &min_width, "min-height", &min_height, NULL);
     GtkBorder edge = edges(button);
     int width = edge.left + edge.right + MAX(min_width, icon), height = edge.top + edge.bottom + MAX(min_height, icon);
-    GtkIconInfo *info = gtk_icon_theme_lookup_icon_for_scale(gtk_icon_theme_get_default(), "window-close-symbolic", icon, icon_scale, GTK_ICON_LOOKUP_FORCE_SIZE);
+    const char *desktop = g_getenv("XDG_CURRENT_DESKTOP");
+    const char *close = desktop && strstr(desktop, "MATE") ? "window-close" : "window-close-symbolic";
+    GtkIconInfo *info = gtk_icon_theme_lookup_icon_for_scale(gtk_icon_theme_get_default(), close, icon, icon_scale, GTK_ICON_LOOKUP_FORCE_SIZE);
     for (int state = NORMAL; state <= DISABLED; state++) {
         gtk_style_context_set_state(button, flags(state, FALSE));
         gtk_style_context_set_state(image, flags(state, FALSE));

@@ -247,6 +247,7 @@ impl Commander {
     fn render_terminal_tabs(&self, cx: &mut Context<Self>) -> impl IntoElement + use<> {
         let mac = crate::appearance::mac_tabs(cx).is_some();
         let gnome = sc_core::system::theme::control_style() == Some(sc_core::system::theme::ControlStyle::Adwaita);
+        let mate = sc_core::system::theme::on_desktop("MATE");
         let current = self.terminal_tab;
         let tabs = self.terminals.iter().enumerate().map(|(ix, tab)| {
             let view = tab.view.read(cx);
@@ -261,6 +262,7 @@ impl Commander {
                 let images = controls.tab_close.clone()?;
                 Some((controls.size(&images.0[0]), images))
             });
+            let close_width = drawn.as_ref().map_or(px(20.), |((width, _), _)| *width);
             let close = match drawn {
                 Some(((width, height), images)) => div()
                     .id(("terminal-close", ix))
@@ -290,6 +292,8 @@ impl Commander {
                     .label(name)
                     .prefix(div().ml_1().w(px(20.)))
                     .suffix(div().mr_1().when(ix != current, |el| el.invisible().group_hover(TAB, |style| style.visible())).child(close)),
+                // MATE Terminal's: the tabs share the bar, the name centred, the × at the right.
+                false if mate => Tab::new().flex_1().label(name).prefix(div().ml_1p5().w(close_width)).suffix(close),
                 false => Tab::new().label(name).suffix(close),
             }
         });

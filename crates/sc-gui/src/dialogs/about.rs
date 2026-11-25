@@ -11,7 +11,12 @@ use sc_core::addons::{Addon, Builtin};
 use sc_core::t;
 
 pub fn open(window: &mut Window, cx: &mut App) {
-    crate::dialogs::dialog_window::show(t!("about.title"), size(px(600.), px(560.)), window, cx, |_, _, cx| cx.new(|_| About), |_, _, _| false);
+    let size = size(px(600.), px(500.));
+    // In a window of its own no heading over it: the app's name heads it already.
+    if crate::dialogs::dialog_window::separate() {
+        return crate::dialogs::dialog_window::open_headed(t!("about.title"), size, window, cx, |_, _, cx| (cx.new(|_| About), None));
+    }
+    crate::dialogs::dialog_window::show(t!("about.title"), size, window, cx, |_, _, cx| cx.new(|_| About), |_, _, _| false);
 }
 
 struct About;
@@ -97,5 +102,5 @@ fn content(cx: &App) -> impl IntoElement + use<> {
         .child(div().border_t_1().border_color(cx.theme().border))
         .child(div().font_semibold().child(t!("about.made_with")))
         // A box of its own height, the list scrolling in its frame.
-        .child(v_flex().h(px(340.)).child(crate::dialogs::framed_list(div().id("about-parts").child(parts), cx)))
+        .child(v_flex().h(px(280.)).child(crate::dialogs::framed_list(div().id("about-parts").child(parts), cx)))
 }

@@ -295,6 +295,8 @@ pub struct X11WindowState {
     /// SparkCommander patch: not resizable: as small and as large as it is, so the
     /// window manager offers no maximize; kept so as the app resizes it.
     fixed_size: bool,
+    /// SparkCommander patch: the size a fixed-size window was last asked to take, device pixels (`resize`).
+    asked_size: Option<(u32, u32)>,
     /// SparkCommander patch: false: the window manager offers no minimize (a dialog's, as Qt's).
     minimizable: bool,
 }
@@ -885,6 +887,7 @@ impl X11WindowState {
                 edge_constraints: None,
                 accesskit_adapter: None,
                 fixed_size: !params.is_resizable,
+                asked_size: None,
                 minimizable: params.is_minimizable,
                 counter_id: sync_request_counter,
                 last_sync_counter: None,
@@ -1474,15 +1477,33 @@ impl PlatformWindow for X11Window {
     }
 
     fn resize(&mut self, size: Size<Pixels>) {
-        let state = self.0.state.borrow();
+        let mut state = self.0.state.borrow_mut();
         let size = size.to_device_pixels(state.scale_factor);
         let width = size.width.0 as u32;
         let height = size.height.0 as u32;
-        // SparkCommander patch: see `fixed_size`.
+        let mut changes = xproto::ConfigureWindowAux::new().width(width).height(height);
+        // SparkCommander patch: see `fixed_size`. Resized as it fits what it shows (a dialog), it keeps its
+        // centre where it was (it was centred over its owner at its first size): moved by half the change,
+        // the window itself placed (static gravity), as window managers leave a resize's own gravity aside.
         if state.fixed_size {
+            // Asked again before the server has it: nothing new, and not moved twice.
+            if state.asked_size == Some((width, height)) {
+                return;
+            }
+            let was = state.bounds.size.to_device_pixels(state.scale_factor);
+            let (was_width, was_height) = state.asked_size.unwrap_or((was.width.0 as u32, was.height.0 as u32));
+            state.asked_size = Some((width, height));
             let mut size_hints = WmSizeHints::new();
             let size = (width as i32, height as i32);
             (size_hints.min_size, size_hints.max_size) = (Some(size), Some(size));
+            let at = self.0.xcb.translate_coordinates(self.0.x_window, state.x_root_window, 0, 0).ok().and_then(|cookie| cookie.reply().ok());
+            if let Some(at) = at {
+                let x = i32::from(at.dst_x) + (was_width as i32 - width as i32) / 2;
+                let y = i32::from(at.dst_y) + (was_height as i32 - height as i32) / 2;
+                size_hints.position = Some((WmSizeHintsSpecification::UserSpecified, x, y));
+                size_hints.win_gravity = Some(xproto::Gravity::STATIC);
+                changes = changes.x(x).y(y);
+            }
             check_reply(|| "X11 change of WM_SIZE_HINTS failed.", size_hints.set_normal_hints(&self.0.xcb, self.0.x_window)).log_err();
         }
 
@@ -1493,12 +1514,7 @@ impl PlatformWindow for X11Window {
                     width, height
                 )
             },
-            self.0.xcb.configure_window(
-                self.0.x_window,
-                &xproto::ConfigureWindowAux::new()
-                    .width(width)
-                    .height(height),
-            ),
+            self.0.xcb.configure_window(self.0.x_window, &changes),
         )
         .log_err();
         xcb_flush(&self.0.xcb);

@@ -668,8 +668,8 @@ diff -ruN a/src/linux/x11/clipboard.rs b/src/linux/x11/clipboard.rs
          match format {
              ImageFormat::Png => self.inner.atoms.PNG__MIME,
 diff -ruN -x .cargo-ok a/src/linux/x11/window.rs b/src/linux/x11/window.rs
---- a/src/linux/x11/window.rs	2006-07-24 03:21:28.000000000 +0200
-+++ b/src/linux/x11/window.rs	2026-11-24 15:06:54.836226145 +0100
+--- a/src/linux/x11/window.rs
++++ b/src/linux/x11/window.rs
 @@ -7,8 +7,8 @@
      Pixels, PlatformAtlas, PlatformDisplay, PlatformInput, PlatformInputHandler, PlatformWindow,
      Point, PromptButton, PromptLevel, RequestFrameOptions, ResizeEdge, ScaledPixels, Scene, Size,
@@ -846,21 +846,23 @@ diff -ruN -x .cargo-ok a/src/linux/x11/window.rs b/src/linux/x11/window.rs
  
              let gpu_size = query_render_extent(&self.xcb, self.x_window)?;
              if let Some(renderer) = &mut state.renderer {
-@@ -1441,6 +1478,13 @@
+@@ -1441,6 +1478,15 @@
          let size = size.to_device_pixels(state.scale_factor);
          let width = size.width.0 as u32;
          let height = size.height.0 as u32;
-+        // SparkCommander patch: see `fixed_size`.
++        // SparkCommander patch: see `fixed_size`; resized as it fits what it shows (a dialog), the window
++        // manager keeps its centre where it was, as it was centred over its owner at its first size.
 +        if state.fixed_size {
 +            let mut size_hints = WmSizeHints::new();
 +            let size = (width as i32, height as i32);
 +            (size_hints.min_size, size_hints.max_size) = (Some(size), Some(size));
++            size_hints.win_gravity = Some(xproto::Gravity::CENTER);
 +            check_reply(|| "X11 change of WM_SIZE_HINTS failed.", size_hints.set_normal_hints(&self.0.xcb, self.0.x_window)).log_err();
 +        }
  
          check_reply(
              || {
-@@ -1928,10 +1972,15 @@
+@@ -1928,10 +1974,15 @@
          }
  
          // https://github.com/rust-windowing/winit/blob/master/src/platform_impl/linux/x11/util/hint.rs#L53-L87
