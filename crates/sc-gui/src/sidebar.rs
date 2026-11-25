@@ -466,7 +466,7 @@ impl Commander {
                         radius: px(6.),
                     },
                     false => TabsLook {
-                        track: theme.background,
+                        track: gpui_kit::transparent_black(),
                         pill: theme.primary,
                         on_pill: theme.primary_foreground,
                         idle: theme.muted_foreground,
