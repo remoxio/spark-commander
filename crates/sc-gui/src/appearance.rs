@@ -451,6 +451,8 @@ fn gtk_sidebar(dark: bool) -> Option<u32> {
     #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     return sc_core::system::toolkit_style::gtk_colors().filter(|drawn| drawn.dark == dark)?.colors.get("sidebar").copied();
     #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
+    let _ = dark;
+    #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
     None
 }
 

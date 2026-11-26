@@ -214,6 +214,8 @@ pub fn adwaita_color(dark: bool, name: &str) -> Option<u32> {
     #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     return crate::system::toolkit_style::adwaita_colors()?.colors.get(&format!("{}.{name}", if dark { "dark" } else { "light" })).copied();
     #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
+    let _ = (dark, name);
+    #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
     None
 }
 
