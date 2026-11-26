@@ -84,6 +84,13 @@ pub fn resolve(target: &str, dir: &Path) -> PathBuf {
                 clean.pop();
             }
             Component::CurDir => {}
+            // As text: Windows takes a server's `C:` for a drive and drops what came before it.
+            Component::Normal(name) => {
+                if !matches!(clean.components().next_back(), None | Some(Component::Prefix(_) | Component::RootDir)) {
+                    clean.as_mut_os_string().push(std::path::MAIN_SEPARATOR_STR);
+                }
+                clean.as_mut_os_string().push(name);
+            }
             part => clean.push(part),
         }
     }
@@ -99,6 +106,13 @@ mod tests {
             Outcome::ChangeDir(path) => path,
             Outcome::Started => panic!("{line} ran"),
         }
+    }
+
+    #[test]
+    fn keeps_a_windows_servers_drive() {
+        let folder = Path::new("/C:/Users").join("Desktop");
+        let resolved = resolve(&format!("{}{}", folder.display(), std::path::MAIN_SEPARATOR), &folder);
+        assert_eq!(resolved.to_string_lossy().replace('\\', "/"), "/C:/Users/Desktop");
     }
 
     #[test]
