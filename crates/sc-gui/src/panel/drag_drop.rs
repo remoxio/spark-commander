@@ -190,6 +190,9 @@ impl Commander {
             // Another program's: this computer's files, copied or cut.
             None => match item.as_ref().and_then(other_files) {
                 Some((batch, cut)) => (batch, cut),
+                #[cfg(windows)]
+                None => return self.paste_virtual_files(to, window, cx),
+                #[cfg(not(windows))]
                 None => {
                     let text = sc_core::t!("panel.clipboard.no_files");
                     return window.push_notification(Notification::warning(text), cx);
@@ -214,6 +217,27 @@ impl Commander {
         };
         let target = Target::Into(to.folder);
         self.enqueue(kind, batch, to.fs, target, Overwrite::Ask, window, cx);
+    }
+}
+
+impl Commander {
+    /// Windows: files offered with no path (an Outlook attachment), saved
+    /// aside on a thread of their own, as the source may be slow, then moved in.
+    #[cfg(windows)]
+    fn paste_virtual_files(&mut self, to: Place, window: &mut Window, cx: &mut Context<Self>) {
+        let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |since| since.as_nanos());
+        let dir = std::env::temp_dir().join(format!("sparkcommander-paste-{stamp}"));
+        let saving = std::thread::spawn(move || sc_core::system::clipboard::save_virtual_files(&dir));
+        let saved = cx.background_executor().spawn(async move { saving.join().unwrap_or_else(|_| Ok(Vec::new())) });
+        cx.spawn_in(window, async move |this, cx| {
+            let saved = saved.await;
+            let _ = this.update_in(cx, |this, window, cx| match saved.map(Batch::paths) {
+                Ok(Some(batch)) => this.enqueue(Kind::Move, batch, to.fs, Target::Into(to.folder), Overwrite::Ask, window, cx),
+                Ok(None) => window.push_notification(Notification::warning(sc_core::t!("panel.clipboard.no_files")), cx),
+                Err(err) => window.push_notification(Notification::error(err.to_string()), cx),
+            });
+        })
+        .detach();
     }
 }
 

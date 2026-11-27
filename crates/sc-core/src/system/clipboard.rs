@@ -69,6 +69,102 @@ pub fn add_files(paths: &[PathBuf], cut: bool) -> windows::core::Result<()> {
     }
 }
 
+/// Windows: files another program offers with no path of their own (an
+/// Outlook attachment, a remote desktop's, an archive's), written into `dir`
+/// as Explorer pastes them; the ones at the top. None on the clipboard: empty.
+/// Runs OLE on the calling thread: one of its own, as the source's may take a while.
+#[cfg(windows)]
+pub fn save_virtual_files(dir: &std::path::Path) -> std::io::Result<Vec<PathBuf>> {
+    use std::io::Write;
+    use std::path::Component;
+    use windows::Win32::System::Com::{DVASPECT_CONTENT, FORMATETC, TYMED_HGLOBAL, TYMED_ISTREAM};
+    use windows::Win32::System::DataExchange::RegisterClipboardFormatW;
+    use windows::Win32::System::Memory::{GlobalLock, GlobalUnlock};
+    use windows::Win32::System::Ole::{OleGetClipboard, OleInitialize, ReleaseStgMedium};
+    use windows::Win32::UI::Shell::{FD_ATTRIBUTES, FD_FILESIZE, FILEDESCRIPTORW, FILEGROUPDESCRIPTORW};
+
+    unsafe {
+        let _ = OleInitialize(None);
+        let data = OleGetClipboard()?;
+        let format = |name, lindex, tymed: i32| FORMATETC {
+            cfFormat: RegisterClipboardFormatW(name) as u16,
+            ptd: std::ptr::null_mut(),
+            dwAspect: DVASPECT_CONTENT.0,
+            lindex,
+            tymed: tymed as u32,
+        };
+        let Ok(mut medium) = data.GetData(&format(windows::core::w!("FileGroupDescriptorW"), -1, TYMED_HGLOBAL.0)) else {
+            return Ok(Vec::new());
+        };
+        let group = GlobalLock(medium.u.hGlobal) as *const FILEGROUPDESCRIPTORW;
+        let items: Vec<FILEDESCRIPTORW> = match group.is_null() {
+            true => Vec::new(),
+            false => (0..std::ptr::addr_of!((*group).cItems).read_unaligned() as usize)
+                .map(|at| std::ptr::addr_of!((*group).fgd).cast::<FILEDESCRIPTORW>().add(at).read_unaligned())
+                .collect(),
+        };
+        let _ = GlobalUnlock(medium.u.hGlobal);
+        ReleaseStgMedium(&mut medium);
+        let mut top = Vec::new();
+        for (at, item) in items.iter().enumerate() {
+            let name = item.cFileName;
+            let name = String::from_utf16_lossy(&name[..name.iter().position(|&c| c == 0).unwrap_or(name.len())]);
+            // Its parts only: a name with .. or a drive would write outside `dir`.
+            let parts: Vec<_> = std::path::Path::new(&name).components().filter_map(|part| match part {
+                Component::Normal(part) => Some(part.to_owned()),
+                _ => None,
+            }).collect();
+            let Some(first) = parts.first() else { continue };
+            let path = parts.iter().fold(dir.to_path_buf(), |path, part| path.join(part));
+            if !top.contains(&dir.join(first)) {
+                top.push(dir.join(first));
+            }
+            let folder = item.dwFlags & FD_ATTRIBUTES.0 as u32 != 0 && item.dwFileAttributes & 0x10 != 0;
+            if folder {
+                std::fs::create_dir_all(&path)?;
+                continue;
+            }
+            if let Some(parent) = path.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            let mut medium = data.GetData(&format(windows::core::w!("FileContents"), at as i32, TYMED_ISTREAM.0 | TYMED_HGLOBAL.0))?;
+            let mut file = std::fs::File::create(&path)?;
+            let written = match medium.tymed as i32 {
+                tymed if tymed == TYMED_ISTREAM.0 => match &*medium.u.pstm {
+                    Some(stream) => {
+                        let mut buffer = vec![0u8; 1 << 16];
+                        loop {
+                            let mut read = 0;
+                            stream.Read(buffer.as_mut_ptr().cast(), buffer.len() as u32, Some(&mut read)).ok()?;
+                            if read == 0 {
+                                break Ok(());
+                            }
+                            file.write_all(&buffer[..read as usize])?;
+                        }
+                    }
+                    None => Ok(()),
+                },
+                _ => {
+                    let size = (u64::from(item.nFileSizeHigh) << 32 | u64::from(item.nFileSizeLow)) as usize;
+                    let bytes = GlobalLock(medium.u.hGlobal) as *const u8;
+                    // A global is often longer than its file: its size where the descriptor gives it.
+                    let whole = windows::Win32::System::Memory::GlobalSize(medium.u.hGlobal);
+                    let size = if item.dwFlags & FD_FILESIZE.0 as u32 != 0 { size.min(whole) } else { whole };
+                    let written = match bytes.is_null() {
+                        true => Ok(()),
+                        false => file.write_all(std::slice::from_raw_parts(bytes, size)),
+                    };
+                    let _ = GlobalUnlock(medium.u.hGlobal);
+                    written
+                }
+            };
+            ReleaseStgMedium(&mut medium);
+            written?;
+        }
+        Ok(top)
+    }
+}
+
 /// The tools a terminal reaches the clipboard through, which has no window to
 /// ask: wl-clipboard's on Wayland, xclip's or xsel's on X11, macOS's own.
 #[cfg(unix)]
@@ -245,6 +341,17 @@ mod tests {
             let _ = CloseClipboard();
         }
         assert_eq!(read, paths);
+    }
+
+    #[test]
+    #[cfg(windows)]
+    #[ignore = "reads what is on the clipboard: copy an Outlook attachment first"]
+    fn saves_virtual_files() {
+        let dir = std::env::temp_dir().join(format!("sc-virtual-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let saved = save_virtual_files(&dir).unwrap();
+        println!("{saved:?}");
+        assert!(!saved.is_empty() && saved.iter().all(|path| path.exists()));
     }
 
     #[test]
